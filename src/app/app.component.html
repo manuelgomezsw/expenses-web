@@ -1,0 +1,49 @@
+<mat-toolbar>
+    <mat-toolbar-row>
+        <button
+                mat-button
+                routerLink="/"
+                routerLinkActive="router-link-active"
+                [routerLinkActiveOptions]="{ exact: true }"
+        >
+            Inicio
+        </button>
+        <button
+                mat-button
+                routerLink="/"
+                routerLinkActive="router-link-active"
+                [routerLinkActiveOptions]="{ exact: true }"
+        >
+            Gastos
+        </button>
+        <button mat-button [matMenuTriggerFor]="belowQuotes">Configuración</button>
+        <mat-menu #belowQuotes="matMenu" yPosition="below">
+            <button
+                    mat-menu-item
+                    routerLink="/payments/types/list"
+                    routerLinkActive="router-link-active"
+                    [routerLinkActiveOptions]="{ exact: true }"
+            >
+                Tipos de pago
+            </button>
+            <button
+                    mat-menu-item
+                    routerLink="/pockets/list"
+                    routerLinkActive="router-link-active"
+                    [routerLinkActiveOptions]="{ exact: true }"
+            >
+                Bolsillos
+            </button>
+            <button
+                    mat-menu-item
+                    routerLink="/pockets/list"
+                    routerLinkActive="router-link-active"
+                    [routerLinkActiveOptions]="{ exact: true }"
+            >
+                Ciclos
+            </button>
+        </mat-menu>
+    </mat-toolbar-row>
+</mat-toolbar>
+
+<router-outlet/>

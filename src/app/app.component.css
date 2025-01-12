@@ -1,0 +1,12 @@
+.active-link {
+    background-color: #1E3A8A;
+    color: white;
+}
+
+mat-toolbar {
+    background-color: #dae2f9;
+}
+
+mat-toolbar button {
+    color: #005cbb;
+}
