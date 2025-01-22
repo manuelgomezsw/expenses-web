@@ -1,0 +1,23 @@
+table {
+    background-color: #FFFFFF;
+}
+
+table th {
+    background-color: #dae2f9;
+    color: #005cbb;
+    border:1px solid #dae2f9;
+}
+
+table th, td {
+    text-align: center;
+}
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto; /* Permite el desplazamiento horizontal */
+}
+
+.btn-new {
+    color: #005cbb;
+    margin-left: 10px;
+}

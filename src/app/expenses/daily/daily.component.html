@@ -1,0 +1,105 @@
+<mat-toolbar>
+    <span>Registrar gasto</span>
+</mat-toolbar>
+
+<div class="main-form">
+    <mat-card class="daily-card" appearance="outlined">
+        <mat-card-content>
+            <form>
+                <mat-form-field appearance="outline">
+                    <mat-label>Nombre del gasto</mat-label>
+                    <input matInput
+                           type="text"
+                           [(ngModel)]="expense.name"
+                           name="name"
+                    />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                    <mat-label>Valor del gasto</mat-label>
+                    <input matInput
+                           type="text"
+                           inputmode="decimal"
+                           name="budget"
+                           [(ngModel)]="expense.value"
+                           [currencyMask]="{
+                                align: 'left',
+                                prefix: '$ ',
+                                precision: 0,
+                                min: 0,
+                                thousands: '.',
+                                decimal: ','
+                           }"/>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                    <mat-label>Billetera</mat-label>
+                    <mat-select [(value)]="selectedPocket">
+                        <mat-option></mat-option>
+                        @for (option of pockets; track option) {
+                            <mat-option [value]="option.pocket_id">{{ option.name }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+                <div>
+                    <label id="payment-type-label">Medio de pago</label>
+                    <mat-radio-group [(ngModel)]="expense.payment_type_id" name="paymentMethod"
+                                     aria-labelledby="payment-type-label">
+                        <mat-radio-button value="1">Crédito</mat-radio-button>
+                        <mat-radio-button value="2">Débito</mat-radio-button>
+                    </mat-radio-group>
+                </div>
+            </form>
+        </mat-card-content>
+        <mat-card-footer class="example-card-footer">
+            <button mat-flat-button type="button" color="primary" (click)="onSave()">
+                GUARDAR
+            </button>
+        </mat-card-footer>
+    </mat-card>
+</div>
+
+<mat-toolbar>
+    <span>Gastos</span>
+</mat-toolbar>
+
+<div class="table-responsive">
+    <table mat-table [dataSource]="expenses" class="mat-elevation-z8">
+        <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Gasto</th>
+            <td mat-cell *matCellDef="let expense">
+                {{ expense.name }}
+            </td>
+        </ng-container>
+        <ng-container matColumnDef="value">
+            <th mat-header-cell *matHeaderCellDef>Valor</th>
+            <td mat-cell *matCellDef="let expense">
+                {{ expense.value | currency:'$ ':'symbol':'1.0-0' }}
+            </td>
+        </ng-container>
+        <ng-container matColumnDef="pocket">
+            <th mat-header-cell *matHeaderCellDef>Billetera</th>
+            <td mat-cell *matCellDef="let expense">
+                {{ expense.pocket_name }}
+            </td>
+        </ng-container>
+        <ng-container matColumnDef="created_at">
+            <th mat-header-cell *matHeaderCellDef>Fecha</th>
+            <td mat-cell *matCellDef="let expense">
+                {{ expense.created_at | customDate }}
+            </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>&nbsp;</th>
+            <td mat-cell *matCellDef="let expense">
+                <button mat-icon-button matSuffix (click)="onEdit(expense.expense_id)">
+                    <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button matSuffix (click)="onDelete(expense.expense_id)">
+                    <mat-icon>delete</mat-icon>
+                </button>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+</div>
