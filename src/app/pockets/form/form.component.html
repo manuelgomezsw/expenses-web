@@ -1,0 +1,43 @@
+<mat-toolbar>
+    <span>{{ isEditMode ? 'Editar Bolsillo' : 'Nuevo Bolsillo' }}</span>
+</mat-toolbar>
+
+<div class="main-form">
+    <mat-card class="cycle-card" appearance="outlined">
+        <mat-card-content>
+            <form>
+                <mat-form-field appearance="outline">
+                    <mat-label>Nombre</mat-label>
+                    <input
+                            matInput
+                            value="{{pocket.name}}"
+                            [(ngModel)]="pocket.name"
+                            name="name">
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Estado</mat-label>
+                    <mat-select
+                            [(ngModel)]="pocket.status"
+                            name="status">
+                        <mat-option></mat-option>
+                        @for (option of status; track option) {
+                            <mat-option [value]="option.value">
+                                {{ option.name }}
+                            </mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            </form>
+        </mat-card-content>
+
+        <mat-card-footer class="example-card-footer">
+            <button mat-flat-button type="button" color="primary" (click)="onSave(pocket)">
+                {{ isEditMode ? 'ACTUALIZAR' : 'GUARDAR' }}
+            </button>
+            <button mat-button class="btn-cancel" (click)="onCancel()">
+                CANCELAR
+            </button>
+        </mat-card-footer>
+    </mat-card>
+</div>

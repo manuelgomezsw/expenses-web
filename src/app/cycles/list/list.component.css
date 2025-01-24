@@ -21,3 +21,12 @@ table th, td {
     color: #005cbb;
     margin-left: 10px;
 }
+
+/* Alternar colores de fila */
+.table-responsive table tr:nth-child(even) {
+    background-color: #f9f7f7; /* Gris claro */
+}
+
+.table-responsive table tr:nth-child(odd) {
+    background-color: #ffffff; /* Blanco */
+}

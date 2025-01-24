@@ -4,4 +4,5 @@ export const environment = {
     paymentsTypeUrl: 'http://localhost:8080/payments/type',
     pocketsUrl: 'http://localhost:8080/pockets',
     cyclesUrl: 'http://localhost:8080/cycles',
+    expensesUrl: 'http://localhost:8080/expenses',
 };

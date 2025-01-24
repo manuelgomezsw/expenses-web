@@ -18,6 +18,10 @@ export class CycleService {
         return this.http.get(environment.cyclesUrl);
     }
 
+    getActive(): Observable<any> {
+        return this.http.get(environment.cyclesUrl + "/active");
+    }
+
     getByID(cycle_id: any): Observable<any> {
         return this.http.get(environment.cyclesUrl + "/" + cycle_id);
     }

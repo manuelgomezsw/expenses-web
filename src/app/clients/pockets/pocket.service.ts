@@ -15,7 +15,19 @@ export class PocketService {
     }
 
     getAll(): Observable<any> {
-        return this.http.get(environment.pocketsUrl);
+        return this.http.get(environment.pocketsUrl + "/all");
+    }
+
+    getByID(pocket_id: any): Observable<any> {
+        return this.http.get(environment.pocketsUrl + "/" + pocket_id);
+    }
+
+    getActive(): Observable<any> {
+        return this.http.get(environment.pocketsUrl + "/active");
+    }
+
+    newPocket(pocket: Pocket): Observable<any> {
+        return this.http.post(environment.pocketsUrl, pocket);
     }
 
     editPocket(pocket: Pocket): Observable<any> {

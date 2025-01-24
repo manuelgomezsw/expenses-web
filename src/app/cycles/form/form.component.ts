@@ -84,9 +84,6 @@ export class CycleFormComponent implements OnInit {
     }
 
     onSave(cycle: Cycle) {
-        this.cycle.date_init = this.formatDate(this.cycle.date_init);
-        this.cycle.date_end = this.formatDate(this.cycle.date_end);
-
         if (this.isEditMode) {
             this.updateCycle(cycle);
         } else {
@@ -102,14 +99,13 @@ export class CycleFormComponent implements OnInit {
         this.cycleService.getByID(cycle_id).subscribe({
             next: (result) => {
                 this.cycle = result;
-                //this.selectedPocket = this.cycle.pocket_id;
             },
             error: (err) => console.error(err)
         });
     }
 
     private loadPockets() {
-        this.pocketServices.getAll().subscribe({
+        this.pocketServices.getActive().subscribe({
             next: (response: any) => {
                 this.pockets = response;
             },
@@ -154,13 +150,5 @@ export class CycleFormComponent implements OnInit {
                 );
             }
         });
-    }
-
-    private formatDate(date: any): string {
-        // Transforma el objeto Date en una cadena YYYY-MM-DD
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
     }
 }

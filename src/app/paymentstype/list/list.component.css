@@ -22,6 +22,15 @@ mat-form-field input {
     color: black; /* Texto negro (opcional) */
 }
 
+/* Alternar colores de fila */
+.table-responsive table tr:nth-child(even) {
+    background-color: #f9f7f7; /* Gris claro */
+}
+
+.table-responsive table tr:nth-child(odd) {
+    background-color: #ffffff; /* Blanco */
+}
+
 /* Para iPhones pequeños */
 @media (max-width: 375px) {
     mat-form-field {

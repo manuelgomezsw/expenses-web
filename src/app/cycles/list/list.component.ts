@@ -101,7 +101,7 @@ export class ListCycleComponent implements OnInit {
         });
     }
 
-    loadCycles(): void {
+    private loadCycles(): void {
         this.cycleService.getAll().subscribe({
             next: (response: any) => {
                 this.cycles = response;

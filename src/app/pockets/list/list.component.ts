@@ -1,17 +1,14 @@
 import {Component, OnInit} from '@angular/core';
 import {FormsModule} from "@angular/forms";
 import {Title} from '@angular/platform-browser';
-import {NgIf} from "@angular/common";
 
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatIconModule} from '@angular/material/icon';
 import {MatTableModule} from '@angular/material/table';
-import {MatIconButton} from "@angular/material/button";
-import {MatFormField, MatSuffix} from "@angular/material/form-field";
-import {MatInput} from "@angular/material/input";
+import {MatButton, MatIconButton} from "@angular/material/button";
+import {MatSuffix} from "@angular/material/form-field";
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatDialog} from '@angular/material/dialog';
-import {MatOption, MatSelect} from "@angular/material/select";
 
 import {Pocket} from "../../domain/pocket";
 import {environment} from "../../../environments/environment";
@@ -20,6 +17,7 @@ import {Status} from "../../domain/status";
 import {NotificationService} from "../../services/notification/notification.service";
 import {PocketService} from "../../clients/pockets/pocket.service";
 import {ConfirmDialogComponent} from "../../components/confirm-dialog/confirm-dialog.component"
+import {Router, RouterLink} from "@angular/router";
 
 @Component({
     selector: 'app-list',
@@ -30,13 +28,10 @@ import {ConfirmDialogComponent} from "../../components/confirm-dialog/confirm-di
         MatTableModule,
         MatIconButton,
         MatSuffix,
-        MatFormField,
-        MatInput,
-        NgIf,
         StatusPipe,
-        MatSelect,
-        MatOption,
         MatTooltipModule,
+        MatButton,
+        RouterLink,
     ],
     templateUrl: './list.component.html',
     styleUrl: './list.component.css'
@@ -44,16 +39,12 @@ import {ConfirmDialogComponent} from "../../components/confirm-dialog/confirm-di
 export class ListPocketsComponent implements OnInit {
     displayedColumns: string[] = ['name', 'status', 'actions'];
     pockets: Pocket[] = [];
-    status: Status[] = [
-        {value: true, name: 'Activo'},
-        {value: false, name: 'Inactivo'},
-    ];
-    selectedStatus: boolean = false;
 
     constructor(
         private titleService: Title,
         private pocketService: PocketService,
         private notificationService: NotificationService,
+        private router: Router,
         private dialog: MatDialog
     ) {
     }
@@ -63,33 +54,8 @@ export class ListPocketsComponent implements OnInit {
         this.loadPockets();
     }
 
-    onEdit(pocket: any) {
-        this.pockets.forEach(element => {
-            element.is_editing = false;
-        });
-        this.selectedStatus = pocket.status;
-        pocket.is_editing = true;
-    }
-
-    onSave(pocket: any) {
-        this.pocketService.editPocket(pocket).subscribe({
-            next: () => {
-                pocket.is_editing = false;
-                this.notificationService.openSnackBar(
-                    'Bolsillo actualizado correctamente',
-                );
-            },
-            error: (error) => {
-                console.log('Error updating pocket: ' + JSON.stringify(error));
-                this.notificationService.openSnackBar(
-                    'Ups... Algo malo ocurrió. Intenta de nuevo.'
-                );
-            }
-        });
-    }
-
-    onCancel(pocket: any) {
-        pocket.is_editing = false;
+    onNew(): void {
+        this.router.navigate(['/pockets/new']);
     }
 
     onDelete(pocket_id: any) {
@@ -118,7 +84,7 @@ export class ListPocketsComponent implements OnInit {
         });
     }
 
-    loadPockets() {
+    private loadPockets() {
         this.pocketService.getAll().subscribe({
             next: (response) => {
                 this.pockets = response;
