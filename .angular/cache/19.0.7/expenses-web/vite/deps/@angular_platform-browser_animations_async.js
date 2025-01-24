@@ -1,6 +1,7 @@
 import {
   DomRendererFactory2
-} from "./chunk-3HQGRQO7.js";
+} from "./chunk-D2O2KEPJ.js";
+import "./chunk-U73FIPOA.js";
 import {
   DOCUMENT
 } from "./chunk-PWCOIAQ7.js";
@@ -55,7 +56,7 @@ var AsyncAnimationRendererFactory = class _AsyncAnimationRendererFactory {
    * @internal
    */
   loadImpl() {
-    const loadFn = () => this.moduleImpl ?? import("./browser-BAP7BLCQ.js").then((m) => m);
+    const loadFn = () => this.moduleImpl ?? import("./browser-UAGK3FRB.js").then((m) => m);
     let moduleImplPromise;
     if (this.loadingSchedulerFn) {
       moduleImplPromise = this.loadingSchedulerFn(loadFn);

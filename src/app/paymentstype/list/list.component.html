@@ -1,28 +1,25 @@
 <mat-toolbar>
-    <span>Tipos de pago</span>
+    <span>Medios de pago</span>
 </mat-toolbar>
 
 <table mat-table [dataSource]="paymentTypes" class="mat-elevation-z8">
     <ng-container matColumnDef="payment_type_id">
         <th mat-header-cell *matHeaderCellDef>Identificador</th>
         <td mat-cell *matCellDef="let paymentType">
-            <form *ngIf="paymentType.is_editing">
-                <mat-form-field appearance="outline">
-                    <input matInput value="{{paymentType.payment_type_id}}">
-                </mat-form-field>
-            </form>
-            <span *ngIf="!paymentType.is_editing">
-                {{ paymentType.payment_type_id }}
-            </span>
+            {{ paymentType.payment_type_id }}
         </td>
     </ng-container>
 
     <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef>Tipo de pago</th>
+        <th mat-header-cell *matHeaderCellDef>Medio de pago</th>
         <td mat-cell *matCellDef="let paymentType">
             <form *ngIf="paymentType.is_editing">
                 <mat-form-field appearance="outline">
-                    <input matInput value="{{paymentType.name}}">
+                    <input
+                            matInput
+                            value="{{paymentType.name}}"
+                            [(ngModel)]="paymentType.name"
+                            name="name">
                 </mat-form-field>
             </form>
             <span *ngIf="!paymentType.is_editing">
@@ -34,13 +31,13 @@
     <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>&nbsp;</th>
         <td mat-cell *matCellDef="let paymentType">
-            <button *ngIf="!paymentType.is_editing" mat-icon-button matSuffix (click)="onEdit(paymentType)">
+            <button *ngIf="!paymentType.is_editing" mat-icon-button matSuffix matTooltip="Editar" (click)="onEdit(paymentType)">
                 <mat-icon>edit</mat-icon>
             </button>
-            <button *ngIf="paymentType.is_editing" mat-icon-button matSuffix (click)="onSave(paymentType)">
+            <button *ngIf="paymentType.is_editing" mat-icon-button matSuffix matTooltip="Guardar" (click)="onSave(paymentType)">
                 <mat-icon>save</mat-icon>
             </button>
-            <button *ngIf="paymentType.is_editing" mat-icon-button matSuffix (click)="onCancel(paymentType)">
+            <button *ngIf="paymentType.is_editing" mat-icon-button matSuffix matTooltip="Cancelar" (click)="onCancel(paymentType)">
                 <mat-icon>cancel</mat-icon>
             </button>
         </td>

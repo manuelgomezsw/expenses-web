@@ -11,7 +11,7 @@ import {MatInput} from "@angular/material/input";
 import {MatRadioButton, MatRadioGroup} from "@angular/material/radio";
 
 import {Expense} from "../../domain/expense";
-import {CustomDatePipe} from '../../pipes/custom-date.pipe';
+import {CustomDatePipe} from '../../pipes/custom-date/custom-date.pipe';
 
 import {
     MatCell,
@@ -23,7 +23,6 @@ import {
     MatRow, MatRowDef, MatTable
 } from "@angular/material/table";
 import {MatIcon} from "@angular/material/icon";
-import {StatusPipe} from "../../pipes/status.pipe";
 import {MatOption} from "@angular/material/core";
 import {MatSelect} from "@angular/material/select";
 import {Pocket} from "../../domain/pocket";
@@ -56,7 +55,6 @@ import {Pocket} from "../../domain/pocket";
         MatRowDef,
         MatSuffix,
         MatTable,
-        StatusPipe,
         MatHeaderCellDef,
         CustomDatePipe,
         MatOption,

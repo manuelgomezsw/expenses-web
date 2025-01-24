@@ -1,7 +1,9 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {Router} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {Title} from "@angular/platform-browser";
+import {MatDialog} from "@angular/material/dialog";
 
 import {MatToolbar} from "@angular/material/toolbar";
 import {
@@ -17,8 +19,12 @@ import {MatSuffix} from "@angular/material/form-field";
 import {MatIcon} from "@angular/material/icon";
 import {MatButton, MatIconButton} from "@angular/material/button";
 
-import {StatusPipe} from "../../pipes/status.pipe";
+import {StatusPipe} from "../../pipes/status/status.pipe";
 import {Cycle} from "../../domain/cycle";
+import {CycleService} from "../../clients/cycles/cycle.service";
+import {NotificationService} from "../../services/notification/notification.service";
+import {environment} from "../../../environments/environment";
+import {ConfirmDialogComponent} from "../../components/confirm-dialog/confirm-dialog.component";
 
 @Component({
     selector: 'app-list',
@@ -42,45 +48,70 @@ import {Cycle} from "../../domain/cycle";
         MatHeaderRowDef,
         MatRowDef,
         MatButton,
+        RouterLink,
     ],
     templateUrl: './list.component.html',
     styleUrl: './list.component.css'
 })
-export class ListCycleComponent {
-    cycles: Cycle[] = [
-        {
-            cycle_id: 1,
-            pocket_id: 1,
-            pocket_name: 'Hogar',
-            name: 'Enero 2024',
-            budget: 2030000,
-            date_init: '2024-01-24',
-            date_end: '2022-02-24',
-            status: true
-        },
-        {
-            cycle_id: 2,
-            pocket_id: 2,
-            pocket_name: 'Yaque',
-            name: 'Enero 2024',
-            budget: 1030000,
-            date_init: '2024-01-24',
-            date_end: '2022-02-24',
-            status: true
-        },
-    ]
+export class ListCycleComponent implements OnInit {
     displayedColumns: string[] = ['cycle', 'pocket_name', 'budget', 'date_init', 'date_end', 'status', 'actions'];
+    cycles: Cycle[] = []
 
     constructor(
-        private router: Router
+        private titleService: Title,
+        private cycleService: CycleService,
+        private notificationService: NotificationService,
+        private router: Router,
+        private dialog: MatDialog
     ) {
+    }
+
+    ngOnInit() {
+        this.titleService.setTitle(environment.titleWebSite + ' - Ciclos');
+        this.loadCycles();
     }
 
     onNewCycle(): void {
         this.router.navigate(['/cycles/new']);
     }
 
-    onEdit(cycle_id: number): void {
+    onDelete(cycle_id: number): void {
+        const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+            width: '400px',
+            data: {message: '¿Deseas eliminar este ciclo?'}
+        });
 
+        dialogRef.afterClosed().subscribe((result) => {
+            if (result === true) {
+                this.cycleService.deleteCycle(cycle_id).subscribe({
+                    next: () => {
+                        this.cycles = this.cycles.filter(e => e.cycle_id !== cycle_id);
+                        this.notificationService.openSnackBar(
+                            'Ciclo eliminado correctamente',
+                        );
+                    },
+                    error: (error: any) => {
+                        console.log('Error deleting cycle: ' + JSON.stringify(error));
+                        this.notificationService.openSnackBar(
+                            'Ups... Algo malo ocurrió. Intenta de nuevo.'
+                        );
+                    }
+                });
+            }
+        });
+    }
+
+    loadCycles(): void {
+        this.cycleService.getAll().subscribe({
+            next: (response: any) => {
+                this.cycles = response;
+            },
+            error: (error: any) => {
+                console.log('Error getting cycles: ' + JSON.stringify(error));
+                this.notificationService.openSnackBar(
+                    'Ups... Algo malo ocurrió. Intenta de nuevo.'
+                );
+            }
+        });
     }
 }
