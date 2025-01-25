@@ -36,6 +36,7 @@ import {CycleService} from "../../clients/cycles/cycle.service";
 import {Cycle} from "../../domain/cycle";
 import {ConfirmDialogComponent} from "../../components/confirm-dialog/confirm-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
+import {MatTooltip} from "@angular/material/tooltip";
 
 @Component({
     selector: 'app-daily',
@@ -69,7 +70,8 @@ import {MatDialog} from "@angular/material/dialog";
         CustomDatePipe,
         MatOption,
         MatSelect,
-        NgIf
+        NgIf,
+        MatTooltip
     ],
     templateUrl: './daily.component.html',
     styleUrl: './daily.component.css'

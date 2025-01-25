@@ -25,10 +25,18 @@
         <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>&nbsp;</th>
             <td mat-cell *matCellDef="let pocket">
-                <button mat-icon-button matSuffix [routerLink]="['/pockets', pocket.pocket_id, 'edit']">
+                <button
+                        mat-icon-button
+                        matSuffix
+                        [routerLink]="['/pockets', pocket.pocket_id, 'edit']"
+                        matTooltip="Editar">
                     <mat-icon>edit</mat-icon>
                 </button>
-                <button mat-icon-button matSuffix (click)="onDelete(pocket.pocket_id)">
+                <button
+                        mat-icon-button
+                        matSuffix
+                        (click)="onDelete(pocket.pocket_id)"
+                        matTooltip="Eliminar">
                     <mat-icon>delete</mat-icon>
                 </button>
             </td>

@@ -108,10 +108,18 @@
         <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>&nbsp;</th>
             <td mat-cell *matCellDef="let expense">
-                <button mat-icon-button matSuffix (click)="onEdit(expense.expense_id)">
+                <button
+                        mat-icon-button
+                        matSuffix
+                        (click)="onEdit(expense.expense_id)"
+                        matTooltip="Editar">
                     <mat-icon>edit</mat-icon>
                 </button>
-                <button mat-icon-button matSuffix (click)="onDelete(expense.expense_id)">
+                <button
+                        mat-icon-button
+                        matSuffix
+                        (click)="onDelete(expense.expense_id)"
+                        matTooltip="Eliminar">
                     <mat-icon>delete</mat-icon>
                 </button>
             </td>

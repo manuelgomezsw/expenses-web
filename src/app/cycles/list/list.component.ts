@@ -25,6 +25,7 @@ import {CycleService} from "../../clients/cycles/cycle.service";
 import {NotificationService} from "../../services/notification/notification.service";
 import {environment} from "../../../environments/environment";
 import {ConfirmDialogComponent} from "../../components/confirm-dialog/confirm-dialog.component";
+import {MatTooltip} from "@angular/material/tooltip";
 
 @Component({
     selector: 'app-list',
@@ -49,6 +50,7 @@ import {ConfirmDialogComponent} from "../../components/confirm-dialog/confirm-di
         MatRowDef,
         MatButton,
         RouterLink,
+        MatTooltip,
     ],
     templateUrl: './list.component.html',
     styleUrl: './list.component.css'
