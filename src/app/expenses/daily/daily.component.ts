@@ -152,6 +152,7 @@ export class DailyComponent implements OnInit {
                     'Gasto almacenado correctamente',
                 );
                 this.loadExpenses();
+                this.clearFields();
             },
             error: (error) => {
                 console.log('Error updating pocket: ' + JSON.stringify(error));
@@ -169,6 +170,7 @@ export class DailyComponent implements OnInit {
                     'Gasto actualizado correctamente',
                 );
                 this.isEditMode = false;
+                this.clearFields();
             },
             error: (error) => {
                 console.log('Error updating pocket: ' + JSON.stringify(error));
