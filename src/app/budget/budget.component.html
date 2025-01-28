@@ -1,0 +1,50 @@
+<mat-toolbar>
+    Ejecución del presupuesto
+</mat-toolbar>
+
+<div class="main-form">
+    <form>
+        <mat-form-field class="budget-card" appearance="outline">
+            <mat-label>Bolsillo</mat-label>
+            <mat-select
+                    (selectionChange)="onSelectionChanged($event)">
+                <mat-option></mat-option>
+                @for (option of cycles; track option) {
+                    <mat-option
+                            [value]="option.cycle_id">
+                        {{ option.pocket_name + ' (' + option.name + ')' }}
+                    </mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+    </form>
+</div>
+
+<div class="progress-card">
+    <div class="progress-header">
+        <!-- Bloque Gastado -->
+        <div class="progress-start">
+            <span class="subtitle">Gastado</span>
+            <span class="progress-value">{{ budget.spent | currency:'$ ':'symbol':'1.0-0' }}</span>
+        </div>
+
+        <!-- Bloque Presupuestado -->
+        <div class="progress-end">
+            <span class="subtitle">Presupuestado</span>
+            <span class="progress-value">{{ budget.budget | currency:'$ ':'symbol':'1.0-0' }}</span>
+        </div>
+    </div>
+
+    <!-- Barra de progreso -->
+    <mat-progress-bar
+            color="accent"
+            mode="determinate"
+            [value]="budget.spent_ratio"
+            class="progress-bar">
+    </mat-progress-bar>
+
+    <!-- Subtítulo de progreso -->
+    <div class="progress-footer">
+        <span class="progress-percentage">{{ budget.spent_ratio }}%</span>
+    </div>
+</div>

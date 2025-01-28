@@ -189,7 +189,7 @@ export class DailyComponent implements OnInit {
                 this.cycles = response;
             },
             error: (error) => {
-                console.log('Error getting pockets: ' + JSON.stringify(error));
+                console.log('Error getting cycles: ' + JSON.stringify(error));
                 this.notificationService.openSnackBar(
                     'Ups... Algo malo ocurrió. Intenta de nuevo.'
                 );

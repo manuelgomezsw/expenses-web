@@ -1,8 +1,9 @@
 export const environment = {
-    production: false,
-    titleWebSite: 'Mis finanzas (Dev)',
-    paymentsTypeUrl: 'http://localhost:8080/payments/type',
-    pocketsUrl: 'http://localhost:8080/pockets',
-    cyclesUrl: 'http://localhost:8080/cycles',
-    expensesUrl: 'http://localhost:8080/expenses',
+    production: true,
+    titleWebSite: 'Mis finanzas',
+    paymentsTypeUrl: 'https://expenses-api-dot-quotes-api-100.ue.r.appspot.com/payments/type',
+    pocketsUrl: 'https://expenses-api-dot-quotes-api-100.ue.r.appspot.com/pockets',
+    cyclesUrl: 'https://expenses-api-dot-quotes-api-100.ue.r.appspot.com/cycles',
+    expensesUrl: 'https://expenses-api-dot-quotes-api-100.ue.r.appspot.com/expenses',
+    budgetsUrl: 'https://expenses-api-dot-quotes-api-100.ue.r.appspot.com/budgets',
 };
