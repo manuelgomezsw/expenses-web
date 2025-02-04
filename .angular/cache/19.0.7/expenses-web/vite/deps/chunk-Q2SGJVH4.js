@@ -5721,7 +5721,6 @@ export {
   coerceCssPixelValue,
   coerceElement,
   coerceStringArray,
-  CdkObserveContent,
   ObserversModule,
   BreakpointObserver,
   Breakpoints,
@@ -5783,4 +5782,4 @@ export {
   MatRippleLoader,
   _MatInternalFormField
 };
-//# sourceMappingURL=chunk-AMDCGDHS.js.map
+//# sourceMappingURL=chunk-Q2SGJVH4.js.map

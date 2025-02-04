@@ -87,3 +87,40 @@ form {
         margin: 0 auto; /* Para centrar horizontalmente */
     }
 }
+
+.detailed-list {
+    padding: 10px;
+}
+
+table {
+    background-color: #FFFFFF;
+    margin-bottom: 20px;
+}
+
+table th {
+    background-color: #dae2f9;
+    color: #005cbb;
+    border:1px solid #dae2f9;
+}
+
+table th, td {
+    text-align: center;
+}
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto; /* Permite el desplazamiento horizontal */
+}
+
+.table-responsive table {
+    white-space: nowrap; /* Evita que el texto salte de línea */
+}
+
+/* Alternar colores de fila */
+.table-responsive table tr:nth-child(even) {
+    background-color: #f9f7f7; /* Gris claro */
+}
+
+.table-responsive table tr:nth-child(odd) {
+    background-color: #ffffff; /* Blanco */
+}

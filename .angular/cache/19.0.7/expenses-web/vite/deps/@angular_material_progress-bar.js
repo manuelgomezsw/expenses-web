@@ -1,6 +1,6 @@
 import {
   MatCommonModule
-} from "./chunk-AMDCGDHS.js";
+} from "./chunk-Q2SGJVH4.js";
 import {
   DOCUMENT
 } from "./chunk-PWCOIAQ7.js";

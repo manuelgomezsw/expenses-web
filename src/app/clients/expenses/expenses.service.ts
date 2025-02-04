@@ -18,8 +18,8 @@ export class ExpensesService {
         return this.http.get(environment.expensesUrl);
     }
 
-    getByID(expense_id: any): Observable<any> {
-        return this.http.get(environment.expensesUrl + '/' + expense_id);
+    getByCycleID(cycle_id: any): Observable<any> {
+        return this.http.get(environment.cyclesUrl + '/' + cycle_id + "/expenses");
     }
 
     new(expense: Expense): Observable<any> {
