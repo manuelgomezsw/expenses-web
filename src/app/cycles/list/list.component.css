@@ -5,7 +5,7 @@ table {
 table th {
     background-color: #dae2f9;
     color: #005cbb;
-    border:1px solid #dae2f9;
+    border: 1px solid #dae2f9;
 }
 
 table th, td {
@@ -29,4 +29,12 @@ table th, td {
 
 .table-responsive table tr:nth-child(odd) {
     background-color: #ffffff; /* Blanco */
+}
+
+.info-icon {
+    font-size: 1rem; /* Tamaño pequeño */
+    color: rgba(0, 0, 0, 0.4); /* Color sutil, grisáceo */
+    vertical-align: middle; /* Alineado con el texto */
+    margin-left: 0.5rem; /* Espacio a la izquierda */
+    cursor: pointer; /* Opcional: para indicar interactividad */
 }

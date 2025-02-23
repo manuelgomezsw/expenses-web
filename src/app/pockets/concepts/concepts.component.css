@@ -1,0 +1,83 @@
+form {
+    display: flex;
+    flex-direction: column; /* Alinea los campos en columna */
+    gap: 16px;             /* Espaciado vertical entre campos (opcional) */
+}
+
+mat-card-footer {
+    padding: 10px;
+}
+
+table {
+    background-color: #FFFFFF;
+    margin-bottom: 20px;
+}
+
+table th {
+    background-color: #dae2f9;
+    color: #005cbb;
+    border:1px solid #dae2f9;
+}
+
+table th, td {
+    text-align: center;
+}
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto; /* Permite el desplazamiento horizontal */
+}
+
+.table-responsive table {
+    white-space: nowrap; /* Evita que el texto salte de línea */
+}
+
+/* Alternar colores de fila */
+.table-responsive table tr:nth-child(even) {
+    background-color: #f9f7f7; /* Gris claro */
+}
+
+.table-responsive table tr:nth-child(odd) {
+    background-color: #ffffff; /* Blanco */
+}
+
+.main-form {
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+
+#payment-type-label {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.btn-cancel {
+    color: #CB3A12;
+}
+
+/* Para iPhones medianos y grandes */
+@media (max-width: 430px) {
+    .daily-card {
+        width: 90%;
+        margin: 0 auto; /* Para centrar horizontalmente */
+        background-color: #FFFFFF;
+    }
+}
+
+/* Para pantallas de escritorio estándar */
+@media (min-width: 1024px) {
+    .daily-card {
+        width: 60%;
+        margin: 0 auto; /* Para centrar horizontalmente */
+        background-color: #FFFFFF;
+    }
+}
+
+/* Para pantallas de escritorio grandes */
+@media (min-width: 1440px) {
+    .daily-card {
+        width: 60%;
+        margin: 0 auto; /* Para centrar horizontalmente */
+        background-color: #FFFFFF;
+    }
+}

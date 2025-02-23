@@ -55,6 +55,21 @@
                     <mat-icon>edit</mat-icon>
                 </button>
                 <button
+                        *ngIf="!cycle.status"
+                        mat-icon-button
+                        matSuffix
+                        [routerLink]="['/cycles', cycle.cycle_id, 'edit']"
+                        matTooltip="Detalle">
+                    <mat-icon>info</mat-icon>
+                </button>
+                <button
+                        mat-icon-button
+                        matSuffix
+                        [routerLink]="['/cycles', cycle.cycle_id, 'edit']"
+                        matTooltip="Finalizar">
+                    <mat-icon>check_small</mat-icon>
+                </button>
+                <button
                         mat-icon-button
                         matSuffix
                         (click)="onDelete(cycle.cycle_id)"

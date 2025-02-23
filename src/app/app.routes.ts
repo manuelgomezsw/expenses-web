@@ -6,6 +6,7 @@ import {DailyComponent} from "./expenses/daily/daily.component";
 import {ListCycleComponent} from "./cycles/list/list.component";
 import {CycleFormComponent} from "./cycles/form/form.component";
 import {BudgetComponent} from "./budget/budget.component";
+import {ConceptsComponent} from "./pockets/concepts/concepts.component";
 
 export const routes: Routes = [
     {path: 'budget', title: 'Ejecución del presupuesto', component: BudgetComponent},
@@ -13,6 +14,7 @@ export const routes: Routes = [
     {path: 'pockets/list', title: 'Bolsillo', component: ListPocketsComponent},
     {path: 'pockets/new', title: 'Nuevo bolsillo', component: PocketFormComponent},
     {path: 'pockets/:id/edit', title: 'Editar bolsillo', component: PocketFormComponent},
+    {path: 'pockets/:id/concepts', title: 'Conceptos', component: ConceptsComponent},
     {path: 'payments/types/list', title: 'Tipos de pago', component: ListPaymentTypeComponent},
     {path: 'cycles/list', title: 'Ciclos', component: ListCycleComponent},
     {path: 'cycles/new', title: 'Nuevo ciclo', component: CycleFormComponent},
