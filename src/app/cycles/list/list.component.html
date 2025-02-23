@@ -1,6 +1,11 @@
 <mat-toolbar>
     <span>Ciclos</span>
 </mat-toolbar>
+<div *ngIf="isLoading" class="loading-container">
+    <div *ngIf="isLoading" class="loading-container">
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    </div>
+</div>
 
 <div>
     <button mat-button class="btn-new" (click)="onNewCycle()">NUEVO CICLO</button>
@@ -48,6 +53,7 @@
             <th mat-header-cell *matHeaderCellDef>&nbsp;</th>
             <td mat-cell *matCellDef="let cycle">
                 <button
+                        *ngIf="cycle.status"
                         mat-icon-button
                         matSuffix
                         [routerLink]="['/cycles', cycle.cycle_id, 'edit']"
@@ -63,13 +69,15 @@
                     <mat-icon>info</mat-icon>
                 </button>
                 <button
+                        *ngIf="cycle.status"
                         mat-icon-button
                         matSuffix
-                        [routerLink]="['/cycles', cycle.cycle_id, 'edit']"
+                        (click)="onFinish(cycle.cycle_id)"
                         matTooltip="Finalizar">
                     <mat-icon>check_small</mat-icon>
                 </button>
                 <button
+                        *ngIf="cycle.status"
                         mat-icon-button
                         matSuffix
                         (click)="onDelete(cycle.cycle_id)"

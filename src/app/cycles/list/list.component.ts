@@ -26,6 +26,7 @@ import {NotificationService} from "../../services/notification/notification.serv
 import {environment} from "../../../environments/environment";
 import {ConfirmDialogComponent} from "../../components/confirm-dialog/confirm-dialog.component";
 import {MatTooltip} from "@angular/material/tooltip";
+import {MatProgressBar} from "@angular/material/progress-bar";
 
 @Component({
     selector: 'app-list',
@@ -51,6 +52,7 @@ import {MatTooltip} from "@angular/material/tooltip";
         MatButton,
         RouterLink,
         MatTooltip,
+        MatProgressBar,
     ],
     templateUrl: './list.component.html',
     styleUrl: './list.component.css'
@@ -58,6 +60,7 @@ import {MatTooltip} from "@angular/material/tooltip";
 export class ListCycleComponent implements OnInit {
     displayedColumns: string[] = ['cycle', 'pocket_name', 'budget', 'date_init', 'date_end', 'status', 'actions'];
     cycles: Cycle[] = []
+    isLoading = false;
 
     constructor(
         private titleService: Title,
@@ -97,6 +100,36 @@ export class ListCycleComponent implements OnInit {
                         this.notificationService.openSnackBar(
                             'Ups... Algo malo ocurrió. Intenta de nuevo.'
                         );
+                    }
+                });
+            }
+        });
+    }
+
+    onFinish(cycle_id: number): void {
+        const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+            width: '400px',
+            data: {message: '¿Deseas cerrar este ciclo?'}
+        });
+
+        dialogRef.afterClosed().subscribe((result) => {
+            if (result === true) {
+                this.isLoading = true;
+                this.cycleService.finishCycle(cycle_id).subscribe({
+                    next: () => {
+                        this.cycles = this.cycles.filter(e => e.cycle_id !== cycle_id);
+                        this.notificationService.openSnackBar(
+                            'Ciclo cerrado correctamente',
+                        );
+                        this.loadCycles();
+                        this.isLoading = false;
+                    },
+                    error: (error: any) => {
+                        console.log('Error deleting cycle: ' + JSON.stringify(error));
+                        this.notificationService.openSnackBar(
+                            'Ups... Algo malo ocurrió. Intenta de nuevo.'
+                        );
+                        this.isLoading = false;
                     }
                 });
             }

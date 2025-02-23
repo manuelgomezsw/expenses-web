@@ -37,4 +37,8 @@ export class CycleService {
     deleteCycle(cycle_id: any): Observable<any> {
         return this.http.delete(environment.cyclesUrl + "/" + cycle_id);
     }
+
+    finishCycle(cycle_id: any): Observable<any> {
+        return this.http.post(environment.cyclesUrl + "/" + cycle_id + "/finish", null);
+    }
 }
