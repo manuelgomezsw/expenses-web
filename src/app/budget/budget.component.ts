@@ -1,21 +1,14 @@
 import {Component, OnInit} from '@angular/core';
 import {Title} from "@angular/platform-browser";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {CurrencyPipe} from "@angular/common";
+import {HTTP_INTERCEPTORS} from "@angular/common/http";
 
 import {MatToolbar} from "@angular/material/toolbar";
-import {MatFormField, MatLabel, MatSuffix} from "@angular/material/form-field";
+import {MatFormField, MatLabel} from "@angular/material/form-field";
 import {MatOption} from "@angular/material/core";
 import {MatSelect, MatSelectChange} from "@angular/material/select";
-
-import {Cycle} from "../domain/cycle";
-import {CycleService} from "../clients/cycles/cycle.service";
-import {NotificationService} from "../services/notification/notification.service";
-import {environment} from "../../environments/environment";
 import {MatProgressBar} from "@angular/material/progress-bar";
-import {CurrencyPipe} from "@angular/common";
-import {BudgetsService} from "../clients/budgets/budgets.service";
-import {Budget} from "../domain/budget";
-import {CustomDatePipe} from "../pipes/custom-date/custom-date.pipe";
 import {
     MatCell,
     MatCellDef,
@@ -25,11 +18,17 @@ import {
     MatHeaderRowDef,
     MatRow, MatRowDef, MatTable
 } from "@angular/material/table";
-import {MatIcon} from "@angular/material/icon";
-import {MatIconButton} from "@angular/material/button";
-import {MatTooltip} from "@angular/material/tooltip";
+
+import {environment} from "../../environments/environment";
+import {Cycle} from "../domain/cycle";
+import {Budget} from "../domain/budget";
 import {Expense} from "../domain/expense";
+import {CycleService} from "../clients/cycles/cycle.service";
+import {NotificationService} from "../shared/services/notification/notification.service";
+import {BudgetsService} from "../clients/budgets/budgets.service";
 import {ExpensesService} from "../clients/expenses/expenses.service";
+import {CustomDatePipe} from "../pipes/custom-date/custom-date.pipe";
+import {TokenInterceptor} from "../shared/interceptors/token/token";
 
 @Component({
     selector: 'app-budget',
@@ -54,6 +53,9 @@ import {ExpensesService} from "../clients/expenses/expenses.service";
         MatRowDef,
         MatTable,
         MatHeaderCellDef
+    ],
+    providers: [
+        {provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true}
     ],
     templateUrl: './budget.component.html',
     styleUrl: './budget.component.css'

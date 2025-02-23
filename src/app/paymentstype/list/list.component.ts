@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {FormsModule} from "@angular/forms";
 import {Title} from '@angular/platform-browser';
 import {NgIf} from "@angular/common";
+import {HTTP_INTERCEPTORS} from "@angular/common/http";
 
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatIconModule} from '@angular/material/icon';
@@ -11,10 +12,11 @@ import {MatFormField, MatSuffix} from "@angular/material/form-field";
 import {MatInput} from "@angular/material/input";
 import {MatTooltip} from "@angular/material/tooltip";
 
-import {PaymentType} from "../../domain/payment_type";
 import {environment} from "../../../environments/environment";
+import {PaymentType} from "../../domain/payment_type";
 import {PaymentsTypeService} from "../../clients/paymentstype/paymentstype.service";
-import {NotificationService} from "../../services/notification/notification.service";
+import {NotificationService} from "../../shared/services/notification/notification.service";
+import {TokenInterceptor} from "../../shared/interceptors/token/token";
 
 @Component({
     selector: 'app-list',
@@ -29,6 +31,9 @@ import {NotificationService} from "../../services/notification/notification.serv
         MatInput,
         NgIf,
         MatTooltip,
+    ],
+    providers: [
+        {provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true}
     ],
     templateUrl: './list.component.html',
     styleUrl: './list.component.css'

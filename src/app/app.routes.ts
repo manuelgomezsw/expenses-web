@@ -6,15 +6,19 @@ import {DailyComponent} from "./expenses/daily/daily.component";
 import {ListCycleComponent} from "./cycles/list/list.component";
 import {CycleFormComponent} from "./cycles/form/form.component";
 import {BudgetComponent} from "./budget/budget.component";
+import {AuthGuard} from "./shared/services/authguard/authguard.service";
+import {LoginComponent} from "./login/login.component";
 
 export const routes: Routes = [
-    {path: 'budget', title: 'Ejecución del presupuesto', component: BudgetComponent},
-    {path: 'expenses/daily', title: 'Gastos', component: DailyComponent},
-    {path: 'pockets/list', title: 'Bolsillo', component: ListPocketsComponent},
-    {path: 'pockets/new', title: 'Nuevo bolsillo', component: PocketFormComponent},
-    {path: 'pockets/:id/edit', title: 'Editar bolsillo', component: PocketFormComponent},
-    {path: 'payments/types/list', title: 'Tipos de pago', component: ListPaymentTypeComponent},
-    {path: 'cycles/list', title: 'Ciclos', component: ListCycleComponent},
-    {path: 'cycles/new', title: 'Nuevo ciclo', component: CycleFormComponent},
-    {path: 'cycles/:id/edit', title: 'Editar ciclo', component: CycleFormComponent}
+    { path: '', redirectTo: '/login', pathMatch: 'full' },
+    { path: 'login', component: LoginComponent },
+    {path: 'budget', component: BudgetComponent, canActivate: [AuthGuard]},
+    {path: 'expenses/daily', component: DailyComponent, canActivate: [AuthGuard]},
+    {path: 'pockets/list', component: ListPocketsComponent, canActivate: [AuthGuard]},
+    {path: 'pockets/new', component: PocketFormComponent, canActivate: [AuthGuard]},
+    {path: 'pockets/:id/edit', component: PocketFormComponent, canActivate: [AuthGuard]},
+    {path: 'payments/types/list', component: ListPaymentTypeComponent, canActivate: [AuthGuard]},
+    {path: 'cycles/list', component: ListCycleComponent, canActivate: [AuthGuard]},
+    {path: 'cycles/new', component: CycleFormComponent, canActivate: [AuthGuard]},
+    {path: 'cycles/:id/edit', component: CycleFormComponent, canActivate: [AuthGuard]}
 ];

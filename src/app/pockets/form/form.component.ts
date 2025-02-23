@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {FormsModule} from "@angular/forms";
 import {Title} from "@angular/platform-browser";
 import {ActivatedRoute, Router} from "@angular/router";
+import {HTTP_INTERCEPTORS} from "@angular/common/http";
 
 import {MatButton} from "@angular/material/button";
 import {MatCard, MatCardContent, MatCardFooter} from "@angular/material/card";
@@ -11,11 +12,12 @@ import {MatOption} from "@angular/material/core";
 import {MatSelect} from "@angular/material/select";
 import {MatToolbar} from "@angular/material/toolbar";
 
+import {environment} from "../../../environments/environment";
 import {Pocket} from "../../domain/pocket";
 import {Status} from "../../domain/status";
-import {environment} from "../../../environments/environment";
 import {PocketService} from "../../clients/pockets/pocket.service";
-import {NotificationService} from "../../services/notification/notification.service";
+import {NotificationService} from "../../shared/services/notification/notification.service";
+import {TokenInterceptor} from "../../shared/interceptors/token/token";
 
 @Component({
   selector: 'app-form',
@@ -31,6 +33,9 @@ import {NotificationService} from "../../services/notification/notification.serv
         MatOption,
         MatSelect,
         MatToolbar,
+    ],
+    providers: [
+        {provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true}
     ],
   templateUrl: './form.component.html',
   styleUrl: './form.component.css'

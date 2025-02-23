@@ -4,6 +4,7 @@ import {CommonModule, NgForOf} from '@angular/common';
 import {ActivatedRoute, Router} from '@angular/router';
 import {NgxCurrencyDirective} from "ngx-currency";
 import {Title} from "@angular/platform-browser";
+import {HTTP_INTERCEPTORS} from "@angular/common/http";
 
 import {MatToolbar} from "@angular/material/toolbar";
 import {MatCard, MatCardContent, MatCardFooter} from "@angular/material/card";
@@ -21,12 +22,13 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatOption, provideNativeDateAdapter} from '@angular/material/core';
 import {MatSelect} from "@angular/material/select";
 
+import {environment} from "../../../environments/environment";
 import {Cycle} from "../../domain/cycle";
 import {Pocket} from "../../domain/pocket";
-import {NotificationService} from "../../services/notification/notification.service";
-import {environment} from "../../../environments/environment";
+import {NotificationService} from "../../shared/services/notification/notification.service";
 import {CycleService} from "../../clients/cycles/cycle.service";
 import {PocketService} from "../../clients/pockets/pocket.service";
+import {TokenInterceptor} from "../../shared/interceptors/token/token";
 
 @Component({
     selector: 'app-form',
@@ -52,7 +54,8 @@ import {PocketService} from "../../clients/pockets/pocket.service";
         MatButton
     ],
     providers: [
-        provideNativeDateAdapter()
+        provideNativeDateAdapter(),
+        {provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true}
     ],
     templateUrl: './form.component.html',
     styleUrl: './form.component.css'

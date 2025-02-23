@@ -1,6 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {FormsModule} from "@angular/forms";
 import {Title} from '@angular/platform-browser';
+import {Router, RouterLink} from "@angular/router";
+import {HTTP_INTERCEPTORS} from "@angular/common/http";
 
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatIconModule} from '@angular/material/icon';
@@ -10,14 +12,13 @@ import {MatSuffix} from "@angular/material/form-field";
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatDialog} from '@angular/material/dialog';
 
-import {Pocket} from "../../domain/pocket";
 import {environment} from "../../../environments/environment";
-import {StatusPipe} from '../../pipes/status/status.pipe';
-import {Status} from "../../domain/status";
-import {NotificationService} from "../../services/notification/notification.service";
+import {Pocket} from "../../domain/pocket";
+import {NotificationService} from "../../shared/services/notification/notification.service";
 import {PocketService} from "../../clients/pockets/pocket.service";
-import {ConfirmDialogComponent} from "../../components/confirm-dialog/confirm-dialog.component"
-import {Router, RouterLink} from "@angular/router";
+import {StatusPipe} from '../../pipes/status/status.pipe';
+import {ConfirmDialogComponent} from "../../shared/components/confirm-dialog/confirm-dialog.component"
+import {TokenInterceptor} from "../../shared/interceptors/token/token";
 
 @Component({
     selector: 'app-list',
@@ -32,6 +33,9 @@ import {Router, RouterLink} from "@angular/router";
         MatTooltipModule,
         MatButton,
         RouterLink,
+    ],
+    providers: [
+        {provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true}
     ],
     templateUrl: './list.component.html',
     styleUrl: './list.component.css'

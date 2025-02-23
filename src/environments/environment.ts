@@ -1,6 +1,7 @@
 export const environment = {
     production: true,
     titleWebSite: 'Mis finanzas',
+    authUrl: 'https://expenses-api-dot-quotes-api-100.ue.r.appspot.com/login',
     paymentsTypeUrl: 'https://expenses-api-dot-quotes-api-100.ue.r.appspot.com/payments/type',
     pocketsUrl: 'https://expenses-api-dot-quotes-api-100.ue.r.appspot.com/pockets',
     cyclesUrl: 'https://expenses-api-dot-quotes-api-100.ue.r.appspot.com/cycles',

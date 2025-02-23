@@ -3,16 +3,19 @@ import {MatToolbar} from "@angular/material/toolbar";
 import {FormsModule} from "@angular/forms";
 import {CurrencyPipe, NgIf} from "@angular/common";
 import {NgxCurrencyDirective} from "ngx-currency";
+import {Title} from "@angular/platform-browser";
+import {HTTP_INTERCEPTORS} from "@angular/common/http";
 
 import {MatButton, MatIconButton} from "@angular/material/button";
 import {MatCard, MatCardContent, MatCardFooter} from "@angular/material/card";
 import {MatFormField, MatLabel, MatSuffix} from "@angular/material/form-field";
 import {MatInput} from "@angular/material/input";
 import {MatRadioButton, MatRadioGroup} from "@angular/material/radio";
-
-import {Expense} from "../../domain/expense";
-import {CustomDatePipe} from '../../pipes/custom-date/custom-date.pipe';
-
+import {MatIcon} from "@angular/material/icon";
+import {MatOption} from "@angular/material/core";
+import {MatSelect} from "@angular/material/select";
+import {MatDialog} from "@angular/material/dialog";
+import {MatTooltip} from "@angular/material/tooltip";
 import {
     MatCell,
     MatCellDef,
@@ -22,21 +25,19 @@ import {
     MatHeaderRowDef,
     MatRow, MatRowDef, MatTable
 } from "@angular/material/table";
-import {MatIcon} from "@angular/material/icon";
-import {MatOption} from "@angular/material/core";
-import {MatSelect} from "@angular/material/select";
+
+import {environment} from "../../../environments/environment";
+import {Expense} from "../../domain/expense";
 import {Pocket} from "../../domain/pocket";
 import {PaymentType} from "../../domain/payment_type";
-import {Title} from "@angular/platform-browser";
+import {Cycle} from "../../domain/cycle";
 import {PaymentsTypeService} from "../../clients/paymentstype/paymentstype.service";
-import {NotificationService} from "../../services/notification/notification.service";
-import {environment} from "../../../environments/environment";
+import {NotificationService} from "../../shared/services/notification/notification.service";
 import {ExpensesService} from "../../clients/expenses/expenses.service";
 import {CycleService} from "../../clients/cycles/cycle.service";
-import {Cycle} from "../../domain/cycle";
-import {ConfirmDialogComponent} from "../../components/confirm-dialog/confirm-dialog.component";
-import {MatDialog} from "@angular/material/dialog";
-import {MatTooltip} from "@angular/material/tooltip";
+import {CustomDatePipe} from '../../pipes/custom-date/custom-date.pipe';
+import {ConfirmDialogComponent} from "../../shared/components/confirm-dialog/confirm-dialog.component";
+import {TokenInterceptor} from "../../shared/interceptors/token/token";
 
 @Component({
     selector: 'app-daily',
@@ -72,6 +73,9 @@ import {MatTooltip} from "@angular/material/tooltip";
         MatSelect,
         NgIf,
         MatTooltip
+    ],
+    providers: [
+        {provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true}
     ],
     templateUrl: './daily.component.html',
     styleUrl: './daily.component.css'
