@@ -136,8 +136,12 @@ export class ListCycleComponent implements OnInit {
         });
     }
 
+    getTotalBudget(): number {
+        return this.cycles?.reduce((acc, cycle) => acc + (cycle.budget ?? 0), 0) || 0;
+    }
+
     private loadCycles(): void {
-        this.cycleService.getAll().subscribe({
+        this.cycleService.getActive().subscribe({
             next: (response: any) => {
                 this.cycles = response;
             },

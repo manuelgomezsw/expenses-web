@@ -7,6 +7,15 @@
     </div>
 </div>
 
+<div class="budget-summary-card">
+    <div class="card-header">
+        <span class="card-title">Presupuesto total creado</span>
+    </div>
+    <div class="card-body">
+        <span class="card-amount">{{ getTotalBudget() | currency:'$ ':'symbol':'1.0-0' }}</span>
+    </div>
+</div>
+
 <div>
     <button mat-button class="btn-new" (click)="onNewCycle()">NUEVO CICLO</button>
 </div>

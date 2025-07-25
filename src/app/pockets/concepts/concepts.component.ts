@@ -80,7 +80,6 @@ export class ConceptsComponent implements OnInit {
         private conceptsService: ConceptsService,
         private notificationService: NotificationService,
         private dialog: MatDialog,
-        private router: Router,
         private route: ActivatedRoute,
     ) {
         const pocketParam = this.route.snapshot.paramMap.get('id');

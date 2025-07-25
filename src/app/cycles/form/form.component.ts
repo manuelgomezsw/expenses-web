@@ -7,9 +7,8 @@ import {Title} from "@angular/platform-browser";
 
 import {MatToolbar} from "@angular/material/toolbar";
 import {MatCard, MatCardContent, MatCardFooter} from "@angular/material/card";
-import {MatFormField} from "@angular/material/form-field";
+import {MatFormField, MatFormFieldModule, MatLabel} from "@angular/material/form-field";
 import {MatInput} from "@angular/material/input";
-import {MatLabel} from "@angular/material/form-field";
 import {MatButton} from "@angular/material/button";
 import {
     MatDatepickerModule,
@@ -17,16 +16,17 @@ import {
     MatDateRangeInput,
     MatDateRangePicker,
 } from '@angular/material/datepicker';
-import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatOption, provideNativeDateAdapter} from '@angular/material/core';
-import {MatSelect} from "@angular/material/select";
+import {MatSelect, MatSelectChange} from "@angular/material/select";
 
 import {Cycle} from "../../domain/cycle";
 import {Pocket} from "../../domain/pocket";
-import {NotificationService} from "../../services/notification/notification.service";
 import {environment} from "../../../environments/environment";
 import {CycleService} from "../../clients/cycles/cycle.service";
 import {PocketService} from "../../clients/pockets/pocket.service";
+import {Concept} from "../../domain/concept";
+import {NotificationService} from "../../services/notification/notification.service";
+import {ConceptsService} from '../../clients/concepts/concepts.service';
 
 @Component({
     selector: 'app-form',
@@ -68,6 +68,7 @@ export class CycleFormComponent implements OnInit {
         private cycleService: CycleService,
         private pocketServices: PocketService,
         private notificationService: NotificationService,
+        private conceptsService: ConceptsService,
         private router: Router,
         private route: ActivatedRoute,
     ) {
@@ -93,6 +94,25 @@ export class CycleFormComponent implements OnInit {
 
     onCancelNewCycle(): void {
         this.router.navigate(['/cycles', 'list']);
+    }
+
+    onPocketSelected(event: MatSelectChange): void {
+        const selectedPocketId = event.value;
+        this.getBudgetProjected(selectedPocketId);
+    }
+
+    private getBudgetProjected(pocketId: number): void {
+        this.conceptsService.getByPocketID(pocketId).subscribe({
+            next: (response: Concept[]) => {
+                this.cycle.budget = response.reduce((acc, concept) => {
+                    return acc + (concept.value ?? 0);
+                }, 0);
+            },
+            error: (error: any) => {
+                console.log('Error summing concept values: ' + JSON.stringify(error));
+                this.notificationService.openSnackBar('Ups... Algo malo ocurrió. Intenta de nuevo.');
+            }
+        });
     }
 
     private loadCycle(cycle_id: string): void {

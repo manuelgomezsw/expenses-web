@@ -11,7 +11,8 @@
                     <mat-select
                             [(value)]="selectedPocket"
                             [(ngModel)]="cycle.pocket_id"
-                            name="pocket_id">
+                            name="pocket_id"
+                            (selectionChange)="onPocketSelected($event)">
                         <mat-option></mat-option>
                         <mat-option *ngFor="let option of pockets" [value]="option.pocket_id">
                             {{ option.name }}
