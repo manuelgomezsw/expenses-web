@@ -3,7 +3,6 @@ import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 
 import {environment} from "../../../environments/environment";
-import {Expense} from "../../domain/expense";
 import {Concept} from "../../domain/concept";
 
 @Injectable({
@@ -13,10 +12,6 @@ export class ConceptsService {
   constructor(
       private http: HttpClient
   ) {
-  }
-
-  getByID(concept_id: string): Observable<any> {
-    return this.http.get(environment.conceptsUrl + '/' + concept_id);
   }
 
   getByPocketID(pocket_id: number | undefined): Observable<any> {
@@ -29,6 +24,10 @@ export class ConceptsService {
 
   edit(concept: Concept): Observable<any> {
     return this.http.put(environment.conceptsUrl + "/" + concept.id, concept);
+  }
+
+  payedEdit(concept_id: number, payed: boolean): Observable<any> {
+    return this.http.put(environment.conceptsUrl + '/payed/' + concept_id, payed);
   }
 
   delete(concept_id: any): Observable<any> {

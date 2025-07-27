@@ -42,6 +42,7 @@ export class PocketFormComponent implements OnInit {
         {value: false, name: 'Inactivo'},
     ];
     isEditMode = false;
+    isLoading = false;
 
     constructor(
         private titleService: Title,
@@ -75,45 +76,56 @@ export class PocketFormComponent implements OnInit {
     }
 
     private newPocket(pocket: any) {
+        this.isLoading = true;
         this.pocketService.newPocket(pocket).subscribe({
             next: () => {
                 this.notificationService.openSnackBar(
                     'Bolsillo creado correctamente',
                 );
                 this.router.navigate(['/pockets', 'list']);
+                this.isLoading = false;
             },
             error: (error) => {
                 console.log('Error updating pocket: ' + JSON.stringify(error));
                 this.notificationService.openSnackBar(
                     'Ups... Algo malo ocurrió. Intenta de nuevo.'
                 );
+                this.isLoading = false;
             }
         });
     }
 
     private updatePocket(pocket: any) {
+        this.isLoading = true;
         this.pocketService.editPocket(pocket).subscribe({
             next: () => {
                 this.notificationService.openSnackBar(
                     'Bolsillo actualizado correctamente',
                 );
                 this.router.navigate(['/pockets', 'list']);
+                this.isLoading = false;
             },
             error: (error) => {
                 console.log('Error updating pocket: ' + JSON.stringify(error));
                 this.notificationService.openSnackBar(
                     'Ups... Algo malo ocurrió. Intenta de nuevo.'
                 );
+                this.isLoading = false;
             }
         });
     }
 
     private loadPocket(pocket_id: string): void {
+        this.isLoading = true;
         this.pocketService.getByID(pocket_id).subscribe({
             next: (result) => {
                 this.pocket = result;
+                this.isLoading = false;
             },
-            error: (err) => console.error(err)
+            error: (err) => {
+                console.error(err);
+                this.isLoading = false;
+            },
         });
     }
 }

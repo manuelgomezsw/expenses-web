@@ -18,6 +18,8 @@ import {NotificationService} from "../../services/notification/notification.serv
 import {PocketService} from "../../clients/pockets/pocket.service";
 import {ConfirmDialogComponent} from "../../components/confirm-dialog/confirm-dialog.component"
 import {Router, RouterLink} from "@angular/router";
+import {MatProgressBar} from "@angular/material/progress-bar";
+import {CurrencyPipe, NgIf} from "@angular/common";
 
 @Component({
     selector: 'app-list',
@@ -32,13 +34,17 @@ import {Router, RouterLink} from "@angular/router";
         MatTooltipModule,
         MatButton,
         RouterLink,
+        MatProgressBar,
+        NgIf,
+        CurrencyPipe,
     ],
     templateUrl: './list.component.html',
     styleUrl: './list.component.css'
 })
 export class ListPocketsComponent implements OnInit {
-    displayedColumns: string[] = ['name', 'status', 'actions'];
+    displayedColumns: string[] = ['name', 'totalAmount', 'status', 'actions'];
     pockets: Pocket[] = [];
+    isLoading = false;
 
     constructor(
         private titleService: Title,
@@ -85,15 +91,18 @@ export class ListPocketsComponent implements OnInit {
     }
 
     private loadPockets() {
+        this.isLoading = true;
         this.pocketService.getAll().subscribe({
             next: (response) => {
                 this.pockets = response;
+                this.isLoading = false;
             },
             error: (error) => {
                 console.log('Error getting pockets: ' + JSON.stringify(error));
                 this.notificationService.openSnackBar(
                     'Ups... Algo malo ocurrió. Intenta de nuevo.'
                 );
+                this.isLoading = false;
             }
         })
     }

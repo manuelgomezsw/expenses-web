@@ -10,3 +10,12 @@ mat-toolbar {
 mat-toolbar button {
     color: #005cbb;
 }
+
+/* Indicador de carga */
+.loading-container {
+    display: flex; /* Asegura que se muestre como un contenedor flexible */
+    justify-content: center; /* Centra el contenido horizontalmente */
+    align-items: center; /* Centra el contenido verticalmente */
+    min-height: 60px; /* Le da una altura mínima para que sea visible */
+    margin-bottom: 1rem; /* Espacio inferior para separarlo de otros elementos */
+}

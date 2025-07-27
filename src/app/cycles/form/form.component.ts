@@ -27,6 +27,7 @@ import {PocketService} from "../../clients/pockets/pocket.service";
 import {Concept} from "../../domain/concept";
 import {NotificationService} from "../../services/notification/notification.service";
 import {ConceptsService} from '../../clients/concepts/concepts.service';
+import {MatProgressBar} from "@angular/material/progress-bar";
 
 @Component({
     selector: 'app-form',
@@ -49,7 +50,8 @@ import {ConceptsService} from '../../clients/concepts/concepts.service';
         MatDateRangePicker,
         MatDatepickerModule,
         MatCardFooter,
-        MatButton
+        MatButton,
+        MatProgressBar
     ],
     providers: [
         provideNativeDateAdapter()

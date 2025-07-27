@@ -4,5 +4,6 @@ export interface Concept {
     name?: string;
     value?: number;
     pocket_id?: number;
+    payment_day?: number;
     payed?: boolean;
 }
