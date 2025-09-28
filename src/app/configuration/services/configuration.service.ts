@@ -153,6 +153,30 @@ export class ConfigurationService {
   }
 
   /**
+   * Actualiza un bolsillo existente
+   * En el futuro se conectará a: PUT /api/pockets/{id}
+   */
+  updatePocket(pocket: Pocket): Observable<Pocket> {
+    // Mock implementation
+    const updatedPocket: Pocket = {
+      ...pocket,
+      created_at: pocket.created_at || new Date().toISOString()
+    };
+    console.log('Updating pocket:', updatedPocket);
+    return of(updatedPocket);
+  }
+
+  /**
+   * Elimina un bolsillo
+   * En el futuro se conectará a: DELETE /api/pockets/{id}
+   */
+  deletePocket(pocketId: number): Observable<boolean> {
+    // Mock implementation
+    console.log('Deleting pocket:', pocketId);
+    return of(true);
+  }
+
+  /**
    * Extrae bolsillos únicos de los gastos fijos
    */
   private extractPocketsFromExpenses(expenses: FixedExpense[]): Pocket[] {

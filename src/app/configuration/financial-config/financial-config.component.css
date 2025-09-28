@@ -49,9 +49,10 @@
   justify-content: space-between;
   align-items: center;
   padding: var(--spacing-lg);
-  background: var(--background-tertiary);
+  background: var(--background-secondary);
   border-radius: var(--radius-md);
   border: 1px solid var(--card-border);
+  box-shadow: var(--card-shadow);
 }
 
 .salary-info, .budget-info {
@@ -98,6 +99,17 @@
   align-items: center;
   padding: var(--spacing-md) 0;
   border-bottom: 2px solid var(--primary-color);
+}
+
+.pocket-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.pocket-actions {
+  display: flex;
+  gap: var(--spacing-xs);
 }
 
 .pocket-title {
@@ -167,11 +179,12 @@
 
 /* Forms */
 .add-expense-form {
-  background: var(--background-tertiary);
+  background: var(--background-secondary);
   border: 1px solid var(--card-border);
   border-radius: var(--radius-md);
   padding: var(--spacing-xl);
   margin-top: var(--spacing-lg);
+  box-shadow: var(--card-shadow);
 }
 
 .add-expense-form h4 {
@@ -201,8 +214,9 @@
   margin-top: var(--spacing-lg);
 }
 
-.add-expense-button {
+.action-buttons {
   display: flex;
+  gap: var(--spacing-md);
   justify-content: center;
   margin-top: var(--spacing-lg);
 }
@@ -258,7 +272,19 @@
   .pocket-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--spacing-xs);
+    gap: var(--spacing-sm);
+  }
+
+  .pocket-info {
+    width: 100%;
+  }
+
+  .pocket-actions {
+    align-self: flex-end;
+  }
+
+  .action-buttons {
+    flex-direction: column;
   }
 
   .form-row {

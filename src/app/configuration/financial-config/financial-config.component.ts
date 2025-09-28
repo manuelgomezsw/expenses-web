@@ -20,6 +20,8 @@ import { MatDialog } from '@angular/material/dialog';
 // Components and Services
 import { MonthSelectorComponent } from '../../shared/components/month-selector/month-selector.component';
 import { ConfirmDialogComponent } from '../../components/confirm-dialog/confirm-dialog.component';
+import { ExpenseFormModalComponent, ExpenseFormData, ExpenseFormResult } from '../components/expense-form-modal/expense-form-modal.component';
+import { PocketFormModalComponent, PocketFormData, PocketFormResult } from '../components/pocket-form-modal/pocket-form-modal.component';
 import { ConfigurationService, FinancialConfiguration, CreateFixedExpenseRequest, UpdateSalaryRequest, UpdateDailyBudgetRequest } from '../services/configuration.service';
 import { NotificationService } from '../../services/notification/notification.service';
 
@@ -237,8 +239,7 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
 
   // Fixed Expenses Management
   startAddingFixedExpense(): void {
-    this.isAddingFixedExpense = true;
-    this.clearFixedExpenseForm();
+    this.openExpenseFormModal();
   }
 
   saveFixedExpense(): void {
@@ -311,14 +312,7 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
   }
 
   editFixedExpense(expense: FixedExpense): void {
-    this.isAddingFixedExpense = true;
-    this.editingFixedExpenseId = expense.id!;
-    this.fixedExpenseForm = {
-      pocket_name: expense.pocket_name,
-      concept_name: expense.concept_name,
-      amount: expense.amount,
-      payment_day: expense.payment_day
-    };
+    this.openExpenseFormModal(expense);
   }
 
   deleteFixedExpense(expense: FixedExpense): void {
@@ -420,6 +414,195 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
       relativeTo: this.route,
       queryParams: { month },
       queryParamsHandling: 'merge'
+    });
+  }
+
+  // Modal Methods
+  openExpenseFormModal(expense?: FixedExpense): void {
+    const dialogData: ExpenseFormData = {
+      expense: expense,
+      availablePockets: this.availablePockets,
+      isEditing: !!expense
+    };
+
+    const dialogRef = this.dialog.open(ExpenseFormModalComponent, {
+      width: '600px',
+      maxWidth: '95vw',
+      data: dialogData,
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe((result: ExpenseFormResult) => {
+      if (result) {
+        if (expense) {
+          // Update existing expense
+          const updatedExpense: FixedExpense = {
+            ...expense,
+            pocket_name: result.pocket_name,
+            concept_name: result.concept_name,
+            amount: result.amount,
+            payment_day: result.payment_day
+          };
+          this.updateFixedExpenseFromModal(updatedExpense);
+        } else {
+          // Create new expense
+          const newExpenseRequest: CreateFixedExpenseRequest = {
+            pocket_name: result.pocket_name,
+            concept_name: result.concept_name,
+            amount: result.amount,
+            payment_day: result.payment_day
+          };
+          this.createFixedExpenseFromModal(newExpenseRequest);
+        }
+      }
+    });
+  }
+
+  openPocketFormModal(pocket?: Pocket): void {
+    const dialogData: PocketFormData = {
+      pocket: pocket,
+      isEditing: !!pocket
+    };
+
+    const dialogRef = this.dialog.open(PocketFormModalComponent, {
+      width: '500px',
+      maxWidth: '95vw',
+      data: dialogData,
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe((result: PocketFormResult) => {
+      if (result) {
+        if (pocket) {
+          // Update existing pocket
+          const updatedPocket: Pocket = {
+            ...pocket,
+            name: result.name,
+            description: result.description
+          };
+          this.updatePocketFromModal(updatedPocket);
+        } else {
+          // Create new pocket
+          this.createPocketFromModal(result.name, result.description);
+        }
+      }
+    });
+  }
+
+  private createFixedExpenseFromModal(request: CreateFixedExpenseRequest): void {
+    this.configurationService.createFixedExpense(this.currentMonth, request)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (newExpense) => {
+          if (this.configuration) {
+            this.configuration.fixedExpenses.push(newExpense);
+            // Update pockets list
+            this.configuration.pockets = this.extractPocketsFromExpenses(this.configuration.fixedExpenses);
+          }
+          this.notificationService.openSnackBar('Gasto fijo agregado correctamente');
+        },
+        error: (error) => {
+          console.error('Error creating fixed expense:', error);
+          this.notificationService.openSnackBar('Error agregando gasto fijo');
+        }
+      });
+  }
+
+  private updateFixedExpenseFromModal(updatedExpense: FixedExpense): void {
+    this.configurationService.updateFixedExpense(updatedExpense)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (updated) => {
+          if (this.configuration) {
+            const index = this.configuration.fixedExpenses.findIndex(e => e.id === updatedExpense.id);
+            if (index !== -1) {
+              this.configuration.fixedExpenses[index] = updated;
+            }
+          }
+          this.notificationService.openSnackBar('Gasto fijo actualizado correctamente');
+        },
+        error: (error) => {
+          console.error('Error updating fixed expense:', error);
+          this.notificationService.openSnackBar('Error actualizando gasto fijo');
+        }
+      });
+  }
+
+  private createPocketFromModal(name: string, description?: string): void {
+    this.configurationService.createPocket(name, description)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (newPocket) => {
+          this.availablePockets.push(newPocket);
+          this.notificationService.openSnackBar('Bolsillo creado correctamente');
+        },
+        error: (error) => {
+          console.error('Error creating pocket:', error);
+          this.notificationService.openSnackBar('Error creando bolsillo');
+        }
+      });
+  }
+
+  private updatePocketFromModal(updatedPocket: Pocket): void {
+    this.configurationService.updatePocket(updatedPocket)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (updated) => {
+          const index = this.availablePockets.findIndex(p => p.id === updatedPocket.id);
+          if (index !== -1) {
+            this.availablePockets[index] = updated;
+          }
+          this.notificationService.openSnackBar('Bolsillo actualizado correctamente');
+        },
+        error: (error) => {
+          console.error('Error updating pocket:', error);
+          this.notificationService.openSnackBar('Error actualizando bolsillo');
+        }
+      });
+  }
+
+  editPocket(pocketName: string): void {
+    const pocket = this.availablePockets.find(p => p.name === pocketName);
+    if (pocket) {
+      this.openPocketFormModal(pocket);
+    }
+  }
+
+  deletePocket(pocketName: string): void {
+    const pocket = this.availablePockets.find(p => p.name === pocketName);
+    if (!pocket) return;
+
+    // Check if pocket has expenses
+    const hasExpenses = this.configuration?.fixedExpenses.some(e => e.pocket_name === pocketName);
+    if (hasExpenses) {
+      this.notificationService.openSnackBar('No puedes eliminar un bolsillo que tiene gastos asociados');
+      return;
+    }
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        message: `¿Estás seguro de que quieres eliminar el bolsillo "${pocketName}"?`,
+        confirmText: 'Eliminar',
+        cancelText: 'Cancelar'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === true) {
+        this.configurationService.deletePocket(pocket.id!)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: () => {
+              this.availablePockets = this.availablePockets.filter(p => p.id !== pocket.id);
+              this.notificationService.openSnackBar('Bolsillo eliminado correctamente');
+            },
+            error: (error) => {
+              console.error('Error deleting pocket:', error);
+              this.notificationService.openSnackBar('Error eliminando bolsillo');
+            }
+          });
+      }
     });
   }
 }

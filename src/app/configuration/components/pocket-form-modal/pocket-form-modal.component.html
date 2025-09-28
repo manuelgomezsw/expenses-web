@@ -1,0 +1,51 @@
+<div class="pocket-form-modal">
+  <h2 mat-dialog-title>
+    <mat-icon>{{ data.isEditing ? 'edit' : 'create_new_folder' }}</mat-icon>
+    {{ getTitle() }}
+  </h2>
+
+  <mat-dialog-content>
+    <form class="pocket-form" #pocketForm="ngForm">
+      
+      <!-- Nombre del Bolsillo -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nombre del Bolsillo</mat-label>
+        <input matInput 
+               [(ngModel)]="formData.name"
+               name="name"
+               placeholder="Ej: Vivienda, Transporte, Salud..."
+               required>
+        <mat-hint>Nombre de la categoría de gastos</mat-hint>
+      </mat-form-field>
+
+      <!-- Descripción (Opcional) -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Descripción (Opcional)</mat-label>
+        <textarea matInput 
+                  [(ngModel)]="formData.description"
+                  name="description"
+                  placeholder="Describe qué tipo de gastos incluye este bolsillo..."
+                  rows="3">
+        </textarea>
+        <mat-hint>Descripción opcional para clarificar el propósito del bolsillo</mat-hint>
+      </mat-form-field>
+
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()" class="cancel-button">
+      <mat-icon>cancel</mat-icon>
+      Cancelar
+    </button>
+    
+    <button mat-raised-button 
+            color="primary" 
+            (click)="onSave()"
+            [disabled]="!isFormValid()"
+            class="save-button">
+      <mat-icon>{{ getSaveButtonIcon() }}</mat-icon>
+      {{ getSaveButtonText() }}
+    </button>
+  </mat-dialog-actions>
+</div>

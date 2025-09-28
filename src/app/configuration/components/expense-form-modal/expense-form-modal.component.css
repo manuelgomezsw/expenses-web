@@ -1,0 +1,96 @@
+.expense-form-modal {
+  min-width: 500px;
+  max-width: 600px;
+}
+
+.mat-mdc-dialog-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-lg);
+}
+
+.mat-mdc-dialog-content {
+  padding: 0 var(--spacing-lg) var(--spacing-lg) var(--spacing-lg);
+}
+
+.expense-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.form-row {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.mat-mdc-dialog-actions {
+  padding: var(--spacing-lg);
+  gap: var(--spacing-md);
+}
+
+.cancel-button {
+  color: var(--text-secondary) !important;
+}
+
+.save-button {
+  font-weight: 600 !important;
+}
+
+.save-button mat-icon,
+.cancel-button mat-icon {
+  margin-right: var(--spacing-xs);
+}
+
+/* Form Field Styling */
+.mat-mdc-form-field {
+  margin-bottom: var(--spacing-sm);
+}
+
+.mat-mdc-form-field .mat-mdc-form-field-hint {
+  color: var(--text-muted);
+  font-size: var(--font-size-xs);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .expense-form-modal {
+    min-width: 90vw;
+    max-width: 95vw;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .mat-mdc-dialog-title {
+    font-size: var(--font-size-lg);
+  }
+
+  .mat-mdc-dialog-content {
+    padding: 0 var(--spacing-md) var(--spacing-md) var(--spacing-md);
+  }
+
+  .mat-mdc-dialog-actions {
+    padding: var(--spacing-md);
+    flex-direction: column;
+  }
+
+  .save-button,
+  .cancel-button {
+    width: 100%;
+  }
+}

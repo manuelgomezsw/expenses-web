@@ -86,10 +86,25 @@
         <div class="pockets-list">
           <div *ngFor="let pocketName of getPocketKeys()" class="pocket-section">
             <div class="pocket-header">
-              <h3 class="pocket-title">📁 {{ pocketName }}</h3>
-              <span class="pocket-total">
-                Total: {{ getTotalAmountForPocket(pocketName) | currency:'COP':'symbol':'1.0-0' }}
-              </span>
+              <div class="pocket-info">
+                <h3 class="pocket-title">📁 {{ pocketName }}</h3>
+                <span class="pocket-total">
+                  Total: {{ getTotalAmountForPocket(pocketName) | currency:'COP':'symbol':'1.0-0' }}
+                </span>
+              </div>
+              <div class="pocket-actions">
+                <button mat-icon-button 
+                        (click)="editPocket(pocketName)"
+                        matTooltip="Editar bolsillo">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button 
+                        (click)="deletePocket(pocketName)"
+                        matTooltip="Eliminar bolsillo"
+                        color="warn">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
             </div>
             
             <div class="expenses-in-pocket">
@@ -120,66 +135,16 @@
           </div>
         </div>
 
-        <!-- Formulario para Agregar/Editar Gasto Fijo -->
-        <div *ngIf="isAddingFixedExpense" class="add-expense-form">
-          <h4>{{ editingFixedExpenseId ? 'Editar Gasto Fijo' : 'Agregar Nuevo Gasto Fijo' }}</h4>
-          
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="flex-1">
-              <mat-label>Bolsillo</mat-label>
-              <mat-select [(ngModel)]="fixedExpenseForm.pocket_name">
-                <mat-option *ngFor="let pocket of availablePockets" [value]="pocket.name">
-                  {{ pocket.name }}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-            
-            <mat-form-field appearance="outline" class="flex-1">
-              <mat-label>Concepto</mat-label>
-              <input matInput 
-                     [(ngModel)]="fixedExpenseForm.concept_name"
-                     placeholder="Ej: Arriendo, Servicios, etc.">
-            </mat-form-field>
-          </div>
-          
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="flex-1">
-              <mat-label>Monto</mat-label>
-              <input matInput 
-                     type="number" 
-                     [(ngModel)]="fixedExpenseForm.amount"
-                     placeholder="0">
-              <span matTextPrefix>$</span>
-            </mat-form-field>
-            
-            <mat-form-field appearance="outline" class="flex-1">
-              <mat-label>Día de Pago</mat-label>
-              <input matInput 
-                     type="number" 
-                     [(ngModel)]="fixedExpenseForm.payment_day"
-                     min="1" 
-                     max="31"
-                     placeholder="1">
-            </mat-form-field>
-          </div>
-          
-          <div class="form-actions">
-            <button mat-raised-button color="primary" (click)="saveFixedExpense()">
-              <mat-icon>{{ editingFixedExpenseId ? 'save' : 'add' }}</mat-icon>
-              {{ editingFixedExpenseId ? 'Guardar Cambios' : 'Agregar Gasto' }}
-            </button>
-            <button mat-button (click)="cancelAddingFixedExpense()">
-              <mat-icon>cancel</mat-icon>
-              Cancelar
-            </button>
-          </div>
-        </div>
-
-        <!-- Botón para Agregar Nuevo Gasto -->
-        <div *ngIf="!isAddingFixedExpense" class="add-expense-button">
-          <button mat-raised-button color="accent" (click)="startAddingFixedExpense()">
+        <!-- Botones de Acción -->
+        <div class="action-buttons">
+          <button mat-raised-button color="primary" (click)="startAddingFixedExpense()">
             <mat-icon>add</mat-icon>
             Agregar Nuevo Gasto Fijo
+          </button>
+          
+          <button mat-raised-button color="accent" (click)="openPocketFormModal()">
+            <mat-icon>create_new_folder</mat-icon>
+            Crear Nuevo Bolsillo
           </button>
         </div>
 

@@ -1,0 +1,81 @@
+<div class="expense-form-modal">
+  <h2 mat-dialog-title>
+    <mat-icon>{{ data.isEditing ? 'edit' : 'add' }}</mat-icon>
+    {{ getTitle() }}
+  </h2>
+
+  <mat-dialog-content>
+    <form class="expense-form" #expenseForm="ngForm">
+      
+      <!-- Bolsillo -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Bolsillo</mat-label>
+        <mat-select [(ngModel)]="formData.pocket_name" 
+                    name="pocket_name" 
+                    required>
+          <mat-option *ngFor="let pocket of data.availablePockets" [value]="pocket.name">
+            {{ pocket.name }}
+          </mat-option>
+        </mat-select>
+        <mat-hint>Selecciona la categoría del gasto</mat-hint>
+      </mat-form-field>
+
+      <!-- Concepto -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Concepto</mat-label>
+        <input matInput 
+               [(ngModel)]="formData.concept_name"
+               name="concept_name"
+               placeholder="Ej: Arriendo, Servicios públicos, Gasolina..."
+               required>
+        <mat-hint>Describe el gasto específico</mat-hint>
+      </mat-form-field>
+
+      <!-- Monto y Día de Pago -->
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="flex-1">
+          <mat-label>Monto</mat-label>
+          <input matInput 
+                 type="number" 
+                 [(ngModel)]="formData.amount"
+                 name="amount"
+                 placeholder="0"
+                 min="1"
+                 required>
+          <span matTextPrefix>$</span>
+          <mat-hint>Valor mensual del gasto</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="flex-1">
+          <mat-label>Día de Pago</mat-label>
+          <input matInput 
+                 type="number" 
+                 [(ngModel)]="formData.payment_day"
+                 name="payment_day"
+                 min="1" 
+                 max="31"
+                 placeholder="1"
+                 required>
+          <mat-hint>Día del mes (1-31)</mat-hint>
+        </mat-form-field>
+      </div>
+
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()" class="cancel-button">
+      <mat-icon>cancel</mat-icon>
+      Cancelar
+    </button>
+    
+    <button mat-raised-button 
+            color="primary" 
+            (click)="onSave()"
+            [disabled]="!isFormValid()"
+            class="save-button">
+      <mat-icon>{{ getSaveButtonIcon() }}</mat-icon>
+      {{ getSaveButtonText() }}
+    </button>
+  </mat-dialog-actions>
+</div>
