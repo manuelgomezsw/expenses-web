@@ -1,0 +1,347 @@
+.daily-expenses-card {
+  border-radius: var(--radius-lg) !important;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.mat-mdc-card-header {
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-bottom: 1px solid var(--card-border);
+}
+
+.mat-mdc-card-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.mat-mdc-card-subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  margin-top: var(--spacing-xs);
+}
+
+.mat-mdc-card-content {
+  padding: var(--spacing-xl);
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.daily-expenses-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+/* Progress Section */
+.daily-progress {
+  background: var(--background-secondary);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.progress-header {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--spacing-sm);
+}
+
+.budget-label {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-sm);
+}
+
+.spent {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--danger-color);
+}
+
+.remaining {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.remaining.positive {
+  color: var(--secondary-color);
+}
+
+.remaining.negative {
+  color: var(--danger-color);
+}
+
+.progress-percentage {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: var(--spacing-xs);
+}
+
+/* Quick Entry Form */
+.quick-entry {
+  background: var(--background-secondary);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+}
+
+.quick-entry h4 {
+  margin: 0 0 var(--spacing-lg) 0;
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.full-width {
+  width: 100%;
+}
+
+.form-row {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.form-buttons {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+}
+
+.save-button {
+  flex: 1;
+  height: 48px;
+  font-weight: 600 !important;
+  font-size: var(--font-size-base) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+.cancel-button {
+  height: 48px;
+  font-weight: 500 !important;
+  font-size: var(--font-size-sm) !important;
+  border-radius: var(--radius-md) !important;
+  color: var(--text-secondary) !important;
+}
+
+/* Recent Expenses */
+.recent-expenses h4 {
+  margin: 0 0 var(--spacing-lg) 0;
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.expenses-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.daily-expense-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--card-border);
+  transition: background-color 0.2s ease;
+  border-radius: var(--radius-sm);
+  position: relative;
+}
+
+.daily-expense-item:hover {
+  background: var(--background-tertiary);
+}
+
+.daily-expense-item:hover .action-buttons {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+
+.daily-expense-item:last-child {
+  border-bottom: none;
+}
+
+.expense-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  flex: 1;
+}
+
+.expense-description {
+  font-weight: 600;
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+}
+
+.expense-date {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.expense-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.expense-amount {
+  font-weight: 700;
+  font-size: var(--font-size-lg);
+  color: var(--danger-color);
+  margin-right: var(--spacing-sm);
+}
+
+.action-buttons {
+  display: flex;
+  gap: var(--spacing-xs);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  transform: translateX(10px);
+}
+
+.edit-button,
+.delete-button {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  padding: 0 !important;
+}
+
+.edit-button {
+  color: var(--primary-color) !important;
+}
+
+.edit-button:hover {
+  background: rgba(26, 54, 93, 0.1) !important;
+}
+
+.delete-button {
+  color: var(--danger-color) !important;
+}
+
+.delete-button:hover {
+  background: rgba(229, 62, 62, 0.1) !important;
+}
+
+.edit-button mat-icon,
+.delete-button mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.no-expenses {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-2xl);
+  color: var(--text-muted);
+  gap: var(--spacing-md);
+}
+
+.no-expenses mat-icon {
+  font-size: var(--font-size-3xl);
+  width: var(--font-size-3xl);
+  height: var(--font-size-3xl);
+}
+
+/* Loading and Error States */
+.loading-state, .error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  gap: var(--spacing-md);
+  color: var(--text-muted);
+}
+
+.error-state mat-icon {
+  font-size: var(--font-size-3xl);
+  width: var(--font-size-3xl);
+  height: var(--font-size-3xl);
+}
+
+.error-state p {
+  margin: 0;
+  font-size: var(--font-size-base);
+}
+
+.loading-state mat-progress-bar {
+  width: 100%;
+  max-width: 300px;
+}
+
+/* Always show action buttons on mobile for better touch experience */
+@media (max-width: 768px) {
+  .mat-mdc-card-header {
+    padding: var(--spacing-md);
+  }
+
+  .mat-mdc-card-content {
+    padding: var(--spacing-md);
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .form-buttons {
+    flex-direction: column;
+  }
+
+  .save-button,
+  .cancel-button {
+    width: 100%;
+  }
+
+  .action-buttons {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+  }
+
+  .daily-expense-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+  }
+
+  .expense-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .progress-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+}
