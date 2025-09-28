@@ -1,21 +1,13 @@
-.active-link {
-    background-color: #1E3A8A;
-    color: white;
+.app-container {
+  min-height: 100vh;
+  background: var(--background-primary);
+  padding: var(--spacing-lg);
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-mat-toolbar {
-    background-color: #dae2f9;
-}
-
-mat-toolbar button {
-    color: #005cbb;
-}
-
-/* Indicador de carga */
-.loading-container {
-    display: flex; /* Asegura que se muestre como un contenedor flexible */
-    justify-content: center; /* Centra el contenido horizontalmente */
-    align-items: center; /* Centra el contenido verticalmente */
-    min-height: 60px; /* Le da una altura mínima para que sea visible */
-    margin-bottom: 1rem; /* Espacio inferior para separarlo de otros elementos */
+@media (max-width: 768px) {
+  .app-container {
+    padding: var(--spacing-md);
+  }
 }

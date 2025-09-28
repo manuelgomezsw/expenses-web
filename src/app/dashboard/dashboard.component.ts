@@ -14,8 +14,6 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatFabButton } from '@angular/material/button';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatDialog } from '@angular/material/dialog';
 
 // Pipes
 import { CurrencyPipe } from '@angular/common';
@@ -30,7 +28,6 @@ import { MecatoConfig } from '../domain/mecato-config';
 // Services
 import { MockDataService } from '../services/mock-data.service';
 import { NotificationService } from '../services/notification/notification.service';
-import { ConfirmDialogComponent } from '../components/confirm-dialog/confirm-dialog.component';
 import { environment } from '../../environments/environment';
 
 @Component({
@@ -49,7 +46,6 @@ import { environment } from '../../environments/environment';
     MatDividerModule,
     MatChipsModule,
     MatFabButton,
-    MatTooltipModule,
     CurrencyPipe,
     CustomDatePipe
   ],
@@ -78,18 +74,13 @@ export class DashboardComponent implements OnInit {
     date: new Date().toISOString().split('T')[0]
   };
   
-  // Edit mode properties
-  isEditingMecato: boolean = false;
-  editingMecatoId: number | undefined = undefined;
-  
   // UI properties
   fixedExpensesByPocket: { [key: string]: FixedExpense[] } = {};
 
   constructor(
     private titleService: Title,
     private mockDataService: MockDataService,
-    private notificationService: NotificationService,
-    private dialog: MatDialog
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -201,20 +192,12 @@ export class DashboardComponent implements OnInit {
   }
 
   // Métodos para mecato
-  saveMecatoExpense(): void {
+  addMecatoExpense(): void {
     if (!this.newMecatoExpense.description.trim() || this.newMecatoExpense.amount <= 0) {
       this.notificationService.openSnackBar('Por favor completa todos los campos');
       return;
     }
 
-    if (this.isEditingMecato) {
-      this.updateMecatoExpense();
-    } else {
-      this.addMecatoExpense();
-    }
-  }
-
-  private addMecatoExpense(): void {
     this.mockDataService.addMecatoExpense(this.newMecatoExpense).subscribe({
       next: (expense) => {
         this.mecatoExpenses.unshift(expense);
@@ -229,74 +212,7 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  private updateMecatoExpense(): void {
-    const expenseToUpdate: MecatoExpense = { 
-      ...this.newMecatoExpense, 
-      id: this.editingMecatoId 
-    };
-    
-    this.mockDataService.updateMecatoExpense(expenseToUpdate).subscribe({
-      next: (updatedExpense) => {
-        const index = this.mecatoExpenses.findIndex(e => e.id === this.editingMecatoId);
-        if (index !== -1) {
-          this.mecatoExpenses[index] = updatedExpense;
-          this.mecatoExpenses.sort((a, b) => 
-            new Date(b.date).getTime() - new Date(a.date).getTime()
-          );
-        }
-        this.calculateTotals();
-        this.clearMecatoForm();
-        this.notificationService.openSnackBar('Gasto actualizado correctamente');
-      },
-      error: (error) => {
-        console.error('Error updating mecato expense:', error);
-        this.notificationService.openSnackBar('Error actualizando gasto');
-      }
-    });
-  }
-
-  editMecatoExpense(expense: MecatoExpense): void {
-    this.isEditingMecato = true;
-    this.editingMecatoId = expense.id!;
-    this.newMecatoExpense = {
-      description: expense.description,
-      amount: expense.amount,
-      date: expense.date
-    };
-  }
-
-  cancelEditMecato(): void {
-    this.isEditingMecato = false;
-    this.editingMecatoId = undefined;
-    this.clearMecatoForm();
-  }
-
-  deleteMecatoExpense(expenseId: number): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
-      data: { message: '¿Estás seguro de que deseas eliminar este gasto?' }
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result === true) {
-        this.mockDataService.deleteMecatoExpense(expenseId).subscribe({
-          next: () => {
-            this.mecatoExpenses = this.mecatoExpenses.filter(e => e.id !== expenseId);
-            this.calculateTotals();
-            this.notificationService.openSnackBar('Gasto eliminado correctamente');
-          },
-          error: (error) => {
-            console.error('Error deleting mecato expense:', error);
-            this.notificationService.openSnackBar('Error eliminando gasto');
-          }
-        });
-      }
-    });
-  }
-
   private clearMecatoForm(): void {
-    this.isEditingMecato = false;
-    this.editingMecatoId = undefined;
     this.newMecatoExpense = {
       description: '',
       amount: 0,

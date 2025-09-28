@@ -1,7 +1,7 @@
 import {
   NG_VALUE_ACCESSOR
-} from "./chunk-NA34HJAZ.js";
-import "./chunk-PWCOIAQ7.js";
+} from "./chunk-SNR3OASN.js";
+import "./chunk-G3UUT7UE.js";
 import {
   Directive,
   ElementRef,
@@ -11,7 +11,6 @@ import {
   Input,
   KeyValueDiffers,
   Optional,
-  __spreadValues,
   forwardRef,
   makeEnvironmentProviders,
   setClassMetadata,
@@ -19,7 +18,10 @@ import {
   ɵɵdefineDirective,
   ɵɵdirectiveInject,
   ɵɵlistener
-} from "./chunk-YWVPXKW7.js";
+} from "./chunk-2XYG76NS.js";
+import {
+  __spreadValues
+} from "./chunk-5TID76VL.js";
 
 // node_modules/ngx-currency/fesm2022/ngx-currency.mjs
 var NgxCurrencyInputMode;

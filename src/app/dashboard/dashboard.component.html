@@ -1,1 +1,188 @@
-<p>dashboard works!</p>
+<!-- Sección 1: Resumen Mensual (Top) -->
+<div class="summary-section">
+  <mat-card class="summary-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>dashboard</mat-icon>
+        Resumen Financiero - Enero 2024
+      </mat-card-title>
+      <mat-card-subtitle>Vista general de tu situación financiera del mes</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="summary-grid">
+        <div class="summary-item">
+          <span class="summary-label">💰 Salario Mensual</span>
+          <span class="summary-value positive">{{ salary.monthly_amount | currency:'COP':'symbol':'1.0-0' }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">🏠 Gastos Fijos</span>
+          <span class="summary-value negative">{{ totalFixedExpenses | currency:'COP':'symbol':'1.0-0' }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">☕ Presupuesto Mecato</span>
+          <span class="summary-value neutral">{{ mecatoConfig.monthly_budget | currency:'COP':'symbol':'1.0-0' }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">💳 Saldo Disponible</span>
+          <span class="summary-value" [class]="availableAfterFixed >= 0 ? 'positive' : 'negative'">
+            {{ availableAfterFixed | currency:'COP':'symbol':'1.0-0' }}
+          </span>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<!-- Sección 2 y 3: Gastos Fijos y Mecato (Side by side) -->
+<div class="main-content">
+  
+  <!-- Sección 2: Gastos Fijos (Izquierda) -->
+  <div class="fixed-expenses-section">
+    <mat-card class="section-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>account_balance_wallet</mat-icon>
+          Gastos Fijos
+        </mat-card-title>
+        <mat-card-subtitle>Organizado por bolsillos</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="pockets-container">
+          <div *ngFor="let pocket of getPocketKeys()" class="pocket-group">
+            <h3 class="pocket-title">{{ pocket }}</h3>
+            <div class="expenses-list">
+              <div *ngFor="let expense of fixedExpensesByPocket[pocket]" 
+                   class="expense-item"
+                   [class]="getExpenseStatus(expense)">
+                <mat-checkbox 
+                  [checked]="expense.is_paid"
+                  (change)="toggleFixedExpensePaid(expense)">
+                </mat-checkbox>
+                <div class="expense-details">
+                  <span class="expense-name">{{ expense.concept_name }}</span>
+                  <span class="expense-amount">{{ expense.amount | currency:'COP':'symbol':'1.0-0' }}</span>
+                  <span class="expense-date">Día {{ expense.payment_day }}</span>
+                </div>
+                <span class="status-text" [class]="getExpenseStatus(expense)">
+                  {{ expense.is_paid ? 'Pagado' : (getExpenseStatus(expense) === 'overdue' ? 'Vencido' : 'Pendiente') }}
+                </span>
+              </div>
+            </div>
+            <mat-divider></mat-divider>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Sección 3: Mecato (Derecha) -->
+  <div class="mecato-section">
+    <mat-card class="section-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>local_cafe</mat-icon>
+          Mecato
+        </mat-card-title>
+        <mat-card-subtitle>Gastos del día a día</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        
+        <!-- Progreso del presupuesto -->
+        <div class="mecato-progress">
+          <div class="progress-info">
+            <span class="spent">Gastado: {{ totalMecatoSpent | currency:'COP':'symbol':'1.0-0' }}</span>
+            <span class="remaining" [class]="mecatoRemaining >= 0 ? 'positive' : 'negative'">
+              Restante: {{ mecatoRemaining | currency:'COP':'symbol':'1.0-0' }}
+            </span>
+          </div>
+          <mat-progress-bar 
+            mode="determinate" 
+            [value]="getMecatoProgressPercentage()"
+            [color]="getMecatoProgressColor()">
+          </mat-progress-bar>
+          <span class="progress-percentage">{{ getMecatoProgressPercentage() | number:'1.1-1' }}%</span>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <!-- Formulario de entrada rápida -->
+        <div class="quick-entry">
+          <h4>Agregar Gasto</h4>
+          <form (ngSubmit)="addMecatoExpense()" #mecatoForm="ngForm">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>¿Qué compraste?</mat-label>
+              <input matInput 
+                     [(ngModel)]="newMecatoExpense.description" 
+                     name="description"
+                     placeholder="Ej: Café, almuerzo, libro..."
+                     required>
+            </mat-form-field>
+            
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Valor</mat-label>
+                <input matInput 
+                       type="number" 
+                       [(ngModel)]="newMecatoExpense.amount" 
+                       name="amount"
+                       placeholder="0"
+                       required>
+                <span matTextPrefix>$</span>
+              </mat-form-field>
+              
+              <mat-form-field appearance="outline">
+                <mat-label>Fecha</mat-label>
+                <input matInput 
+                       type="date" 
+                       [(ngModel)]="newMecatoExpense.date" 
+                       name="date"
+                       required>
+              </mat-form-field>
+            </div>
+            
+            <button mat-raised-button 
+                    color="primary" 
+                    type="submit"
+                    [disabled]="!mecatoForm.form.valid"
+                    class="add-button">
+              <mat-icon>add</mat-icon>
+              Agregar Gasto
+            </button>
+          </form>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <!-- Lista de gastos recientes -->
+        <div class="recent-expenses">
+          <h4>Gastos Recientes</h4>
+          <div class="expenses-list">
+            <div *ngFor="let expense of mecatoExpenses.slice(0, 8)" class="mecato-expense-item">
+              <div class="expense-info">
+                <span class="expense-description">{{ expense.description }}</span>
+                <span class="expense-date">{{ expense.date | customDate }}</span>
+              </div>
+              <span class="expense-amount">{{ expense.amount | currency:'COP':'symbol':'1.0-0' }}</span>
+            </div>
+            
+            <div *ngIf="mecatoExpenses.length === 0" class="no-expenses">
+              <mat-icon>receipt_long</mat-icon>
+              <span>No hay gastos registrados este mes</span>
+            </div>
+          </div>
+        </div>
+
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+</div>
+
+<!-- Botón flotante para entrada rápida en móvil -->
+<button mat-fab 
+        color="primary" 
+        class="fab-button"
+        (click)="addMecatoExpense()"
+        [disabled]="!newMecatoExpense.description.trim() || newMecatoExpense.amount <= 0">
+  <mat-icon>add</mat-icon>
+</button>

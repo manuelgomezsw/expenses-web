@@ -1,0 +1,486 @@
+/* Dashboard Layout with Modern Design System - Refined Version */
+
+/* Main Layout */
+.summary-section {
+  margin-bottom: var(--spacing-xl);
+}
+
+.main-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-xl);
+  margin-bottom: 100px; /* Space for FAB */
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .main-content {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+}
+
+@media (max-width: 768px) {
+  .summary-section {
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .main-content {
+    gap: var(--spacing-md);
+    margin-bottom: 80px;
+  }
+}
+
+/* Enhanced Cards - Removed hover animations */
+.summary-card,
+.section-card {
+  background: var(--card-background);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--card-shadow);
+}
+
+.section-card {
+  height: fit-content;
+  max-height: 85vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.section-card .mat-mdc-card-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-lg) !important;
+}
+
+/* Summary Section - Flat colors, no gradients */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-lg);
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-xl);
+  background: var(--background-secondary); /* Flat white background */
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--card-border);
+  position: relative;
+  overflow: hidden;
+}
+
+.summary-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--primary-color); /* Solid color instead of gradient */
+}
+
+.summary-label {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.summary-value {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.summary-value.positive {
+  color: var(--secondary-color);
+}
+
+.summary-value.negative {
+  color: var(--danger-color);
+}
+
+.summary-value.neutral {
+  color: var(--accent-color);
+}
+
+/* Card Headers Enhanced */
+.mat-mdc-card-header {
+  padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-md) !important;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.mat-mdc-card-title {
+  font-size: var(--font-size-xl) !important;
+  font-weight: 600 !important;
+  color: var(--text-primary) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: var(--spacing-sm) !important;
+}
+
+.mat-mdc-card-subtitle {
+  font-size: var(--font-size-sm) !important;
+  color: var(--text-muted) !important;
+  margin-top: var(--spacing-xs) !important;
+}
+
+/* Fixed Expenses Section */
+.pockets-container {
+  max-height: 65vh;
+  overflow-y: auto;
+  padding-right: var(--spacing-xs);
+}
+
+.pocket-group {
+  margin-bottom: var(--spacing-xl);
+}
+
+.pocket-title {
+  color: var(--primary-color);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  margin: 0 0 var(--spacing-md) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) 0;
+}
+
+.pocket-title::before {
+  content: '';
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--primary-color); /* Solid color instead of gradient */
+  box-shadow: 0 2px 4px rgba(26, 54, 93, 0.3);
+}
+
+.expenses-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Subtle status indicators - only left border */
+.expense-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--card-border);
+  background: var(--background-secondary);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.expense-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+  background: var(--card-border); /* Default neutral color */
+}
+
+/* Subtle status colors - only left border, no background change */
+.expense-item.paid::before {
+  background: var(--status-paid);
+}
+
+.expense-item.overdue::before {
+  background: var(--status-overdue);
+}
+
+.expense-item.due::before {
+  background: var(--status-due);
+}
+
+.expense-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.expense-name {
+  font-weight: 600;
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+}
+
+.expense-amount {
+  font-weight: 700;
+  font-size: var(--font-size-lg);
+  color: var(--primary-color);
+}
+
+.expense-date {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.status-text {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: var(--spacing-xs) 0;
+}
+
+.status-text.paid {
+  color: var(--status-paid);
+}
+
+.status-text.overdue {
+  color: var(--status-overdue);
+}
+
+.status-text.due {
+  color: var(--status-due);
+}
+
+/* Mecato Section - Flat colors, better contrast */
+.mecato-progress {
+  margin-bottom: var(--spacing-xl);
+  padding: var(--spacing-lg);
+  background: var(--background-secondary); /* Flat white background */
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--card-border);
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.progress-info .spent {
+  color: var(--danger-color);
+}
+
+.progress-info .remaining.positive {
+  color: var(--secondary-color);
+}
+
+.progress-info .remaining.negative {
+  color: var(--danger-color);
+  font-weight: 700;
+}
+
+.progress-percentage {
+  display: block;
+  text-align: center;
+  margin-top: var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+/* Quick Entry Form - Better contrast with white background */
+.quick-entry {
+  margin: var(--spacing-xl) 0;
+  padding: var(--spacing-lg);
+  background: var(--background-secondary); /* White background instead of gray */
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--card-border);
+}
+
+.quick-entry h4 {
+  margin: 0 0 var(--spacing-lg) 0;
+  color: var(--text-primary);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--spacing-md);
+}
+
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.add-button {
+  width: 100%;
+  height: 48px;
+  margin-top: var(--spacing-lg);
+  font-weight: 600 !important;
+  font-size: var(--font-size-base) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+/* Recent Expenses Enhanced */
+.recent-expenses {
+  margin-top: var(--spacing-xl);
+}
+
+.recent-expenses h4 {
+  margin: 0 0 var(--spacing-lg) 0;
+  color: var(--text-primary);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+}
+
+.mecato-expense-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--card-border);
+  transition: background-color 0.2s ease;
+  border-radius: var(--radius-sm);
+}
+
+.mecato-expense-item:hover {
+  background: var(--background-tertiary);
+}
+
+.mecato-expense-item:last-child {
+  border-bottom: none;
+}
+
+.expense-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.expense-description {
+  font-weight: 600;
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+}
+
+.expense-date {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.mecato-expense-item .expense-amount {
+  font-weight: 700;
+  font-size: var(--font-size-lg);
+  color: var(--danger-color);
+}
+
+.no-expenses {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-2xl);
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.no-expenses mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  opacity: 0.4;
+  color: var(--text-muted);
+}
+
+/* Enhanced FAB */
+.fab-button {
+  position: fixed;
+  bottom: var(--spacing-xl);
+  right: var(--spacing-xl);
+  z-index: 1000;
+  box-shadow: var(--card-shadow-hover) !important;
+  background: var(--primary-color) !important; /* Solid color instead of gradient */
+}
+
+.fab-button:hover {
+  transform: scale(1.05); /* Reduced hover effect */
+}
+
+@media (min-width: 1025px) {
+  .fab-button {
+    display: none;
+  }
+}
+
+/* Dividers Enhanced */
+mat-divider {
+  margin: var(--spacing-lg) 0;
+  border-color: var(--card-border) !important;
+}
+
+/* Enhanced Scrollbars */
+.pockets-container::-webkit-scrollbar,
+.section-card::-webkit-scrollbar {
+  width: 8px;
+}
+
+.pockets-container::-webkit-scrollbar-track,
+.section-card::-webkit-scrollbar-track {
+  background: var(--background-tertiary);
+  border-radius: var(--radius-sm);
+}
+
+.pockets-container::-webkit-scrollbar-thumb,
+.section-card::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: var(--radius-sm);
+}
+
+.pockets-container::-webkit-scrollbar-thumb:hover,
+.section-card::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* Material Form Field Overrides */
+.mat-mdc-form-field {
+  font-family: var(--font-family-primary) !important;
+}
+
+.mat-mdc-form-field .mat-mdc-form-field-label {
+  color: var(--text-secondary) !important;
+}
+
+.mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
+  color: var(--primary-color) !important;
+}
+
+/* Checkbox Overrides */
+.mat-mdc-checkbox .mdc-checkbox__native-control:enabled:checked~.mdc-checkbox__background {
+  background-color: var(--secondary-color) !important;
+  border-color: var(--secondary-color) !important;
+}
+
+/* Progress Bar Overrides */
+.mat-mdc-progress-bar[color="primary"] .mdc-linear-progress__bar-inner {
+  background-color: var(--primary-color) !important;
+}
+
+.mat-mdc-progress-bar[color="accent"] .mdc-linear-progress__bar-inner {
+  background-color: var(--accent-color) !important;
+}
+
+.mat-mdc-progress-bar[color="warn"] .mdc-linear-progress__bar-inner {
+  background-color: var(--danger-color) !important;
+}

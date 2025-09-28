@@ -1,4 +1,5 @@
 import {Routes} from '@angular/router';
+import {DashboardComponent} from "./dashboard/dashboard.component";
 import {ListPocketsComponent} from "./pockets/list/list.component";
 import {PocketFormComponent} from "./pockets/form/form.component";
 import {ListPaymentTypeComponent} from "./paymentstype/list/list.component";
@@ -9,6 +10,8 @@ import {BudgetComponent} from "./budget/budget.component";
 import {ConceptsComponent} from "./pockets/concepts/concepts.component";
 
 export const routes: Routes = [
+    {path: '', redirectTo: '/dashboard', pathMatch: 'full'},
+    {path: 'dashboard', title: 'Dashboard Financiero', component: DashboardComponent},
     {path: 'budget', title: 'Ejecución del presupuesto', component: BudgetComponent},
     {path: 'expenses/daily', title: 'Gastos', component: DailyComponent},
     {path: 'pockets/list', title: 'Bolsillo', component: ListPocketsComponent},
