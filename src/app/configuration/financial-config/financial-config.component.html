@@ -85,14 +85,22 @@
         <!-- Lista de Gastos por Bolsillo -->
         <div class="pockets-list">
           <div *ngFor="let pocketName of getPocketKeys()" class="pocket-section">
-            <div class="pocket-header">
-              <div class="pocket-info">
-                <h3 class="pocket-title">📁 {{ pocketName }}</h3>
+            
+            <!-- Pocket Header - Always Visible -->
+            <div class="pocket-header" (click)="togglePocketCollapse(pocketName)">
+              <div class="pocket-main-info">
+                <div class="pocket-title-row">
+                  <button mat-icon-button class="collapse-button">
+                    <mat-icon>{{ isPocketCollapsed(pocketName) ? 'expand_more' : 'expand_less' }}</mat-icon>
+                  </button>
+                  <h3 class="pocket-title">📁 {{ pocketName }}</h3>
+                  <span class="expense-count">({{ getPocketExpenseCount(pocketName) }} gastos)</span>
+                </div>
                 <span class="pocket-total">
                   Total: {{ getTotalAmountForPocket(pocketName) | currency:'COP':'symbol':'1.0-0' }}
                 </span>
               </div>
-              <div class="pocket-actions">
+              <div class="pocket-actions" (click)="$event.stopPropagation()">
                 <button mat-icon-button 
                         (click)="editPocket(pocketName)"
                         matTooltip="Editar bolsillo">
@@ -107,7 +115,10 @@
               </div>
             </div>
             
-            <div class="expenses-in-pocket">
+            <!-- Pocket Content - Collapsible -->
+            <div class="expenses-in-pocket" 
+                 [class.collapsed]="isPocketCollapsed(pocketName)"
+                 [@slideInOut]="isPocketCollapsed(pocketName) ? 'out' : 'in'">
               <div *ngFor="let expense of getFixedExpensesByPocket()[pocketName]" class="expense-item">
                 <div class="expense-info">
                   <span class="expense-name">{{ expense.concept_name }}</span>

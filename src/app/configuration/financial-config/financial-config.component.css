@@ -97,14 +97,57 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-md) 0;
-  border-bottom: 2px solid var(--primary-color);
+  padding: var(--spacing-md);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  background: var(--background-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: var(--spacing-sm);
 }
 
-.pocket-info {
+.pocket-header:hover {
+  background: var(--background-tertiary);
+  box-shadow: var(--card-shadow);
+}
+
+.pocket-main-info {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xs);
+  flex: 1;
+}
+
+.pocket-title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.collapse-button {
+  color: var(--primary-color) !important;
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+}
+
+.pocket-title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.expense-count {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.pocket-total {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--primary-color);
 }
 
 .pocket-actions {
@@ -112,15 +155,6 @@
   gap: var(--spacing-xs);
 }
 
-.pocket-title {
-  font-size: var(--font-size-lg);
-  font-weight: 600;
-  color: var(--text-primary);
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-}
 
 .pocket-total {
   font-size: var(--font-size-base);
@@ -135,7 +169,20 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
-  margin-left: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background: var(--background-secondary);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-md);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.expenses-in-pocket.collapsed {
+  height: 0 !important;
+  padding: 0 var(--spacing-md);
+  margin-bottom: 0;
+  opacity: 0;
 }
 
 .expense-item {
@@ -273,14 +320,23 @@
     flex-direction: column;
     align-items: flex-start;
     gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
   }
 
-  .pocket-info {
+  .pocket-main-info {
     width: 100%;
+  }
+
+  .pocket-title-row {
+    flex-wrap: wrap;
   }
 
   .pocket-actions {
     align-self: flex-end;
+  }
+
+  .expenses-in-pocket {
+    padding: var(--spacing-sm);
   }
 
   .action-buttons {

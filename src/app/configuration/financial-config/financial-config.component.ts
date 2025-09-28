@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
+import { trigger, state, style, transition, animate } from '@angular/animations';
 
 // Angular Material
 import { MatCardModule } from '@angular/material/card';
@@ -52,7 +53,27 @@ import { environment } from '../../../environments/environment';
     CurrencyPipe
   ],
   templateUrl: './financial-config.component.html',
-  styleUrl: './financial-config.component.css'
+  styleUrl: './financial-config.component.css',
+  animations: [
+    trigger('slideInOut', [
+      state('in', style({
+        height: '*',
+        opacity: 1,
+        overflow: 'visible'
+      })),
+      state('out', style({
+        height: '0px',
+        opacity: 0,
+        overflow: 'hidden'
+      })),
+      transition('in => out', [
+        animate('300ms ease-in-out')
+      ]),
+      transition('out => in', [
+        animate('300ms ease-in-out')
+      ])
+    ])
+  ]
 })
 export class FinancialConfigComponent implements OnInit, OnDestroy {
   
@@ -82,6 +103,9 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
     amount: 0,
     payment_day: 1
   };
+  
+  // UI state for collapsible pockets
+  collapsedPockets: Set<string> = new Set();
   
   private destroy$ = new Subject<void>();
 
@@ -131,6 +155,7 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
           this.configuration = config;
           this.salaryForm.monthly_amount = config.salary.monthly_amount;
           this.dailyBudgetForm.monthly_budget = config.dailyExpensesConfig.monthly_budget;
+          this.initializeCollapsedPockets();
           this.isLoading = false;
         },
         error: (error) => {
@@ -604,5 +629,32 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
           });
       }
     });
+  }
+
+  // Collapsible Pockets Methods
+  initializeCollapsedPockets(): void {
+    if (this.configuration) {
+      // Initialize all pockets as collapsed by default
+      const pocketNames = this.getPocketKeys();
+      pocketNames.forEach(pocketName => {
+        this.collapsedPockets.add(pocketName);
+      });
+    }
+  }
+
+  togglePocketCollapse(pocketName: string): void {
+    if (this.collapsedPockets.has(pocketName)) {
+      this.collapsedPockets.delete(pocketName);
+    } else {
+      this.collapsedPockets.add(pocketName);
+    }
+  }
+
+  isPocketCollapsed(pocketName: string): boolean {
+    return this.collapsedPockets.has(pocketName);
+  }
+
+  getPocketExpenseCount(pocketName: string): number {
+    return this.getFixedExpensesByPocket()[pocketName]?.length || 0;
   }
 }
