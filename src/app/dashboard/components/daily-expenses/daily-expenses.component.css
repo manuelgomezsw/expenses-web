@@ -43,6 +43,12 @@
 .collapse-button {
   color: var(--primary-color) !important;
   margin-left: var(--spacing-sm);
+  transition: all 0.2s ease;
+}
+
+.collapse-button:hover {
+  background-color: rgba(var(--primary-color-rgb), 0.1) !important;
+  transform: scale(1.05);
 }
 
 .mat-mdc-card-title {
