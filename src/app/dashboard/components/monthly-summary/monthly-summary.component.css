@@ -35,16 +35,27 @@
 }
 
 /* Collapsible Content */
-.mat-mdc-card-content.collapsed {
+.summary-card .mat-mdc-card-content.collapsed {
   height: 0 !important;
   padding: 0 !important;
   opacity: 0;
   overflow: hidden;
+  margin: 0 !important;
+  border: none !important;
+}
+
+.summary-card .mat-mdc-card-content {
   transition: all 0.3s ease;
 }
 
-.mat-mdc-card-content {
-  transition: all 0.3s ease;
+/* Collapsed card styling */
+.summary-card.collapsed {
+  height: auto !important;
+  min-height: auto !important;
+}
+
+.summary-card.collapsed .mat-mdc-card-header {
+  border-bottom: none !important;
 }
 
 /* Card Header */

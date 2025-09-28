@@ -68,11 +68,23 @@
 }
 
 /* Collapsible Content */
-.mat-mdc-card-content.collapsed {
+.expenses-card .mat-mdc-card-content.collapsed {
   height: 0 !important;
   padding: 0 !important;
   opacity: 0;
   overflow: hidden;
+  margin: 0 !important;
+  border: none !important;
+}
+
+/* Collapsed card styling */
+.expenses-card.collapsed {
+  height: auto !important;
+  min-height: auto !important;
+}
+
+.expenses-card.collapsed .mat-mdc-card-header {
+  border-bottom: none !important;
 }
 
 /* Loading and Error States */

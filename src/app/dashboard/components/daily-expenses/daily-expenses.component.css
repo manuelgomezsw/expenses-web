@@ -60,11 +60,23 @@
 }
 
 /* Collapsible Content */
-.mat-mdc-card-content.collapsed {
+.daily-expenses-card .mat-mdc-card-content.collapsed {
   height: 0 !important;
   padding: 0 !important;
   opacity: 0;
   overflow: hidden;
+  margin: 0 !important;
+  border: none !important;
+}
+
+/* Collapsed card styling */
+.daily-expenses-card.collapsed {
+  height: auto !important;
+  min-height: auto !important;
+}
+
+.daily-expenses-card.collapsed .mat-mdc-card-header {
+  border-bottom: none !important;
 }
 
 .daily-expenses-content {

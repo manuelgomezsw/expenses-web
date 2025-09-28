@@ -1,5 +1,5 @@
 <div class="fixed-expenses">
-  <mat-card class="expenses-card">
+  <mat-card class="expenses-card" [class.collapsed]="isCollapsed">
     <mat-card-header class="collapsible-header" (click)="onToggleCollapse()">
       <div class="header-content">
         <mat-card-title>

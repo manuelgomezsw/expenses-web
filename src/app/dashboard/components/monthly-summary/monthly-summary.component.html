@@ -1,5 +1,5 @@
 <div class="monthly-summary">
-  <mat-card class="summary-card">
+  <mat-card class="summary-card" [class.collapsed]="isCollapsed">
     <mat-card-header class="collapsible-header" (click)="onToggleCollapse()">
       <div class="header-content">
         <mat-card-title>
