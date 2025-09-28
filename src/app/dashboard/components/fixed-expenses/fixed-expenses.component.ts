@@ -36,6 +36,8 @@ import { NotificationService } from '../../../services/notification/notification
 })
 export class FixedExpensesComponent implements OnInit, OnDestroy, OnChanges {
   @Input() currentMonth: string = '2024-01';
+  @Input() isCollapsed: boolean = false;
+  @Output() toggleCollapse = new EventEmitter<void>();
   @Output() expenseStatusChanged = new EventEmitter<void>();
 
   expenses: FixedExpense[] = [];
@@ -176,5 +178,9 @@ export class FixedExpensesComponent implements OnInit, OnDestroy, OnChanges {
   getPaidPercentage(): number {
     if (this.expenses.length === 0) return 0;
     return (this.getTotalPaidCount() / this.expenses.length) * 100;
+  }
+
+  onToggleCollapse(): void {
+    this.toggleCollapse.emit();
   }
 }

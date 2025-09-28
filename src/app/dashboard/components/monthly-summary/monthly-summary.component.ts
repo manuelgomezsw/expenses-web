@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -29,6 +29,8 @@ import { NotificationService } from '../../../services/notification/notification
 })
 export class MonthlySummaryComponent implements OnInit, OnDestroy, OnChanges {
   @Input() currentMonth: string = '2024-01';
+  @Input() isCollapsed: boolean = false;
+  @Output() toggleCollapse = new EventEmitter<void>();
 
   summary: MonthlySummary | null = null;
   isLoading = false;
@@ -117,5 +119,9 @@ export class MonthlySummaryComponent implements OnInit, OnDestroy, OnChanges {
   getDailyExpensesPercentage(): number {
     if (!this.summary || this.summary.salary.monthly_amount === 0) return 0;
     return (this.summary.mecatoBudget.monthly_budget / this.summary.salary.monthly_amount) * 100;
+  }
+
+  onToggleCollapse(): void {
+    this.toggleCollapse.emit();
   }
 }

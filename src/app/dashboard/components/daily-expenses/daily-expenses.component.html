@@ -1,12 +1,17 @@
 <mat-card class="section-card daily-expenses-card">
-  <mat-card-header>
-    <mat-card-title>
-      <mat-icon>local_cafe</mat-icon>
-      Gastos Diarios - {{ getMonthlyName(currentMonth) | titlecase }}
-    </mat-card-title>
-    <mat-card-subtitle>Control de gastos del día a día</mat-card-subtitle>
+  <mat-card-header class="collapsible-header" (click)="onToggleCollapse()">
+    <div class="header-content">
+      <mat-card-title>
+        <mat-icon>local_cafe</mat-icon>
+        Gastos Diarios - {{ getMonthlyName(currentMonth) | titlecase }}
+      </mat-card-title>
+      <mat-card-subtitle>Control de gastos del día a día</mat-card-subtitle>
+    </div>
+    <button mat-icon-button class="collapse-button" (click)="$event.stopPropagation()">
+      <mat-icon>{{ isCollapsed ? 'expand_more' : 'expand_less' }}</mat-icon>
+    </button>
   </mat-card-header>
-  <mat-card-content>
+  <mat-card-content [class.collapsed]="isCollapsed">
     <div *ngIf="isLoading" class="loading-state">
       <mat-progress-bar mode="indeterminate"></mat-progress-bar>
       <p>Cargando gastos diarios...</p>

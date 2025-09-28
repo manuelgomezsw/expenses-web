@@ -12,6 +12,41 @@
   box-shadow: var(--card-shadow);
 }
 
+/* Collapsible Header */
+.collapsible-header {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.collapsible-header:hover {
+  background-color: var(--background-tertiary);
+}
+
+.header-content {
+  flex: 1;
+}
+
+.collapse-button {
+  color: var(--primary-color) !important;
+  margin-left: var(--spacing-sm);
+}
+
+/* Collapsible Content */
+.mat-mdc-card-content.collapsed {
+  height: 0 !important;
+  padding: 0 !important;
+  opacity: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.mat-mdc-card-content {
+  transition: all 0.3s ease;
+}
+
 /* Card Header */
 .mat-mdc-card-header {
   padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-md) !important;

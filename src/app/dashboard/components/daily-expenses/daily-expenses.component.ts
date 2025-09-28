@@ -41,6 +41,8 @@ import { Subject, takeUntil } from 'rxjs';
 })
 export class DailyExpensesComponent implements OnInit, OnDestroy, OnChanges {
   @Input() currentMonth: string = '2024-01'; // Format YYYY-MM
+  @Input() isCollapsed: boolean = false;
+  @Output() toggleCollapse = new EventEmitter<void>();
   @Output() expenseAdded = new EventEmitter<void>();
   @Output() expenseUpdated = new EventEmitter<void>();
   @Output() expenseDeleted = new EventEmitter<void>();
@@ -259,5 +261,9 @@ export class DailyExpensesComponent implements OnInit, OnDestroy, OnChanges {
     const [year, monthNum] = month.split('-').map(Number);
     const date = new Date(year, monthNum - 1, 1);
     return date.toLocaleString('es-CO', { month: 'long', year: 'numeric' });
+  }
+
+  onToggleCollapse(): void {
+    this.toggleCollapse.emit();
   }
 }

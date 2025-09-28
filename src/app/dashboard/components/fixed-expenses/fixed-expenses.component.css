@@ -23,6 +23,28 @@
   flex-shrink: 0;
 }
 
+/* Collapsible Header */
+.collapsible-header {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.collapsible-header:hover {
+  background-color: var(--background-tertiary);
+}
+
+.header-content {
+  flex: 1;
+}
+
+.collapse-button {
+  color: var(--primary-color) !important;
+  margin-left: var(--spacing-sm);
+}
+
 .mat-mdc-card-title {
   font-size: var(--font-size-xl) !important;
   font-weight: 600 !important;
@@ -42,6 +64,15 @@
   flex: 1;
   overflow-y: auto;
   padding: var(--spacing-lg) !important;
+  transition: all 0.3s ease;
+}
+
+/* Collapsible Content */
+.mat-mdc-card-content.collapsed {
+  height: 0 !important;
+  padding: 0 !important;
+  opacity: 0;
+  overflow: hidden;
 }
 
 /* Loading and Error States */

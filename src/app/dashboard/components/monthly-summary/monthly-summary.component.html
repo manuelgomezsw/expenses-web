@@ -1,14 +1,19 @@
 <div class="monthly-summary">
   <mat-card class="summary-card">
-    <mat-card-header>
-      <mat-card-title>
-        <mat-icon>dashboard</mat-icon>
-        Resumen Financiero - {{ getMonthName() }}
-      </mat-card-title>
-      <mat-card-subtitle>Vista general de tu situación financiera del mes</mat-card-subtitle>
+    <mat-card-header class="collapsible-header" (click)="onToggleCollapse()">
+      <div class="header-content">
+        <mat-card-title>
+          <mat-icon>dashboard</mat-icon>
+          Resumen Financiero - {{ getMonthName() }}
+        </mat-card-title>
+        <mat-card-subtitle>Vista general de tu situación financiera del mes</mat-card-subtitle>
+      </div>
+      <button mat-icon-button class="collapse-button" (click)="$event.stopPropagation()">
+        <mat-icon>{{ isCollapsed ? 'expand_more' : 'expand_less' }}</mat-icon>
+      </button>
     </mat-card-header>
     
-    <mat-card-content>
+    <mat-card-content [class.collapsed]="isCollapsed">
       <!-- Loading State -->
       <div *ngIf="isLoading" class="loading-container">
         <mat-spinner diameter="40"></mat-spinner>
