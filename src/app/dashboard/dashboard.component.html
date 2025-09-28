@@ -9,9 +9,20 @@
   
   <!-- Sección 1: Resumen Mensual (Top) -->
   <div class="summary-section">
-    <app-monthly-summary 
-      [currentMonth]="currentMonth">
-    </app-monthly-summary>
+    <div class="collapsible-header" (click)="toggleMonthlySummary()">
+      <h2 class="section-title">
+        <mat-icon>dashboard</mat-icon>
+        Resumen Financiero
+      </h2>
+      <button mat-icon-button class="collapse-button">
+        <mat-icon>{{ isMonthlySummaryCollapsed ? 'expand_more' : 'expand_less' }}</mat-icon>
+      </button>
+    </div>
+    <div class="collapsible-content" [class.collapsed]="isMonthlySummaryCollapsed">
+      <app-monthly-summary 
+        [currentMonth]="currentMonth">
+      </app-monthly-summary>
+    </div>
   </div>
 
   <!-- Sección 2 y 3: Gastos Diarios y Gastos Fijos (Side by side) -->
@@ -19,20 +30,42 @@
     
     <!-- Sección 2: Gastos Diarios (Izquierda - Prioridad móvil) -->
     <div class="daily-expenses-section">
-      <app-daily-expenses 
-        [currentMonth]="currentMonth"
-        (expenseAdded)="onDailyExpenseAdded()"
-        (expenseUpdated)="onDailyExpenseUpdated()"
-        (expenseDeleted)="onDailyExpenseDeleted()">
-      </app-daily-expenses>
+      <div class="collapsible-header" (click)="toggleDailyExpenses()">
+        <h2 class="section-title">
+          <mat-icon>coffee</mat-icon>
+          Gastos Diarios
+        </h2>
+        <button mat-icon-button class="collapse-button">
+          <mat-icon>{{ isDailyExpensesCollapsed ? 'expand_more' : 'expand_less' }}</mat-icon>
+        </button>
+      </div>
+      <div class="collapsible-content" [class.collapsed]="isDailyExpensesCollapsed">
+        <app-daily-expenses 
+          [currentMonth]="currentMonth"
+          (expenseAdded)="onDailyExpenseAdded()"
+          (expenseUpdated)="onDailyExpenseUpdated()"
+          (expenseDeleted)="onDailyExpenseDeleted()">
+        </app-daily-expenses>
+      </div>
     </div>
 
     <!-- Sección 3: Gastos Fijos (Derecha) -->
     <div class="fixed-expenses-section">
-      <app-fixed-expenses 
-        [currentMonth]="currentMonth"
-        (expenseStatusChanged)="onFixedExpenseStatusChanged()">
-      </app-fixed-expenses>
+      <div class="collapsible-header" (click)="toggleFixedExpenses()">
+        <h2 class="section-title">
+          <mat-icon>home</mat-icon>
+          Gastos Fijos
+        </h2>
+        <button mat-icon-button class="collapse-button">
+          <mat-icon>{{ isFixedExpensesCollapsed ? 'expand_more' : 'expand_less' }}</mat-icon>
+        </button>
+      </div>
+      <div class="collapsible-content" [class.collapsed]="isFixedExpensesCollapsed">
+        <app-fixed-expenses 
+          [currentMonth]="currentMonth"
+          (expenseStatusChanged)="onFixedExpenseStatusChanged()">
+        </app-fixed-expenses>
+      </div>
     </div>
 
   </div>

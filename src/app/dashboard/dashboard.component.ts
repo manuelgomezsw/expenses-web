@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 // Components
 import { MonthlySummaryComponent } from './components/monthly-summary/monthly-summary.component';
@@ -17,6 +20,8 @@ import { environment } from '../../environments/environment';
   standalone: true,
   imports: [
     CommonModule,
+    MatIconModule,
+    MatButtonModule,
     MonthSelectorComponent,
     MonthlySummaryComponent,
     FixedExpensesComponent,
@@ -29,16 +34,34 @@ export class DashboardComponent implements OnInit, OnDestroy {
   
   // Current month for all components
   currentMonth: string = this.getCurrentMonth();
+  
+  // Collapsible components state
+  isMonthlySummaryCollapsed: boolean = false;
+  isFixedExpensesCollapsed: boolean = false;
+  isDailyExpensesCollapsed: boolean = false;
+  
+  // Mobile detection
+  isMobile: boolean = false;
+  
   private destroy$ = new Subject<void>();
 
   constructor(
     private titleService: Title,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private breakpointObserver: BreakpointObserver
   ) {}
 
   ngOnInit(): void {
     this.titleService.setTitle(environment.titleWebSite + ' - Dashboard Financiero');
+    
+    // Detect mobile and set initial collapse state
+    this.breakpointObserver.observe([Breakpoints.Handset])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(result => {
+        this.isMobile = result.matches;
+        this.setInitialCollapseState();
+      });
     
     // Listen to query parameter changes for month
     this.route.queryParams
@@ -120,5 +143,32 @@ export class DashboardComponent implements OnInit, OnDestroy {
       queryParams: { month },
       queryParamsHandling: 'merge'
     });
+  }
+
+  // Collapsible methods
+  setInitialCollapseState(): void {
+    if (this.isMobile) {
+      // On mobile: keep monthly-summary expanded, collapse others
+      this.isMonthlySummaryCollapsed = false;
+      this.isFixedExpensesCollapsed = true;
+      this.isDailyExpensesCollapsed = false; // Keep daily expenses expanded for quick access
+    } else {
+      // On desktop: keep all expanded
+      this.isMonthlySummaryCollapsed = false;
+      this.isFixedExpensesCollapsed = false;
+      this.isDailyExpensesCollapsed = false;
+    }
+  }
+
+  toggleMonthlySummary(): void {
+    this.isMonthlySummaryCollapsed = !this.isMonthlySummaryCollapsed;
+  }
+
+  toggleFixedExpenses(): void {
+    this.isFixedExpensesCollapsed = !this.isFixedExpensesCollapsed;
+  }
+
+  toggleDailyExpenses(): void {
+    this.isDailyExpensesCollapsed = !this.isDailyExpensesCollapsed;
   }
 }

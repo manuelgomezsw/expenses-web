@@ -27,6 +27,52 @@
   flex-direction: column;
 }
 
+/* Collapsible Components */
+.collapsible-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--card-background);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: var(--spacing-sm);
+  box-shadow: var(--card-shadow);
+}
+
+.collapsible-header:hover {
+  background: var(--background-tertiary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.collapse-button {
+  color: var(--primary-color) !important;
+  transition: transform 0.2s ease;
+}
+
+.collapsible-content {
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.collapsible-content.collapsed {
+  height: 0 !important;
+  opacity: 0;
+  margin-bottom: 0;
+}
+
 /* Responsive Design */
 @media (max-width: 1200px) {
   .main-content {
