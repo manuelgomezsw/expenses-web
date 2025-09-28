@@ -35,8 +35,8 @@ import { NotificationService } from '../../../services/notification/notification
   styleUrl: './fixed-expenses.component.css'
 })
 export class FixedExpensesComponent implements OnInit, OnDestroy {
-  @Input() month: string = '2024-01';
-  @Output() expenseToggled = new EventEmitter<{ expenseId: number, isPaid: boolean }>();
+  @Input() currentMonth: string = '2024-01';
+  @Output() expenseStatusChanged = new EventEmitter<void>();
 
   expenses: FixedExpense[] = [];
   expensesByPocket: FixedExpensesByPocket = {};
@@ -66,7 +66,7 @@ export class FixedExpensesComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.error = null;
 
-    this.fixedExpensesService.getFixedExpenses(this.month)
+    this.fixedExpensesService.getFixedExpenses(this.currentMonth)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (expenses) => {
@@ -108,7 +108,7 @@ export class FixedExpensesComponent implements OnInit, OnDestroy {
           this.expensesByPocket = this.fixedExpensesService.groupExpensesByPocket(this.expenses);
           
           // Emitir evento para notificar al componente padre
-          this.expenseToggled.emit({ expenseId: expense.id!, isPaid: newStatus });
+          this.expenseStatusChanged.emit(); // Notify parent
           
           const status = newStatus ? 'pagado' : 'marcado como pendiente';
           this.notificationService.openSnackBar(`${expense.concept_name} ${status}`);

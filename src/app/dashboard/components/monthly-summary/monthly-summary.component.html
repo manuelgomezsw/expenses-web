@@ -36,7 +36,7 @@
           <div class="summary-content">
             <span class="summary-label">Salario Mensual</span>
             <span class="summary-value positive">
-              {{ summary.salary | currency:'COP':'symbol':'1.0-0' }}
+              {{ summary.salary.monthly_amount | currency:'COP':'symbol':'1.0-0' }}
             </span>
           </div>
         </div>
@@ -65,7 +65,7 @@
           <div class="summary-content">
             <span class="summary-label">Gastos Diarios</span>
             <span class="summary-value neutral">
-              {{ summary.dailyExpensesBudget | currency:'COP':'symbol':'1.0-0' }}
+              {{ summary.mecatoBudget.monthly_budget | currency:'COP':'symbol':'1.0-0' }}
             </span>
             <span class="summary-percentage">
               {{ getDailyExpensesPercentage() | number:'1.1-1' }}% del salario
@@ -80,11 +80,11 @@
           </div>
           <div class="summary-content">
             <span class="summary-label">Saldo Disponible</span>
-            <span class="summary-value" [class]="getAvailableBalanceClass()">
-              {{ summary.availableAfterFixed | currency:'COP':'symbol':'1.0-0' }}
+            <span class="summary-value" [class]="summary.availableOverall >= 0 ? 'positive' : 'negative'">
+              {{ summary.availableOverall | currency:'COP':'symbol':'1.0-0' }}
             </span>
-            <span class="summary-status" [class]="getAvailableBalanceClass()">
-              {{ summary.availableAfterFixed >= 0 ? 'Superávit' : 'Déficit' }}
+            <span class="balance-status" [class]="summary.overallBalanceStatus">
+              {{ summary.overallBalanceStatus === 'surplus' ? 'Superávit' : (summary.overallBalanceStatus === 'deficit' ? 'Déficit' : 'Balanceado') }}
             </span>
           </div>
         </div>

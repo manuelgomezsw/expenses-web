@@ -28,7 +28,7 @@ import { NotificationService } from '../../../services/notification/notification
   styleUrl: './monthly-summary.component.css'
 })
 export class MonthlySummaryComponent implements OnInit, OnDestroy {
-  @Input() month: string = '2024-01';
+  @Input() currentMonth: string = '2024-01';
 
   summary: MonthlySummary | null = null;
   isLoading = false;
@@ -57,7 +57,7 @@ export class MonthlySummaryComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.error = null;
 
-    this.summaryService.getMonthlySummary(this.month)
+    this.summaryService.getMonthlySummary(this.currentMonth)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (summary) => {
@@ -84,9 +84,9 @@ export class MonthlySummaryComponent implements OnInit, OnDestroy {
    * Obtiene el nombre del mes en español
    */
   getMonthName(): string {
-    if (!this.month) return '';
-    
-    const [year, monthNum] = this.month.split('-');
+    if (!this.currentMonth) return '';
+
+    const [year, monthNum] = this.currentMonth.split('-');
     const monthNames = [
       'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
       'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
@@ -96,30 +96,20 @@ export class MonthlySummaryComponent implements OnInit, OnDestroy {
     return `${monthNames[monthIndex]} ${year}`;
   }
 
-  /**
-   * Determina si el saldo disponible es positivo, negativo o neutro
-   */
-  getAvailableBalanceClass(): string {
-    if (!this.summary) return '';
-    
-    if (this.summary.availableAfterFixed > 0) return 'positive';
-    if (this.summary.availableAfterFixed < 0) return 'negative';
-    return 'neutral';
-  }
 
   /**
    * Obtiene el porcentaje de gastos fijos sobre el salario
    */
   getFixedExpensesPercentage(): number {
-    if (!this.summary || this.summary.salary === 0) return 0;
-    return (this.summary.totalFixedExpenses / this.summary.salary) * 100;
+    if (!this.summary || this.summary.salary.monthly_amount === 0) return 0;
+    return (this.summary.totalFixedExpenses / this.summary.salary.monthly_amount) * 100;
   }
 
   /**
    * Obtiene el porcentaje de gastos diarios sobre el salario
    */
   getDailyExpensesPercentage(): number {
-    if (!this.summary || this.summary.salary === 0) return 0;
-    return (this.summary.dailyExpensesBudget / this.summary.salary) * 100;
+    if (!this.summary || this.summary.salary.monthly_amount === 0) return 0;
+    return (this.summary.mecatoBudget.monthly_budget / this.summary.salary.monthly_amount) * 100;
   }
 }

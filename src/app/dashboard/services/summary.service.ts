@@ -1,17 +1,20 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, combineLatest } from 'rxjs';
-import { map } from 'rxjs/operators';
-
+import { Observable, of } from 'rxjs';
 import { Salary } from '../../domain/salary';
 import { FixedExpense } from '../../domain/fixed-expense';
 import { DailyExpensesConfig } from '../../domain/daily-expenses-config';
+import { MockDataService } from '../../services/mock-data.service';
 
 export interface MonthlySummary {
-  salary: number;
+  salary: Salary;
   totalFixedExpenses: number;
-  dailyExpensesBudget: number;
+  mecatoBudget: DailyExpensesConfig;
+  totalMecatoSpent: number;
   availableAfterFixed: number;
-  month: string;
+  availableOverall: number;
+  fixedExpensesPercentage: number;
+  mecatoBudgetPercentage: number;
+  overallBalanceStatus: 'surplus' | 'deficit' | 'balanced';
 }
 
 @Injectable({
@@ -19,66 +22,55 @@ export interface MonthlySummary {
 })
 export class SummaryService {
 
-  constructor() { }
+  constructor(private mockDataService: MockDataService) { }
 
-  /**
-   * Obtiene el resumen financiero del mes
-   * En el futuro se conectará a: GET /api/summary/{month}
-   */
   getMonthlySummary(month: string): Observable<MonthlySummary> {
-    // Mock data - será reemplazado por llamada HTTP real
-    const mockSalary: Salary = {
-      id: 1,
-      monthly_amount: 4500000,
-      month: month,
-      created_at: new Date().toISOString()
-    };
+    return new Observable(observer => {
+      this.mockDataService.getSalary(month).subscribe(salary => {
+        this.mockDataService.getFixedExpenses(month).subscribe(fixedExpenses => {
+          this.mockDataService.getDailyExpensesConfig(month).subscribe(mecatoConfig => {
+            this.mockDataService.getDailyExpenses(month).subscribe(mecatoExpenses => {
 
-    const mockFixedExpenses: FixedExpense[] = [
-      { id: 1, pocket_name: 'Vivienda', concept_name: 'Arriendo', amount: 1200000, payment_day: 5, is_paid: true, month: month },
-      { id: 2, pocket_name: 'Vivienda', concept_name: 'Servicios públicos', amount: 350000, payment_day: 15, is_paid: false, month: month },
-      { id: 3, pocket_name: 'Vivienda', concept_name: 'Internet', amount: 89000, payment_day: 20, is_paid: false, month: month },
-      { id: 4, pocket_name: 'Transporte', concept_name: 'Gasolina', amount: 400000, payment_day: 1, is_paid: true, month: month },
-      { id: 5, pocket_name: 'Transporte', concept_name: 'SOAT', amount: 180000, payment_day: 25, is_paid: false, month: month },
-      { id: 6, pocket_name: 'Alimentación', concept_name: 'Mercado semanal', amount: 600000, payment_day: 7, is_paid: true, month: month },
-      { id: 7, pocket_name: 'Salud', concept_name: 'EPS', amount: 120000, payment_day: 10, is_paid: false, month: month },
-      { id: 8, pocket_name: 'Salud', concept_name: 'Medicina prepagada', amount: 250000, payment_day: 12, is_paid: false, month: month }
-    ];
+              const totalFixedExpenses = fixedExpenses
+                .filter(e => !e.is_paid) // Only count unpaid fixed expenses for available calculation
+                .reduce((sum, expense) => sum + expense.amount, 0);
 
-    const mockDailyExpensesConfig: DailyExpensesConfig = {
-      id: 1,
-      monthly_budget: 500000,
-      month: month
-    };
+              const totalMecatoSpent = mecatoExpenses.reduce((sum, expense) => sum + expense.amount, 0);
 
-    // Simular llamadas asíncronas y combinar resultados
-    return combineLatest([
-      of(mockSalary),
-      of(mockFixedExpenses),
-      of(mockDailyExpensesConfig)
-    ]).pipe(
-      map(([salary, fixedExpenses, dailyExpensesConfig]) => {
-        const totalFixedExpenses = fixedExpenses.reduce((sum, expense) => sum + expense.amount, 0);
-        const availableAfterFixed = salary.monthly_amount - totalFixedExpenses - dailyExpensesConfig.monthly_budget;
+              const availableAfterFixed = salary.monthly_amount - totalFixedExpenses;
+              const availableOverall = availableAfterFixed - (mecatoConfig.monthly_budget || 0);
 
-        return {
-          salary: salary.monthly_amount,
-          totalFixedExpenses,
-          dailyExpensesBudget: dailyExpensesConfig.monthly_budget,
-          availableAfterFixed,
-          month: month
-        };
-      })
-    );
-  }
+              const fixedExpensesPercentage = salary.monthly_amount > 0
+                ? (totalFixedExpenses / salary.monthly_amount) * 100
+                : 0;
 
-  /**
-   * Actualiza el salario mensual
-   * En el futuro se conectará a: PUT /api/salary/{month}
-   */
-  updateSalary(month: string, amount: number): Observable<boolean> {
-    // Mock implementation
-    console.log(`Updating salary for ${month}: ${amount}`);
-    return of(true);
+              const mecatoBudgetPercentage = salary.monthly_amount > 0
+                ? ((mecatoConfig.monthly_budget || 0) / salary.monthly_amount) * 100
+                : 0;
+
+              let overallBalanceStatus: 'surplus' | 'deficit' | 'balanced' = 'balanced';
+              if (availableOverall > 0) {
+                overallBalanceStatus = 'surplus';
+              } else if (availableOverall < 0) {
+                overallBalanceStatus = 'deficit';
+              }
+
+              observer.next({
+                salary,
+                totalFixedExpenses,
+                mecatoBudget: mecatoConfig,
+                totalMecatoSpent,
+                availableAfterFixed,
+                availableOverall,
+                fixedExpensesPercentage,
+                mecatoBudgetPercentage,
+                overallBalanceStatus
+              });
+              observer.complete();
+            });
+          });
+        });
+      });
+    });
   }
 }
