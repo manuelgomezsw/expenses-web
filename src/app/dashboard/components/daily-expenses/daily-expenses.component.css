@@ -3,7 +3,9 @@
   border: 1px solid var(--card-border);
   border-radius: var(--radius-xl);
   box-shadow: var(--card-shadow);
-  height: 100%;
+  height: fit-content;
+  max-height: 85vh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
@@ -11,6 +13,7 @@
 .mat-mdc-card-header {
   padding: var(--spacing-lg) var(--spacing-xl);
   border-bottom: 1px solid var(--card-border);
+  flex-shrink: 0;
 }
 
 .mat-mdc-card-title {
@@ -29,9 +32,9 @@
 }
 
 .mat-mdc-card-content {
-  padding: var(--spacing-xl);
-  flex-grow: 1;
+  flex: 1;
   overflow-y: auto;
+  padding: var(--spacing-xl) !important;
 }
 
 .daily-expenses-content {
@@ -347,4 +350,23 @@
     align-items: flex-start;
     gap: var(--spacing-xs);
   }
+}
+
+/* Scrollbar */
+.mat-mdc-card-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.mat-mdc-card-content::-webkit-scrollbar-track {
+  background: var(--background-tertiary);
+  border-radius: var(--radius-sm);
+}
+
+.mat-mdc-card-content::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: var(--radius-sm);
+}
+
+.mat-mdc-card-content::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
 }
