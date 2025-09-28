@@ -19,8 +19,8 @@
           <span class="summary-value negative">{{ totalFixedExpenses | currency:'COP':'symbol':'1.0-0' }}</span>
         </div>
         <div class="summary-item">
-          <span class="summary-label">☕ Presupuesto Mecato</span>
-          <span class="summary-value neutral">{{ mecatoConfig.monthly_budget | currency:'COP':'symbol':'1.0-0' }}</span>
+          <span class="summary-label">☕ Gastos Diarios</span>
+          <span class="summary-value neutral">{{ dailyExpensesConfig.monthly_budget | currency:'COP':'symbol':'1.0-0' }}</span>
         </div>
         <div class="summary-item">
           <span class="summary-label">💳 Saldo Disponible</span>
@@ -33,7 +33,7 @@
   </mat-card>
 </div>
 
-<!-- Sección 2 y 3: Gastos Fijos y Mecato (Side by side) -->
+<!-- Sección 2 y 3: Gastos Fijos y Gastos Diarios (Side by side) -->
 <div class="main-content">
   
   <!-- Sección 2: Gastos Fijos (Izquierda) -->
@@ -75,44 +75,44 @@
     </mat-card>
   </div>
 
-  <!-- Sección 3: Mecato (Derecha) -->
-  <div class="mecato-section">
+  <!-- Sección 3: Gastos Diarios (Derecha) -->
+  <div class="daily-expenses-section">
     <mat-card class="section-card">
       <mat-card-header>
         <mat-card-title>
           <mat-icon>local_cafe</mat-icon>
-          Mecato
+          Gastos Diarios
         </mat-card-title>
         <mat-card-subtitle>Gastos del día a día</mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
         
         <!-- Progreso del presupuesto -->
-        <div class="mecato-progress">
+        <div class="daily-progress">
           <div class="progress-info">
-            <span class="spent">Gastado: {{ totalMecatoSpent | currency:'COP':'symbol':'1.0-0' }}</span>
-            <span class="remaining" [class]="mecatoRemaining >= 0 ? 'positive' : 'negative'">
-              Restante: {{ mecatoRemaining | currency:'COP':'symbol':'1.0-0' }}
+            <span class="spent">Gastado: {{ totalDailySpent | currency:'COP':'symbol':'1.0-0' }}</span>
+            <span class="remaining" [class]="dailyRemaining >= 0 ? 'positive' : 'negative'">
+              Restante: {{ dailyRemaining | currency:'COP':'symbol':'1.0-0' }}
             </span>
           </div>
           <mat-progress-bar 
             mode="determinate" 
-            [value]="getMecatoProgressPercentage()"
-            [color]="getMecatoProgressColor()">
+            [value]="getDailyProgressPercentage()"
+            [color]="getDailyProgressColor()">
           </mat-progress-bar>
-          <span class="progress-percentage">{{ getMecatoProgressPercentage() | number:'1.1-1' }}%</span>
+          <span class="progress-percentage">{{ getDailyProgressPercentage() | number:'1.1-1' }}%</span>
         </div>
 
         <mat-divider></mat-divider>
 
         <!-- Formulario de entrada rápida -->
         <div class="quick-entry">
-          <h4>{{ isEditingMecato ? 'Editar Gasto' : 'Agregar Gasto' }}</h4>
-          <form (ngSubmit)="addMecatoExpense()" #mecatoForm="ngForm">
+          <h4>{{ isEditingDaily ? 'Editar Gasto' : 'Agregar Gasto' }}</h4>
+          <form (ngSubmit)="addDailyExpense()" #dailyForm="ngForm">
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>¿Qué compraste?</mat-label>
               <input matInput 
-                     [(ngModel)]="newMecatoExpense.description" 
+                     [(ngModel)]="newDailyExpense.description" 
                      name="description"
                      placeholder="Ej: Café, almuerzo, libro..."
                      required>
@@ -123,7 +123,7 @@
                 <mat-label>Valor</mat-label>
                 <input matInput 
                        type="number" 
-                       [(ngModel)]="newMecatoExpense.amount" 
+                       [(ngModel)]="newDailyExpense.amount" 
                        name="amount"
                        placeholder="0"
                        required>
@@ -134,7 +134,7 @@
                 <mat-label>Fecha</mat-label>
                 <input matInput 
                        type="date" 
-                       [(ngModel)]="newMecatoExpense.date" 
+                       [(ngModel)]="newDailyExpense.date" 
                        name="date"
                        required>
               </mat-form-field>
@@ -144,16 +144,16 @@
               <button mat-raised-button 
                       color="primary" 
                       type="submit"
-                      [disabled]="!mecatoForm.form.valid"
+                      [disabled]="!dailyForm.form.valid"
                       class="save-button">
-                <mat-icon>{{ isEditingMecato ? 'save' : 'add' }}</mat-icon>
-                {{ isEditingMecato ? 'Guardar Cambios' : 'Agregar Gasto' }}
+                <mat-icon>{{ isEditingDaily ? 'save' : 'add' }}</mat-icon>
+                {{ isEditingDaily ? 'Guardar Cambios' : 'Agregar Gasto' }}
               </button>
               
-              <button *ngIf="isEditingMecato"
+              <button *ngIf="isEditingDaily"
                       mat-button 
                       type="button"
-                      (click)="cancelEditMecato()"
+                      (click)="cancelEditDaily()"
                       class="cancel-button">
                 <mat-icon>cancel</mat-icon>
                 Cancelar
@@ -168,7 +168,7 @@
         <div class="recent-expenses">
           <h4>Gastos Recientes</h4>
           <div class="expenses-list">
-            <div *ngFor="let expense of mecatoExpenses.slice(0, 8)" class="mecato-expense-item">
+            <div *ngFor="let expense of dailyExpenses.slice(0, 8)" class="daily-expense-item">
               <div class="expense-info">
                 <span class="expense-description">{{ expense.description }}</span>
                 <span class="expense-date">{{ expense.date | customDate }}</span>
@@ -177,13 +177,13 @@
                 <span class="expense-amount">{{ expense.amount | currency:'COP':'symbol':'1.0-0' }}</span>
                 <div class="action-buttons">
                   <button mat-icon-button 
-                          (click)="editMecatoExpense(expense)"
+                          (click)="editDailyExpense(expense)"
                           matTooltip="Editar gasto"
                           class="edit-button">
                     <mat-icon>edit</mat-icon>
                   </button>
                   <button mat-icon-button 
-                          (click)="deleteMecatoExpense(expense.id!)"
+                          (click)="deleteDailyExpense(expense.id!)"
                           matTooltip="Eliminar gasto"
                           class="delete-button">
                     <mat-icon>delete</mat-icon>
@@ -192,7 +192,7 @@
               </div>
             </div>
             
-            <div *ngIf="mecatoExpenses.length === 0" class="no-expenses">
+            <div *ngIf="dailyExpenses.length === 0" class="no-expenses">
               <mat-icon>receipt_long</mat-icon>
               <span>No hay gastos registrados este mes</span>
             </div>
@@ -209,7 +209,7 @@
 <button mat-fab 
         color="primary" 
         class="fab-button"
-        (click)="addMecatoExpense()"
-        [disabled]="!newMecatoExpense.description.trim() || newMecatoExpense.amount <= 0">
+        (click)="addDailyExpense()"
+        [disabled]="!newDailyExpense.description.trim() || newDailyExpense.amount <= 0">
   <mat-icon>add</mat-icon>
 </button>

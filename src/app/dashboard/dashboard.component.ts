@@ -67,20 +67,20 @@ export class DashboardComponent implements OnInit {
   
   // Computed properties
   totalFixedExpenses: number = 0;
-  totalMecatoSpent: number = 0;
-  mecatoRemaining: number = 0;
+  totalDailySpent: number = 0;
+  dailyRemaining: number = 0;
   availableAfterFixed: number = 0;
   
   // Form properties
-  newMecatoExpense: MecatoExpense = {
+  newDailyExpense: DailyExpense = {
     description: '',
     amount: 0,
     date: new Date().toISOString().split('T')[0]
   };
   
   // Edit mode properties
-  isEditingMecato: boolean = false;
-  editingMecatoId: number | null = null;
+  isEditingDaily: boolean = false;
+  editingDailyId: number | null = null;
   
   // UI properties
   fixedExpensesByPocket: { [key: string]: FixedExpense[] } = {};
@@ -123,29 +123,29 @@ export class DashboardComponent implements OnInit {
       }
     });
 
-    // Cargar configuración de mecato
-    this.mockDataService.getMecatoConfig(this.currentMonth).subscribe({
+    // Cargar configuración de gastos diarios
+    this.mockDataService.getDailyExpensesConfig(this.currentMonth).subscribe({
       next: (config) => {
-        this.mecatoConfig = config;
+        this.dailyExpensesConfig = config;
         this.calculateTotals();
       },
       error: (error) => {
-        console.error('Error loading mecato config:', error);
-        this.notificationService.openSnackBar('Error cargando configuración de mecato');
+        console.error('Error loading daily expenses config:', error);
+        this.notificationService.openSnackBar('Error cargando configuración de gastos diarios');
       }
     });
 
-    // Cargar gastos de mecato
-    this.mockDataService.getMecatoExpenses(this.currentMonth).subscribe({
+    // Cargar gastos diarios
+    this.mockDataService.getDailyExpenses(this.currentMonth).subscribe({
       next: (expenses) => {
-        this.mecatoExpenses = expenses.sort((a, b) => 
+        this.dailyExpenses = expenses.sort((a, b) => 
           new Date(b.date).getTime() - new Date(a.date).getTime()
         );
         this.calculateTotals();
       },
       error: (error) => {
-        console.error('Error loading mecato expenses:', error);
-        this.notificationService.openSnackBar('Error cargando gastos de mecato');
+        console.error('Error loading daily expenses:', error);
+        this.notificationService.openSnackBar('Error cargando gastos diarios');
       }
     });
   }
@@ -163,9 +163,9 @@ export class DashboardComponent implements OnInit {
 
   private calculateTotals(): void {
     this.totalFixedExpenses = this.fixedExpenses.reduce((sum, expense) => sum + expense.amount, 0);
-    this.totalMecatoSpent = this.mecatoExpenses.reduce((sum, expense) => sum + expense.amount, 0);
-    this.mecatoRemaining = this.mecatoConfig.monthly_budget - this.totalMecatoSpent;
-    this.availableAfterFixed = this.salary.monthly_amount - this.totalFixedExpenses - this.mecatoConfig.monthly_budget;
+    this.totalDailySpent = this.dailyExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+    this.dailyRemaining = this.dailyExpensesConfig.monthly_budget - this.totalDailySpent;
+    this.availableAfterFixed = this.salary.monthly_amount - this.totalFixedExpenses - this.dailyExpensesConfig.monthly_budget;
   }
 
   // Métodos para gastos fijos
@@ -200,75 +200,75 @@ export class DashboardComponent implements OnInit {
     return Object.keys(this.fixedExpensesByPocket);
   }
 
-  // Métodos para mecato
-  addMecatoExpense(): void {
-    if (!this.newMecatoExpense.description.trim() || this.newMecatoExpense.amount <= 0) {
+  // Métodos para gastos diarios
+  addDailyExpense(): void {
+    if (!this.newDailyExpense.description.trim() || this.newDailyExpense.amount <= 0) {
       this.notificationService.openSnackBar('Por favor completa todos los campos');
       return;
     }
 
-    if (this.isEditingMecato) {
-      this.updateMecatoExpense();
+    if (this.isEditingDaily) {
+      this.updateDailyExpense();
     } else {
-      this.createMecatoExpense();
+      this.createDailyExpense();
     }
   }
 
-  private createMecatoExpense(): void {
-    this.mockDataService.addMecatoExpense(this.newMecatoExpense).subscribe({
+  private createDailyExpense(): void {
+    this.mockDataService.addDailyExpense(this.newDailyExpense).subscribe({
       next: (expense) => {
-        this.mecatoExpenses.unshift(expense);
+        this.dailyExpenses.unshift(expense);
         this.calculateTotals();
-        this.clearMecatoForm();
-        this.notificationService.openSnackBar('Gasto de mecato agregado');
+        this.clearDailyForm();
+        this.notificationService.openSnackBar('Gasto diario agregado');
       },
       error: (error) => {
-        console.error('Error adding mecato expense:', error);
+        console.error('Error adding daily expense:', error);
         this.notificationService.openSnackBar('Error agregando gasto');
       }
     });
   }
 
-  private updateMecatoExpense(): void {
-    if (!this.editingMecatoId) return;
+  private updateDailyExpense(): void {
+    if (!this.editingDailyId) return;
 
-    const updatedExpense: MecatoExpense = {
-      ...this.newMecatoExpense,
-      id: this.editingMecatoId
+    const updatedExpense: DailyExpense = {
+      ...this.newDailyExpense,
+      id: this.editingDailyId
     };
 
-    this.mockDataService.updateMecatoExpense(updatedExpense).subscribe({
+    this.mockDataService.updateDailyExpense(updatedExpense).subscribe({
       next: (expense) => {
-        const index = this.mecatoExpenses.findIndex(e => e.id === this.editingMecatoId);
+        const index = this.dailyExpenses.findIndex(e => e.id === this.editingDailyId);
         if (index !== -1) {
-          this.mecatoExpenses[index] = expense;
-          this.mecatoExpenses.sort((a, b) => 
+          this.dailyExpenses[index] = expense;
+          this.dailyExpenses.sort((a, b) => 
             new Date(b.date).getTime() - new Date(a.date).getTime()
           );
         }
         this.calculateTotals();
-        this.clearMecatoForm();
+        this.clearDailyForm();
         this.notificationService.openSnackBar('Gasto actualizado correctamente');
       },
       error: (error) => {
-        console.error('Error updating mecato expense:', error);
+        console.error('Error updating daily expense:', error);
         this.notificationService.openSnackBar('Error actualizando gasto');
       }
     });
   }
 
-  editMecatoExpense(expense: MecatoExpense): void {
-    this.isEditingMecato = true;
-    this.editingMecatoId = expense.id!;
-    this.newMecatoExpense = {
+  editDailyExpense(expense: DailyExpense): void {
+    this.isEditingDaily = true;
+    this.editingDailyId = expense.id!;
+    this.newDailyExpense = {
       description: expense.description,
       amount: expense.amount,
       date: expense.date
     };
   }
 
-  deleteMecatoExpense(expenseId: number): void {
-    const expense = this.mecatoExpenses.find(e => e.id === expenseId);
+  deleteDailyExpense(expenseId: number): void {
+    const expense = this.dailyExpenses.find(e => e.id === expenseId);
     if (!expense) return;
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
@@ -282,14 +282,14 @@ export class DashboardComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result === true) {
-        this.mockDataService.deleteMecatoExpense(expenseId).subscribe({
+        this.mockDataService.deleteDailyExpense(expenseId).subscribe({
           next: () => {
-            this.mecatoExpenses = this.mecatoExpenses.filter(e => e.id !== expenseId);
+            this.dailyExpenses = this.dailyExpenses.filter(e => e.id !== expenseId);
             this.calculateTotals();
             this.notificationService.openSnackBar('Gasto eliminado correctamente');
           },
           error: (error) => {
-            console.error('Error deleting mecato expense:', error);
+            console.error('Error deleting daily expense:', error);
             this.notificationService.openSnackBar('Error eliminando gasto');
           }
         });
@@ -297,29 +297,29 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  cancelEditMecato(): void {
-    this.isEditingMecato = false;
-    this.editingMecatoId = null;
-    this.clearMecatoForm();
+  cancelEditDaily(): void {
+    this.isEditingDaily = false;
+    this.editingDailyId = null;
+    this.clearDailyForm();
   }
 
-  private clearMecatoForm(): void {
-    this.newMecatoExpense = {
+  private clearDailyForm(): void {
+    this.newDailyExpense = {
       description: '',
       amount: 0,
       date: new Date().toISOString().split('T')[0]
     };
-    this.isEditingMecato = false;
-    this.editingMecatoId = null;
+    this.isEditingDaily = false;
+    this.editingDailyId = null;
   }
 
-  getMecatoProgressPercentage(): number {
-    if (this.mecatoConfig.monthly_budget === 0) return 0;
-    return (this.totalMecatoSpent / this.mecatoConfig.monthly_budget) * 100;
+  getDailyProgressPercentage(): number {
+    if (this.dailyExpensesConfig.monthly_budget === 0) return 0;
+    return (this.totalDailySpent / this.dailyExpensesConfig.monthly_budget) * 100;
   }
 
-  getMecatoProgressColor(): string {
-    const percentage = this.getMecatoProgressPercentage();
+  getDailyProgressColor(): string {
+    const percentage = this.getDailyProgressPercentage();
     if (percentage >= 90) return 'warn';
     if (percentage >= 70) return 'accent';
     return 'primary';
