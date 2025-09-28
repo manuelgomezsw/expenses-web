@@ -57,18 +57,18 @@
           </div>
         </div>
 
-        <!-- Presupuesto Mecato -->
-        <div class="summary-item mecato-budget">
+        <!-- Presupuesto Gastos Diarios -->
+        <div class="summary-item daily-expenses-budget">
           <div class="summary-icon">
             <mat-icon>☕</mat-icon>
           </div>
           <div class="summary-content">
-            <span class="summary-label">Presupuesto Mecato</span>
+            <span class="summary-label">Gastos Diarios</span>
             <span class="summary-value neutral">
-              {{ summary.mecatoBudget | currency:'COP':'symbol':'1.0-0' }}
+              {{ summary.dailyExpensesBudget | currency:'COP':'symbol':'1.0-0' }}
             </span>
             <span class="summary-percentage">
-              {{ getMecatoPercentage() | number:'1.1-1' }}% del salario
+              {{ getDailyExpensesPercentage() | number:'1.1-1' }}% del salario
             </span>
           </div>
         </div>

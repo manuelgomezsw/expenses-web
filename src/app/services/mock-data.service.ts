@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { Salary } from '../domain/salary';
 import { FixedExpense } from '../domain/fixed-expense';
-import { MecatoExpense } from '../domain/mecato-expense';
-import { MecatoConfig } from '../domain/mecato-config';
+import { DailyExpense } from '../domain/daily-expense';
+import { DailyExpensesConfig } from '../domain/daily-expenses-config';
 
 @Injectable({
   providedIn: 'root'
@@ -109,9 +109,9 @@ export class MockDataService {
     return of(mockFixedExpenses);
   }
 
-  // Configuración de mecato mock
-  getMecatoConfig(month: string): Observable<MecatoConfig> {
-    const mockConfig: MecatoConfig = {
+  // Configuración de gastos diarios mock
+  getDailyExpensesConfig(month: string): Observable<DailyExpensesConfig> {
+    const mockConfig: DailyExpensesConfig = {
       id: 1,
       monthly_budget: 500000,
       month: month
@@ -119,9 +119,9 @@ export class MockDataService {
     return of(mockConfig);
   }
 
-  // Gastos de mecato mock
-  getMecatoExpenses(month: string): Observable<MecatoExpense[]> {
-    const mockMecatoExpenses: MecatoExpense[] = [
+  // Gastos diarios mock
+  getDailyExpenses(month: string): Observable<DailyExpense[]> {
+    const mockDailyExpenses: DailyExpense[] = [
       {
         id: 1,
         description: 'Café en Juan Valdez',
@@ -165,12 +165,12 @@ export class MockDataService {
         created_at: '2024-01-10T15:30:00Z'
       }
     ];
-    return of(mockMecatoExpenses);
+    return of(mockDailyExpenses);
   }
 
-  // Método para agregar nuevo gasto de mecato
-  addMecatoExpense(expense: MecatoExpense): Observable<MecatoExpense> {
-    const newExpense: MecatoExpense = {
+  // Método para agregar nuevo gasto diario
+  addDailyExpense(expense: DailyExpense): Observable<DailyExpense> {
+    const newExpense: DailyExpense = {
       ...expense,
       id: Math.floor(Math.random() * 1000) + 100,
       created_at: new Date().toISOString()
@@ -178,17 +178,17 @@ export class MockDataService {
     return of(newExpense);
   }
 
-  // Método para actualizar gasto de mecato
-  updateMecatoExpense(expense: MecatoExpense): Observable<MecatoExpense> {
-    const updatedExpense: MecatoExpense = {
+  // Método para actualizar gasto diario
+  updateDailyExpense(expense: DailyExpense): Observable<DailyExpense> {
+    const updatedExpense: DailyExpense = {
       ...expense,
       created_at: expense.created_at || new Date().toISOString()
     };
     return of(updatedExpense);
   }
 
-  // Método para eliminar gasto de mecato
-  deleteMecatoExpense(expenseId: number): Observable<boolean> {
+  // Método para eliminar gasto diario
+  deleteDailyExpense(expenseId: number): Observable<boolean> {
     return of(true);
   }
 

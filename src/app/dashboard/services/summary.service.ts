@@ -4,12 +4,12 @@ import { map } from 'rxjs/operators';
 
 import { Salary } from '../../domain/salary';
 import { FixedExpense } from '../../domain/fixed-expense';
-import { MecatoConfig } from '../../domain/mecato-config';
+import { DailyExpensesConfig } from '../../domain/daily-expenses-config';
 
 export interface MonthlySummary {
   salary: number;
   totalFixedExpenses: number;
-  mecatoBudget: number;
+  dailyExpensesBudget: number;
   availableAfterFixed: number;
   month: string;
 }
@@ -45,7 +45,7 @@ export class SummaryService {
       { id: 8, pocket_name: 'Salud', concept_name: 'Medicina prepagada', amount: 250000, payment_day: 12, is_paid: false, month: month }
     ];
 
-    const mockMecatoConfig: MecatoConfig = {
+    const mockDailyExpensesConfig: DailyExpensesConfig = {
       id: 1,
       monthly_budget: 500000,
       month: month
@@ -55,16 +55,16 @@ export class SummaryService {
     return combineLatest([
       of(mockSalary),
       of(mockFixedExpenses),
-      of(mockMecatoConfig)
+      of(mockDailyExpensesConfig)
     ]).pipe(
-      map(([salary, fixedExpenses, mecatoConfig]) => {
+      map(([salary, fixedExpenses, dailyExpensesConfig]) => {
         const totalFixedExpenses = fixedExpenses.reduce((sum, expense) => sum + expense.amount, 0);
-        const availableAfterFixed = salary.monthly_amount - totalFixedExpenses - mecatoConfig.monthly_budget;
+        const availableAfterFixed = salary.monthly_amount - totalFixedExpenses - dailyExpensesConfig.monthly_budget;
 
         return {
           salary: salary.monthly_amount,
           totalFixedExpenses,
-          mecatoBudget: mecatoConfig.monthly_budget,
+          dailyExpensesBudget: dailyExpensesConfig.monthly_budget,
           availableAfterFixed,
           month: month
         };

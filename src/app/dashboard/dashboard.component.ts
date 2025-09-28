@@ -24,8 +24,8 @@ import { CustomDatePipe } from '../pipes/custom-date/custom-date.pipe';
 // Domain models
 import { Salary } from '../domain/salary';
 import { FixedExpense } from '../domain/fixed-expense';
-import { MecatoExpense } from '../domain/mecato-expense';
-import { MecatoConfig } from '../domain/mecato-config';
+import { DailyExpense } from '../domain/daily-expense';
+import { DailyExpensesConfig } from '../domain/daily-expenses-config';
 
 // Services
 import { MockDataService } from '../services/mock-data.service';
@@ -62,8 +62,8 @@ export class DashboardComponent implements OnInit {
   currentMonth: string = '2024-01';
   salary: Salary = { monthly_amount: 0, month: this.currentMonth };
   fixedExpenses: FixedExpense[] = [];
-  mecatoConfig: MecatoConfig = { monthly_budget: 0, month: this.currentMonth };
-  mecatoExpenses: MecatoExpense[] = [];
+  dailyExpensesConfig: DailyExpensesConfig = { monthly_budget: 0, month: this.currentMonth };
+  dailyExpenses: DailyExpense[] = [];
   
   // Computed properties
   totalFixedExpenses: number = 0;

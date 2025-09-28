@@ -104,7 +104,7 @@
   background: var(--danger-color);
 }
 
-.summary-item.mecato-budget::before {
+.summary-item.daily-expenses-budget::before {
   background: var(--accent-color);
 }
 

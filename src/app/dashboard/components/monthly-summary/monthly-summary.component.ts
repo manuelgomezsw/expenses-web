@@ -116,10 +116,10 @@ export class MonthlySummaryComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Obtiene el porcentaje de mecato sobre el salario
+   * Obtiene el porcentaje de gastos diarios sobre el salario
    */
-  getMecatoPercentage(): number {
+  getDailyExpensesPercentage(): number {
     if (!this.summary || this.summary.salary === 0) return 0;
-    return (this.summary.mecatoBudget / this.summary.salary) * 100;
+    return (this.summary.dailyExpensesBudget / this.summary.salary) * 100;
   }
 }

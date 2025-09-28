@@ -2,12 +2,12 @@ import { Injectable } from '@angular/core';
 import { Observable, of, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { MecatoExpense } from '../../domain/mecato-expense';
-import { MecatoConfig } from '../../domain/mecato-config';
+import { DailyExpense } from '../../domain/daily-expense';
+import { DailyExpensesConfig } from '../../domain/daily-expenses-config';
 
-export interface MecatoSummary {
-  config: MecatoConfig;
-  expenses: MecatoExpense[];
+export interface DailyExpensesSummary {
+  config: DailyExpensesConfig;
+  expenses: DailyExpense[];
   totalSpent: number;
   remaining: number;
   progressPercentage: number;
@@ -16,18 +16,18 @@ export interface MecatoSummary {
 @Injectable({
   providedIn: 'root'
 })
-export class MecatoService {
+export class DailyExpensesService {
 
   constructor() { }
 
   /**
-   * Obtiene el resumen completo de mecato del mes
-   * En el futuro se conectará a: GET /api/mecato/{month}
+   * Obtiene el resumen completo de gastos diarios del mes
+   * En el futuro se conectará a: GET /api/daily-expenses/{month}
    */
-  getMecatoSummary(month: string): Observable<MecatoSummary> {
+  getDailyExpensesSummary(month: string): Observable<DailyExpensesSummary> {
     return combineLatest([
-      this.getMecatoConfig(month),
-      this.getMecatoExpenses(month)
+      this.getDailyExpensesConfig(month),
+      this.getDailyExpenses(month)
     ]).pipe(
       map(([config, expenses]) => {
         const totalSpent = this.calculateTotalSpent(expenses);
@@ -48,12 +48,12 @@ export class MecatoService {
   }
 
   /**
-   * Obtiene la configuración de mecato del mes
-   * En el futuro se conectará a: GET /api/mecato/config/{month}
+   * Obtiene la configuración de gastos diarios del mes
+   * En el futuro se conectará a: GET /api/daily-expenses/config/{month}
    */
-  getMecatoConfig(month: string): Observable<MecatoConfig> {
+  getDailyExpensesConfig(month: string): Observable<DailyExpensesConfig> {
     // Mock data - será reemplazado por llamada HTTP real
-    const mockConfig: MecatoConfig = {
+    const mockConfig: DailyExpensesConfig = {
       id: 1,
       monthly_budget: 500000,
       month: month
@@ -62,12 +62,12 @@ export class MecatoService {
   }
 
   /**
-   * Obtiene los gastos de mecato del mes
-   * En el futuro se conectará a: GET /api/mecato/expenses/{month}
+   * Obtiene los gastos diarios del mes
+   * En el futuro se conectará a: GET /api/daily-expenses/expenses/{month}
    */
-  getMecatoExpenses(month: string): Observable<MecatoExpense[]> {
+  getDailyExpenses(month: string): Observable<DailyExpense[]> {
     // Mock data - será reemplazado por llamada HTTP real
-    const mockMecatoExpenses: MecatoExpense[] = [
+    const mockDailyExpenses: DailyExpense[] = [
       {
         id: 1,
         description: 'Café en Juan Valdez',
@@ -113,69 +113,69 @@ export class MecatoService {
     ];
 
     // Ordenar por fecha descendente
-    return of(mockMecatoExpenses.sort((a, b) => 
+    return of(mockDailyExpenses.sort((a, b) => 
       new Date(b.date).getTime() - new Date(a.date).getTime()
     ));
   }
 
   /**
-   * Agrega un nuevo gasto de mecato
-   * En el futuro se conectará a: POST /api/mecato/expenses
+   * Agrega un nuevo gasto diario
+   * En el futuro se conectará a: POST /api/daily-expenses/expenses
    */
-  addMecatoExpense(expense: MecatoExpense): Observable<MecatoExpense> {
+  addDailyExpense(expense: DailyExpense): Observable<DailyExpense> {
     // Mock implementation
-    const newExpense: MecatoExpense = {
+    const newExpense: DailyExpense = {
       ...expense,
       id: Math.floor(Math.random() * 1000) + 100,
       created_at: new Date().toISOString()
     };
-    console.log('Adding mecato expense:', newExpense);
+    console.log('Adding daily expense:', newExpense);
     return of(newExpense);
   }
 
   /**
-   * Actualiza un gasto de mecato existente
-   * En el futuro se conectará a: PUT /api/mecato/expenses/{id}
+   * Actualiza un gasto diario existente
+   * En el futuro se conectará a: PUT /api/daily-expenses/expenses/{id}
    */
-  updateMecatoExpense(expense: MecatoExpense): Observable<MecatoExpense> {
+  updateDailyExpense(expense: DailyExpense): Observable<DailyExpense> {
     // Mock implementation
-    const updatedExpense: MecatoExpense = {
+    const updatedExpense: DailyExpense = {
       ...expense,
       created_at: expense.created_at || new Date().toISOString()
     };
-    console.log('Updating mecato expense:', updatedExpense);
+    console.log('Updating daily expense:', updatedExpense);
     return of(updatedExpense);
   }
 
   /**
-   * Elimina un gasto de mecato
-   * En el futuro se conectará a: DELETE /api/mecato/expenses/{id}
+   * Elimina un gasto diario
+   * En el futuro se conectará a: DELETE /api/daily-expenses/expenses/{id}
    */
-  deleteMecatoExpense(expenseId: number): Observable<boolean> {
+  deleteDailyExpense(expenseId: number): Observable<boolean> {
     // Mock implementation
-    console.log('Deleting mecato expense:', expenseId);
+    console.log('Deleting daily expense:', expenseId);
     return of(true);
   }
 
   /**
-   * Actualiza el presupuesto mensual de mecato
-   * En el futuro se conectará a: PUT /api/mecato/config/{month}
+   * Actualiza el presupuesto mensual de gastos diarios
+   * En el futuro se conectará a: PUT /api/daily-expenses/config/{month}
    */
-  updateMecatoBudget(month: string, budget: number): Observable<MecatoConfig> {
+  updateDailyExpensesBudget(month: string, budget: number): Observable<DailyExpensesConfig> {
     // Mock implementation
-    const updatedConfig: MecatoConfig = {
+    const updatedConfig: DailyExpensesConfig = {
       id: 1,
       monthly_budget: budget,
       month: month
     };
-    console.log('Updating mecato budget:', updatedConfig);
+    console.log('Updating daily expenses budget:', updatedConfig);
     return of(updatedConfig);
   }
 
   /**
    * Calcula el total gastado
    */
-  calculateTotalSpent(expenses: MecatoExpense[]): number {
+  calculateTotalSpent(expenses: DailyExpense[]): number {
     return expenses.reduce((sum, expense) => sum + expense.amount, 0);
   }
 

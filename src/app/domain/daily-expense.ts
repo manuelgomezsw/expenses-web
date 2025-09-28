@@ -1,4 +1,4 @@
-export interface MecatoExpense {
+export interface DailyExpense {
     id?: number;
     description: string;
     amount: number;
