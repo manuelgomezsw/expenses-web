@@ -1,5 +1,8 @@
 .daily-expenses-card {
-  border-radius: var(--radius-lg) !important;
+  background: var(--card-background);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--card-shadow);
   height: 100%;
   display: flex;
   flex-direction: column;
