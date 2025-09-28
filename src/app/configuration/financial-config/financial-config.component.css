@@ -1,0 +1,300 @@
+.configuration-container {
+  min-height: 100vh;
+  background: var(--background-primary);
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+}
+
+.configuration-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+}
+
+/* Configuration Sections */
+.config-section {
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--card-shadow);
+}
+
+.mat-mdc-card-header {
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-bottom: 1px solid var(--card-border);
+}
+
+.mat-mdc-card-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.mat-mdc-card-subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  margin-top: var(--spacing-xs);
+}
+
+.mat-mdc-card-content {
+  padding: var(--spacing-xl);
+}
+
+/* Salary Section */
+.salary-display, .budget-display {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-lg);
+  background: var(--background-tertiary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--card-border);
+}
+
+.salary-info, .budget-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.salary-label, .budget-label {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.salary-amount, .budget-amount {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--secondary-color);
+}
+
+.salary-form, .budget-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+/* Fixed Expenses Section */
+.pockets-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+}
+
+.pocket-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.pocket-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md) 0;
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.pocket-title {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.pocket-total {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--primary-color);
+  background: var(--background-tertiary);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-sm);
+}
+
+.expenses-in-pocket {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-left: var(--spacing-lg);
+}
+
+.expense-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md);
+  background: var(--background-secondary);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+}
+
+.expense-item:hover {
+  box-shadow: var(--card-shadow-hover);
+  transform: translateY(-1px);
+}
+
+.expense-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  flex: 1;
+}
+
+.expense-name {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.expense-details {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.expense-actions {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+/* Forms */
+.add-expense-form {
+  background: var(--background-tertiary);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-xl);
+  margin-top: var(--spacing-lg);
+}
+
+.add-expense-form h4 {
+  margin: 0 0 var(--spacing-lg) 0;
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.form-row {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.form-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+}
+
+.add-expense-button {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--spacing-lg);
+}
+
+/* Loading and Error States */
+.loading-state, .error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  gap: var(--spacing-md);
+  color: var(--text-muted);
+}
+
+.error-state mat-icon {
+  font-size: var(--font-size-3xl);
+  width: var(--font-size-3xl);
+  height: var(--font-size-3xl);
+}
+
+.error-state p {
+  margin: 0;
+  font-size: var(--font-size-base);
+}
+
+.loading-state mat-progress-bar {
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .configuration-container {
+    padding: var(--spacing-md);
+    gap: var(--spacing-lg);
+  }
+
+  .mat-mdc-card-header {
+    padding: var(--spacing-md);
+  }
+
+  .mat-mdc-card-content {
+    padding: var(--spacing-md);
+  }
+
+  .salary-display, .budget-display {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+  }
+
+  .pocket-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .expense-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+  }
+
+  .expense-actions {
+    align-self: flex-end;
+  }
+
+  .expenses-in-pocket {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .configuration-container {
+    padding: var(--spacing-sm);
+  }
+
+  .mat-mdc-card-title {
+    font-size: var(--font-size-lg);
+  }
+
+  .salary-amount, .budget-amount {
+    font-size: var(--font-size-xl);
+  }
+}

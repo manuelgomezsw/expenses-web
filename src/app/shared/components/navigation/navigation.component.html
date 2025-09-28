@@ -1,0 +1,30 @@
+<nav class="navigation-bar">
+  <div class="nav-container">
+    
+    <!-- Logo/Title -->
+    <div class="nav-brand">
+      <mat-icon class="brand-icon">account_balance</mat-icon>
+      <span class="brand-text">Control Financiero</span>
+    </div>
+
+    <!-- Navigation Links -->
+    <div class="nav-links">
+      <a mat-button 
+         routerLink="/dashboard" 
+         routerLinkActive="active-link"
+         matTooltip="Ver dashboard financiero">
+        <mat-icon>dashboard</mat-icon>
+        Dashboard
+      </a>
+      
+      <a mat-button 
+         routerLink="/configuration" 
+         routerLinkActive="active-link"
+         matTooltip="Configurar ingresos y gastos">
+        <mat-icon>settings</mat-icon>
+        Configuración
+      </a>
+    </div>
+
+  </div>
+</nav>

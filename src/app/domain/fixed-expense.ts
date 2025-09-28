@@ -7,4 +7,5 @@ export interface FixedExpense {
     is_paid: boolean;
     month: string; // "2024-01"
     paid_date?: string;
+    created_at?: string;
 }

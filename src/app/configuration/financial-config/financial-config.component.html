@@ -1,0 +1,240 @@
+<div class="configuration-container">
+  
+  <!-- Selector de Mes -->
+  <app-month-selector 
+    [currentMonth]="currentMonth"
+    (monthChanged)="onMonthChanged($event)">
+  </app-month-selector>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    <p>Cargando configuración financiera...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="hasError" class="error-state">
+    <mat-icon color="warn">error_outline</mat-icon>
+    <p>Error al cargar la configuración. Intenta de nuevo.</p>
+    <button mat-raised-button color="primary" (click)="loadConfiguration()">Reintentar</button>
+  </div>
+
+  <!-- Configuration Content -->
+  <div *ngIf="!isLoading && !hasError && configuration" class="configuration-content">
+
+    <!-- Sección 1: Ingresos Mensuales -->
+    <mat-card class="config-section">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>attach_money</mat-icon>
+          Ingresos Mensuales
+        </mat-card-title>
+        <mat-card-subtitle>Configura tus ingresos del mes</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        
+        <!-- Vista de Solo Lectura -->
+        <div *ngIf="!isEditingSalary" class="salary-display">
+          <div class="salary-info">
+            <span class="salary-label">Salario Principal:</span>
+            <span class="salary-amount">{{ configuration.salary.monthly_amount | currency:'COP':'symbol':'1.0-0' }}</span>
+          </div>
+          <button mat-raised-button color="primary" (click)="startEditingSalary()">
+            <mat-icon>edit</mat-icon>
+            Editar
+          </button>
+        </div>
+
+        <!-- Formulario de Edición -->
+        <div *ngIf="isEditingSalary" class="salary-form">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Salario Mensual</mat-label>
+            <input matInput 
+                   type="number" 
+                   [(ngModel)]="salaryForm.monthly_amount"
+                   placeholder="0">
+            <span matTextPrefix>$</span>
+          </mat-form-field>
+          
+          <div class="form-actions">
+            <button mat-raised-button color="primary" (click)="saveSalary()">
+              <mat-icon>save</mat-icon>
+              Guardar
+            </button>
+            <button mat-button (click)="cancelEditingSalary()">
+              <mat-icon>cancel</mat-icon>
+              Cancelar
+            </button>
+          </div>
+        </div>
+
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Sección 2: Gastos Fijos por Bolsillos -->
+    <mat-card class="config-section">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>account_balance_wallet</mat-icon>
+          Gastos Fijos por Bolsillos
+        </mat-card-title>
+        <mat-card-subtitle>Organiza tus gastos fijos mensuales</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+
+        <!-- Lista de Gastos por Bolsillo -->
+        <div class="pockets-list">
+          <div *ngFor="let pocketName of getPocketKeys()" class="pocket-section">
+            <div class="pocket-header">
+              <h3 class="pocket-title">📁 {{ pocketName }}</h3>
+              <span class="pocket-total">
+                Total: {{ getTotalAmountForPocket(pocketName) | currency:'COP':'symbol':'1.0-0' }}
+              </span>
+            </div>
+            
+            <div class="expenses-in-pocket">
+              <div *ngFor="let expense of getFixedExpensesByPocket()[pocketName]" class="expense-item">
+                <div class="expense-info">
+                  <span class="expense-name">{{ expense.concept_name }}</span>
+                  <span class="expense-details">
+                    {{ expense.amount | currency:'COP':'symbol':'1.0-0' }} - Día {{ expense.payment_day }}
+                  </span>
+                </div>
+                <div class="expense-actions">
+                  <button mat-icon-button 
+                          (click)="editFixedExpense(expense)"
+                          matTooltip="Editar gasto">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button 
+                          (click)="deleteFixedExpense(expense)"
+                          matTooltip="Eliminar gasto"
+                          color="warn">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <mat-divider></mat-divider>
+          </div>
+        </div>
+
+        <!-- Formulario para Agregar/Editar Gasto Fijo -->
+        <div *ngIf="isAddingFixedExpense" class="add-expense-form">
+          <h4>{{ editingFixedExpenseId ? 'Editar Gasto Fijo' : 'Agregar Nuevo Gasto Fijo' }}</h4>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="flex-1">
+              <mat-label>Bolsillo</mat-label>
+              <mat-select [(ngModel)]="fixedExpenseForm.pocket_name">
+                <mat-option *ngFor="let pocket of availablePockets" [value]="pocket.name">
+                  {{ pocket.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline" class="flex-1">
+              <mat-label>Concepto</mat-label>
+              <input matInput 
+                     [(ngModel)]="fixedExpenseForm.concept_name"
+                     placeholder="Ej: Arriendo, Servicios, etc.">
+            </mat-form-field>
+          </div>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="flex-1">
+              <mat-label>Monto</mat-label>
+              <input matInput 
+                     type="number" 
+                     [(ngModel)]="fixedExpenseForm.amount"
+                     placeholder="0">
+              <span matTextPrefix>$</span>
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline" class="flex-1">
+              <mat-label>Día de Pago</mat-label>
+              <input matInput 
+                     type="number" 
+                     [(ngModel)]="fixedExpenseForm.payment_day"
+                     min="1" 
+                     max="31"
+                     placeholder="1">
+            </mat-form-field>
+          </div>
+          
+          <div class="form-actions">
+            <button mat-raised-button color="primary" (click)="saveFixedExpense()">
+              <mat-icon>{{ editingFixedExpenseId ? 'save' : 'add' }}</mat-icon>
+              {{ editingFixedExpenseId ? 'Guardar Cambios' : 'Agregar Gasto' }}
+            </button>
+            <button mat-button (click)="cancelAddingFixedExpense()">
+              <mat-icon>cancel</mat-icon>
+              Cancelar
+            </button>
+          </div>
+        </div>
+
+        <!-- Botón para Agregar Nuevo Gasto -->
+        <div *ngIf="!isAddingFixedExpense" class="add-expense-button">
+          <button mat-raised-button color="accent" (click)="startAddingFixedExpense()">
+            <mat-icon>add</mat-icon>
+            Agregar Nuevo Gasto Fijo
+          </button>
+        </div>
+
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Sección 3: Presupuesto Gastos Diarios -->
+    <mat-card class="config-section">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>local_cafe</mat-icon>
+          Presupuesto Gastos Diarios
+        </mat-card-title>
+        <mat-card-subtitle>Define tu presupuesto para gastos del día a día</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        
+        <!-- Vista de Solo Lectura -->
+        <div *ngIf="!isEditingDailyBudget" class="budget-display">
+          <div class="budget-info">
+            <span class="budget-label">Presupuesto Mensual:</span>
+            <span class="budget-amount">{{ configuration.dailyExpensesConfig.monthly_budget | currency:'COP':'symbol':'1.0-0' }}</span>
+          </div>
+          <button mat-raised-button color="primary" (click)="startEditingDailyBudget()">
+            <mat-icon>edit</mat-icon>
+            Editar
+          </button>
+        </div>
+
+        <!-- Formulario de Edición -->
+        <div *ngIf="isEditingDailyBudget" class="budget-form">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Presupuesto Mensual</mat-label>
+            <input matInput 
+                   type="number" 
+                   [(ngModel)]="dailyBudgetForm.monthly_budget"
+                   placeholder="0">
+            <span matTextPrefix>$</span>
+          </mat-form-field>
+          
+          <div class="form-actions">
+            <button mat-raised-button color="primary" (click)="saveDailyBudget()">
+              <mat-icon>save</mat-icon>
+              Guardar
+            </button>
+            <button mat-button (click)="cancelEditingDailyBudget()">
+              <mat-icon>cancel</mat-icon>
+              Cancelar
+            </button>
+          </div>
+        </div>
+
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+
+</div>
