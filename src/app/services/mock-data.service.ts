@@ -33,9 +33,9 @@ export class MockDataService {
         concept_name: 'Arriendo',
         amount: 1200000,
         payment_day: 5,
-        is_paid: true,
+        is_paid: this.shouldExpenseBePaid(month, 5),
         month: month,
-        paid_date: '2024-01-05'
+        paid_date: this.shouldExpenseBePaid(month, 5) ? this.getPaidDate(month, 5) : undefined
       },
       {
         id: 2,
@@ -43,8 +43,9 @@ export class MockDataService {
         concept_name: 'Servicios públicos',
         amount: 350000,
         payment_day: 15,
-        is_paid: false,
-        month: month
+        is_paid: this.shouldExpenseBePaid(month, 15),
+        month: month,
+        paid_date: this.shouldExpenseBePaid(month, 15) ? this.getPaidDate(month, 15) : undefined
       },
       {
         id: 3,
@@ -52,8 +53,9 @@ export class MockDataService {
         concept_name: 'Internet',
         amount: 89000,
         payment_day: 20,
-        is_paid: false,
-        month: month
+        is_paid: this.shouldExpenseBePaid(month, 20),
+        month: month,
+        paid_date: this.shouldExpenseBePaid(month, 20) ? this.getPaidDate(month, 20) : undefined
       },
       // Bolsillo: Transporte
       {
@@ -62,9 +64,9 @@ export class MockDataService {
         concept_name: 'Gasolina',
         amount: 400000,
         payment_day: 1,
-        is_paid: true,
+        is_paid: this.shouldExpenseBePaid(month, 1),
         month: month,
-        paid_date: '2024-01-01'
+        paid_date: this.shouldExpenseBePaid(month, 1) ? this.getPaidDate(month, 1) : undefined
       },
       {
         id: 5,
@@ -72,8 +74,9 @@ export class MockDataService {
         concept_name: 'SOAT',
         amount: 180000,
         payment_day: 25,
-        is_paid: false,
-        month: month
+        is_paid: this.shouldExpenseBePaid(month, 25),
+        month: month,
+        paid_date: this.shouldExpenseBePaid(month, 25) ? this.getPaidDate(month, 25) : undefined
       },
       // Bolsillo: Alimentación
       {
@@ -82,9 +85,9 @@ export class MockDataService {
         concept_name: 'Mercado semanal',
         amount: 600000,
         payment_day: 7,
-        is_paid: true,
+        is_paid: this.shouldExpenseBePaid(month, 7),
         month: month,
-        paid_date: '2024-01-07'
+        paid_date: this.shouldExpenseBePaid(month, 7) ? this.getPaidDate(month, 7) : undefined
       },
       // Bolsillo: Salud
       {
@@ -93,8 +96,9 @@ export class MockDataService {
         concept_name: 'EPS',
         amount: 120000,
         payment_day: 10,
-        is_paid: false,
-        month: month
+        is_paid: this.shouldExpenseBePaid(month, 20),
+        month: month,
+        paid_date: this.shouldExpenseBePaid(month, 20) ? this.getPaidDate(month, 20) : undefined
       },
       {
         id: 8,
@@ -102,8 +106,9 @@ export class MockDataService {
         concept_name: 'Medicina prepagada',
         amount: 250000,
         payment_day: 12,
-        is_paid: false,
-        month: month
+        is_paid: this.shouldExpenseBePaid(month, 20),
+        month: month,
+        paid_date: this.shouldExpenseBePaid(month, 20) ? this.getPaidDate(month, 20) : undefined
       }
     ];
     return of(mockFixedExpenses);
@@ -121,51 +126,68 @@ export class MockDataService {
 
   // Gastos diarios mock
   getDailyExpenses(month: string): Observable<DailyExpense[]> {
-    const mockDailyExpenses: DailyExpense[] = [
-      {
-        id: 1,
-        description: 'Café en Juan Valdez',
-        amount: 8500,
-        date: '2024-01-15',
-        created_at: '2024-01-15T10:30:00Z'
-      },
-      {
-        id: 2,
-        description: 'Almuerzo con mi esposa',
-        amount: 45000,
-        date: '2024-01-14',
-        created_at: '2024-01-14T13:15:00Z'
-      },
-      {
-        id: 3,
-        description: 'Libro "Cien años de soledad"',
-        amount: 35000,
-        date: '2024-01-13',
-        created_at: '2024-01-13T16:45:00Z'
-      },
-      {
-        id: 4,
-        description: 'Helado para mi hija',
-        amount: 12000,
-        date: '2024-01-12',
-        created_at: '2024-01-12T18:20:00Z'
-      },
-      {
-        id: 5,
-        description: 'Cine familiar',
-        amount: 85000,
-        date: '2024-01-11',
-        created_at: '2024-01-11T20:00:00Z'
-      },
-      {
-        id: 6,
-        description: 'Dulces en la tienda',
-        amount: 6500,
-        date: '2024-01-10',
-        created_at: '2024-01-10T15:30:00Z'
-      }
-    ];
+    const mockDailyExpenses: DailyExpense[] = this.generateDailyExpensesForMonth(month);
     return of(mockDailyExpenses);
+  }
+
+  /**
+   * Genera gastos diarios dinámicos para el mes especificado
+   */
+  private generateDailyExpensesForMonth(month: string): DailyExpense[] {
+    const [year, monthNum] = month.split('-');
+    const currentDate = new Date();
+    const targetMonth = new Date(parseInt(year), parseInt(monthNum) - 1, 1);
+    
+    // Si es el mes actual, generar hasta la fecha actual
+    // Si es un mes pasado, generar todo el mes
+    // Si es un mes futuro, no generar gastos
+    const isCurrentMonth = targetMonth.getFullYear() === currentDate.getFullYear() && 
+                          targetMonth.getMonth() === currentDate.getMonth();
+    const isFutureMonth = targetMonth > currentDate;
+    
+    if (isFutureMonth) {
+      return []; // No hay gastos en meses futuros
+    }
+    
+    const maxDay = isCurrentMonth ? currentDate.getDate() : new Date(parseInt(year), parseInt(monthNum), 0).getDate();
+    const expenses: DailyExpense[] = [];
+    
+    // Gastos típicos que pueden aparecer
+    const expenseTypes = [
+      { description: 'Café en Juan Valdez', amount: 8500, frequency: 0.3 },
+      { description: 'Almuerzo en el trabajo', amount: 25000, frequency: 0.4 },
+      { description: 'Transporte público', amount: 3500, frequency: 0.6 },
+      { description: 'Dulces para la niña', amount: 12000, frequency: 0.2 },
+      { description: 'Libro', amount: 45000, frequency: 0.1 },
+      { description: 'Cine con la familia', amount: 65000, frequency: 0.1 },
+      { description: 'Helado', amount: 15000, frequency: 0.15 },
+      { description: 'Farmacia', amount: 28000, frequency: 0.1 },
+      { description: 'Café con amigos', amount: 18000, frequency: 0.2 },
+      { description: 'Snacks', amount: 8000, frequency: 0.25 }
+    ];
+    
+    let idCounter = 1;
+    
+    // Generar gastos para cada día del mes
+    for (let day = 1; day <= maxDay; day++) {
+      const dateStr = `${year}-${monthNum.padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+      
+      // Cada día tiene una probabilidad de tener gastos
+      expenseTypes.forEach(expenseType => {
+        if (Math.random() < expenseType.frequency) {
+          expenses.push({
+            id: idCounter++,
+            description: expenseType.description,
+            amount: expenseType.amount + Math.floor(Math.random() * 5000) - 2500, // Variación de ±2500
+            date: dateStr,
+            created_at: `${dateStr}T${Math.floor(Math.random() * 24).toString().padStart(2, '0')}:${Math.floor(Math.random() * 60).toString().padStart(2, '0')}:00Z`
+          });
+        }
+      });
+    }
+    
+    // Ordenar por fecha descendente (más recientes primero)
+    return expenses.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }
 
   // Método para agregar nuevo gasto diario
@@ -195,5 +217,36 @@ export class MockDataService {
   // Método para marcar gasto fijo como pagado
   markFixedExpenseAsPaid(expenseId: number): Observable<boolean> {
     return of(true);
+  }
+
+  /**
+   * Determina si un gasto fijo debería estar pagado según el mes y día de pago
+   */
+  private shouldExpenseBePaid(month: string, paymentDay: number): boolean {
+    const [year, monthNum] = month.split('-');
+    const currentDate = new Date();
+    const targetMonth = new Date(parseInt(year), parseInt(monthNum) - 1, paymentDay);
+    
+    // Si es un mes futuro, no está pagado
+    if (targetMonth > currentDate) {
+      return false;
+    }
+    
+    // Si es el mes actual, verificar si ya pasó la fecha de pago
+    if (targetMonth.getFullYear() === currentDate.getFullYear() && 
+        targetMonth.getMonth() === currentDate.getMonth()) {
+      return currentDate.getDate() >= paymentDay;
+    }
+    
+    // Si es un mes pasado, está pagado
+    return true;
+  }
+
+  /**
+   * Genera la fecha de pago para un gasto fijo
+   */
+  private getPaidDate(month: string, paymentDay: number): string {
+    const [year, monthNum] = month.split('-');
+    return `${year}-${monthNum.padStart(2, '0')}-${paymentDay.toString().padStart(2, '0')}`;
   }
 }

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -39,7 +39,7 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './daily-expenses.component.html',
   styleUrl: './daily-expenses.component.css'
 })
-export class DailyExpensesComponent implements OnInit, OnDestroy {
+export class DailyExpensesComponent implements OnInit, OnDestroy, OnChanges {
   @Input() currentMonth: string = '2024-01'; // Format YYYY-MM
   @Output() expenseAdded = new EventEmitter<void>();
   @Output() expenseUpdated = new EventEmitter<void>();
@@ -69,6 +69,12 @@ export class DailyExpensesComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadDailyExpensesSummary();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['currentMonth'] && !changes['currentMonth'].firstChange) {
+      this.loadDailyExpensesSummary();
+    }
   }
 
   ngOnDestroy(): void {

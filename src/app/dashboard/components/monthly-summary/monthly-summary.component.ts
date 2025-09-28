@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -27,7 +27,7 @@ import { NotificationService } from '../../../services/notification/notification
   templateUrl: './monthly-summary.component.html',
   styleUrl: './monthly-summary.component.css'
 })
-export class MonthlySummaryComponent implements OnInit, OnDestroy {
+export class MonthlySummaryComponent implements OnInit, OnDestroy, OnChanges {
   @Input() currentMonth: string = '2024-01';
 
   summary: MonthlySummary | null = null;
@@ -43,6 +43,12 @@ export class MonthlySummaryComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadSummary();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['currentMonth'] && !changes['currentMonth'].firstChange) {
+      this.loadSummary();
+    }
   }
 
   ngOnDestroy(): void {

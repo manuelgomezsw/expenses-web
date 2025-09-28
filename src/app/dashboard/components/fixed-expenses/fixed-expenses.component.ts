@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -34,7 +34,7 @@ import { NotificationService } from '../../../services/notification/notification
   templateUrl: './fixed-expenses.component.html',
   styleUrl: './fixed-expenses.component.css'
 })
-export class FixedExpensesComponent implements OnInit, OnDestroy {
+export class FixedExpensesComponent implements OnInit, OnDestroy, OnChanges {
   @Input() currentMonth: string = '2024-01';
   @Output() expenseStatusChanged = new EventEmitter<void>();
 
@@ -52,6 +52,12 @@ export class FixedExpensesComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadFixedExpenses();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['currentMonth'] && !changes['currentMonth'].firstChange) {
+      this.loadFixedExpenses();
+    }
   }
 
   ngOnDestroy(): void {
