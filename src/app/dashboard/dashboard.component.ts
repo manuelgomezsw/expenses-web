@@ -1,11 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Title } from '@angular/platform-browser';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
 
 // Components
 import { MonthlySummaryComponent } from './components/monthly-summary/monthly-summary.component';
 import { FixedExpensesComponent } from './components/fixed-expenses/fixed-expenses.component';
 import { DailyExpensesComponent } from './components/daily-expenses/daily-expenses.component';
+import { MonthSelectorComponent } from '../shared/components/month-selector/month-selector.component';
 
 import { environment } from '../../environments/environment';
 
@@ -14,6 +17,7 @@ import { environment } from '../../environments/environment';
   standalone: true,
   imports: [
     CommonModule,
+    MonthSelectorComponent,
     MonthlySummaryComponent,
     FixedExpensesComponent,
     DailyExpensesComponent
@@ -21,15 +25,39 @@ import { environment } from '../../environments/environment';
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   
   // Current month for all components
-  currentMonth: string = '2024-01';
+  currentMonth: string = this.getCurrentMonth();
+  private destroy$ = new Subject<void>();
 
-  constructor(private titleService: Title) {}
+  constructor(
+    private titleService: Title,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.titleService.setTitle(environment.titleWebSite + ' - Dashboard Financiero');
+    
+    // Listen to query parameter changes for month
+    this.route.queryParams
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(params => {
+        const monthParam = params['month'];
+        if (monthParam && this.isValidMonth(monthParam)) {
+          this.currentMonth = monthParam;
+        } else {
+          // If no valid month param, redirect to current month
+          this.currentMonth = this.getCurrentMonth();
+          this.updateUrlWithMonth(this.currentMonth);
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   /**
@@ -53,5 +81,44 @@ export class DashboardComponent implements OnInit {
 
   onDailyExpenseDeleted(): void {
     console.log('Daily expense deleted - summary will auto-refresh');
+  }
+
+  /**
+   * Handle month change from MonthSelector
+   */
+  onMonthChanged(newMonth: string): void {
+    this.updateUrlWithMonth(newMonth);
+  }
+
+  /**
+   * Get current month in YYYY-MM format
+   */
+  private getCurrentMonth(): string {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    return `${year}-${month}`;
+  }
+
+  /**
+   * Validate month format (YYYY-MM)
+   */
+  private isValidMonth(month: string): boolean {
+    const regex = /^\d{4}-\d{2}$/;
+    if (!regex.test(month)) return false;
+    
+    const [year, monthNum] = month.split('-').map(Number);
+    return year >= 2020 && year <= 2030 && monthNum >= 1 && monthNum <= 12;
+  }
+
+  /**
+   * Update URL with month parameter
+   */
+  private updateUrlWithMonth(month: string): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { month },
+      queryParamsHandling: 'merge'
+    });
   }
 }

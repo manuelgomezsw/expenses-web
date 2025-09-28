@@ -1,0 +1,129 @@
+.month-selector {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-md) 0;
+  background: var(--background-secondary);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-lg);
+  box-shadow: var(--card-shadow);
+}
+
+.month-navigation {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
+.nav-button {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: var(--radius-md) !important;
+  background: var(--background-tertiary) !important;
+  color: var(--primary-color) !important;
+  transition: all 0.2s ease;
+}
+
+.nav-button:hover:not([disabled]) {
+  background: var(--primary-color) !important;
+  color: white !important;
+  transform: scale(1.05);
+}
+
+.nav-button[disabled] {
+  background: var(--background-tertiary) !important;
+  color: var(--text-muted) !important;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.nav-button mat-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.month-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  min-width: 200px;
+}
+
+.month-name {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+.current-month-btn {
+  font-size: var(--font-size-xs) !important;
+  font-weight: 500 !important;
+  color: var(--primary-color) !important;
+  padding: var(--spacing-xs) var(--spacing-sm) !important;
+  min-width: auto !important;
+  height: auto !important;
+  line-height: 1 !important;
+  border-radius: var(--radius-sm) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: var(--spacing-xs) !important;
+}
+
+.current-month-btn:hover {
+  background: rgba(26, 54, 93, 0.1) !important;
+}
+
+.current-month-btn mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .month-selector {
+    margin: 0 var(--spacing-md) var(--spacing-lg) var(--spacing-md);
+  }
+  
+  .month-navigation {
+    gap: var(--spacing-md);
+  }
+  
+  .nav-button {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  
+  .nav-button mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+  
+  .month-display {
+    min-width: 150px;
+  }
+  
+  .month-name {
+    font-size: var(--font-size-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .month-navigation {
+    gap: var(--spacing-sm);
+  }
+  
+  .month-display {
+    min-width: 120px;
+  }
+  
+  .month-name {
+    font-size: var(--font-size-base);
+  }
+}

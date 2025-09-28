@@ -1,6 +1,12 @@
 <!-- Dashboard Financiero - Arquitectura de Componentes Especializados -->
 <div class="dashboard-container">
   
+  <!-- Selector de Mes -->
+  <app-month-selector 
+    [currentMonth]="currentMonth"
+    (monthChanged)="onMonthChanged($event)">
+  </app-month-selector>
+  
   <!-- Sección 1: Resumen Mensual (Top) -->
   <div class="summary-section">
     <app-monthly-summary 

@@ -1,0 +1,36 @@
+<div class="month-selector">
+  <div class="month-navigation">
+    
+    <!-- Botón Mes Anterior -->
+    <button mat-icon-button 
+            (click)="goToPreviousMonth()"
+            [disabled]="!canGoToPrevious()"
+            matTooltip="Mes anterior"
+            class="nav-button">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+
+    <!-- Mes Actual -->
+    <div class="month-display">
+      <span class="month-name">{{ getMonthName() }}</span>
+      <button *ngIf="!isCurrentMonth()" 
+              mat-button 
+              (click)="goToCurrentMonth()"
+              class="current-month-btn"
+              matTooltip="Ir al mes actual">
+        <mat-icon>today</mat-icon>
+        Actual
+      </button>
+    </div>
+
+    <!-- Botón Mes Siguiente -->
+    <button mat-icon-button 
+            (click)="goToNextMonth()"
+            [disabled]="!canGoToNext()"
+            matTooltip="Mes siguiente"
+            class="nav-button">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+
+  </div>
+</div>
