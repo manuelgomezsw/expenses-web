@@ -14,18 +14,10 @@
     </app-monthly-summary>
   </div>
 
-  <!-- Sección 2 y 3: Gastos Fijos y Gastos Diarios (Side by side) -->
+  <!-- Sección 2 y 3: Gastos Diarios y Gastos Fijos (Side by side) -->
   <div class="main-content">
     
-    <!-- Sección 2: Gastos Fijos (Izquierda) -->
-    <div class="fixed-expenses-section">
-      <app-fixed-expenses 
-        [currentMonth]="currentMonth"
-        (expenseStatusChanged)="onFixedExpenseStatusChanged()">
-      </app-fixed-expenses>
-    </div>
-
-    <!-- Sección 3: Gastos Diarios (Derecha) -->
+    <!-- Sección 2: Gastos Diarios (Izquierda - Prioridad móvil) -->
     <div class="daily-expenses-section">
       <app-daily-expenses 
         [currentMonth]="currentMonth"
@@ -33,6 +25,14 @@
         (expenseUpdated)="onDailyExpenseUpdated()"
         (expenseDeleted)="onDailyExpenseDeleted()">
       </app-daily-expenses>
+    </div>
+
+    <!-- Sección 3: Gastos Fijos (Derecha) -->
+    <div class="fixed-expenses-section">
+      <app-fixed-expenses 
+        [currentMonth]="currentMonth"
+        (expenseStatusChanged)="onFixedExpenseStatusChanged()">
+      </app-fixed-expenses>
     </div>
 
   </div>
