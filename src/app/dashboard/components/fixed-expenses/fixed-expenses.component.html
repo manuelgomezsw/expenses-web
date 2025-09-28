@@ -1,0 +1,107 @@
+<div class="fixed-expenses">
+  <mat-card class="expenses-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>account_balance_wallet</mat-icon>
+        Gastos Fijos
+      </mat-card-title>
+      <mat-card-subtitle>
+        {{ getTotalPaidCount() }} de {{ expenses.length }} pagados 
+        ({{ getPaidPercentage() | number:'1.0-0' }}%)
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="loading-container">
+        <mat-spinner diameter="40"></mat-spinner>
+        <span>Cargando gastos fijos...</span>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="error && !isLoading" class="error-container">
+        <mat-icon color="warn">error</mat-icon>
+        <span>{{ error }}</span>
+        <button mat-button color="primary" (click)="refreshExpenses()">
+          <mat-icon>refresh</mat-icon>
+          Reintentar
+        </button>
+      </div>
+
+      <!-- Expenses Content -->
+      <div *ngIf="!isLoading && !error" class="pockets-container">
+        
+        <!-- No expenses message -->
+        <div *ngIf="expenses.length === 0" class="no-expenses">
+          <mat-icon>receipt_long</mat-icon>
+          <span>No hay gastos fijos registrados este mes</span>
+        </div>
+
+        <!-- Expenses by pocket -->
+        <div *ngFor="let pocketName of getPocketKeys()" class="pocket-group">
+          
+          <!-- Pocket Header -->
+          <div class="pocket-header">
+            <h3 class="pocket-title">{{ pocketName }}</h3>
+            <div class="pocket-summary">
+              <span class="pocket-total">
+                {{ getPocketTotal(pocketName) | currency:'COP':'symbol':'1.0-0' }}
+              </span>
+              <span class="pocket-status">
+                {{ getPocketPaidCount(pocketName) }} de {{ expensesByPocket[pocketName].length }} pagados
+              </span>
+            </div>
+          </div>
+
+          <!-- Expenses List -->
+          <div class="expenses-list">
+            <div *ngFor="let expense of expensesByPocket[pocketName]" 
+                 class="expense-item"
+                 [class]="getExpenseStatus(expense)">
+              
+              <!-- Checkbox -->
+              <mat-checkbox 
+                [checked]="expense.is_paid"
+                (change)="togglePaymentStatus(expense)"
+                [color]="'primary'">
+              </mat-checkbox>
+
+              <!-- Expense Details -->
+              <div class="expense-details">
+                <span class="expense-name">{{ expense.concept_name }}</span>
+                <span class="expense-amount">
+                  {{ expense.amount | currency:'COP':'symbol':'1.0-0' }}
+                </span>
+                <span class="expense-date">
+                  Día {{ expense.payment_day }}
+                  <span *ngIf="expense.paid_date" class="paid-date">
+                    - Pagado {{ expense.paid_date }}
+                  </span>
+                </span>
+              </div>
+
+              <!-- Status Text -->
+              <span class="status-text" [class]="getExpenseStatus(expense)">
+                {{ expense.is_paid ? 'Pagado' : (getExpenseStatus(expense) === 'overdue' ? 'Vencido' : 'Pendiente') }}
+              </span>
+            </div>
+          </div>
+
+          <mat-divider *ngIf="getPocketKeys().indexOf(pocketName) < getPocketKeys().length - 1"></mat-divider>
+        </div>
+
+        <!-- Summary Footer -->
+        <div *ngIf="expenses.length > 0" class="expenses-summary">
+          <mat-divider></mat-divider>
+          <div class="summary-row">
+            <span class="summary-label">Total Gastos Fijos:</span>
+            <span class="summary-total">
+              {{ getTotalFixedExpenses() | currency:'COP':'symbol':'1.0-0' }}
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
