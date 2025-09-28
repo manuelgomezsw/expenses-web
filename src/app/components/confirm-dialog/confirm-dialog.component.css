@@ -1,3 +1,49 @@
-.btn-delete {
-    color: #CB3A12;
+/* Confirm Dialog Styles */
+
+.dialog-message {
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  line-height: 1.6;
+  margin: var(--spacing-lg) 0;
+  font-weight: 400;
+}
+
+.cancel-btn {
+  color: var(--text-secondary) !important;
+  font-weight: 500 !important;
+  margin-right: var(--spacing-sm) !important;
+}
+
+.cancel-btn:hover {
+  background: var(--background-tertiary) !important;
+}
+
+.confirm-btn {
+  font-weight: 600 !important;
+  min-width: 100px !important;
+}
+
+/* Dialog title styling */
+h2[mat-dialog-title] {
+  color: var(--text-primary) !important;
+  font-weight: 600 !important;
+  font-size: var(--font-size-xl) !important;
+  margin-bottom: 0 !important;
+}
+
+/* Dialog content styling */
+mat-dialog-content {
+  padding: var(--spacing-md) var(--spacing-lg) !important;
+}
+
+/* Dialog actions styling */
+mat-dialog-actions {
+  padding: var(--spacing-md) var(--spacing-lg) var(--spacing-lg) !important;
+  gap: var(--spacing-sm);
+}
+
+/* Override Material Dialog styles */
+.mat-mdc-dialog-container .mdc-dialog__surface {
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--card-shadow-hover) !important;
 }

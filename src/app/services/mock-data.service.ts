@@ -178,6 +178,20 @@ export class MockDataService {
     return of(newExpense);
   }
 
+  // Método para actualizar gasto de mecato
+  updateMecatoExpense(expense: MecatoExpense): Observable<MecatoExpense> {
+    const updatedExpense: MecatoExpense = {
+      ...expense,
+      created_at: expense.created_at || new Date().toISOString()
+    };
+    return of(updatedExpense);
+  }
+
+  // Método para eliminar gasto de mecato
+  deleteMecatoExpense(expenseId: number): Observable<boolean> {
+    return of(true);
+  }
+
   // Método para marcar gasto fijo como pagado
   markFixedExpenseAsPaid(expenseId: number): Observable<boolean> {
     return of(true);

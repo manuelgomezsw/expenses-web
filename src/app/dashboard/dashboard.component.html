@@ -107,7 +107,7 @@
 
         <!-- Formulario de entrada rápida -->
         <div class="quick-entry">
-          <h4>Agregar Gasto</h4>
+          <h4>{{ isEditingMecato ? 'Editar Gasto' : 'Agregar Gasto' }}</h4>
           <form (ngSubmit)="addMecatoExpense()" #mecatoForm="ngForm">
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>¿Qué compraste?</mat-label>
@@ -140,14 +140,25 @@
               </mat-form-field>
             </div>
             
-            <button mat-raised-button 
-                    color="primary" 
-                    type="submit"
-                    [disabled]="!mecatoForm.form.valid"
-                    class="add-button">
-              <mat-icon>add</mat-icon>
-              Agregar Gasto
-            </button>
+            <div class="form-buttons">
+              <button mat-raised-button 
+                      color="primary" 
+                      type="submit"
+                      [disabled]="!mecatoForm.form.valid"
+                      class="save-button">
+                <mat-icon>{{ isEditingMecato ? 'save' : 'add' }}</mat-icon>
+                {{ isEditingMecato ? 'Guardar Cambios' : 'Agregar Gasto' }}
+              </button>
+              
+              <button *ngIf="isEditingMecato"
+                      mat-button 
+                      type="button"
+                      (click)="cancelEditMecato()"
+                      class="cancel-button">
+                <mat-icon>cancel</mat-icon>
+                Cancelar
+              </button>
+            </div>
           </form>
         </div>
 
@@ -162,7 +173,23 @@
                 <span class="expense-description">{{ expense.description }}</span>
                 <span class="expense-date">{{ expense.date | customDate }}</span>
               </div>
-              <span class="expense-amount">{{ expense.amount | currency:'COP':'symbol':'1.0-0' }}</span>
+              <div class="expense-actions">
+                <span class="expense-amount">{{ expense.amount | currency:'COP':'symbol':'1.0-0' }}</span>
+                <div class="action-buttons">
+                  <button mat-icon-button 
+                          (click)="editMecatoExpense(expense)"
+                          matTooltip="Editar gasto"
+                          class="edit-button">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button 
+                          (click)="deleteMecatoExpense(expense.id!)"
+                          matTooltip="Eliminar gasto"
+                          class="delete-button">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </div>
             </div>
             
             <div *ngIf="mecatoExpenses.length === 0" class="no-expenses">

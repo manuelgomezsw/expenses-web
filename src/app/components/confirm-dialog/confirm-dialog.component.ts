@@ -22,8 +22,15 @@ import {MatButton} from "@angular/material/button";
 export class ConfirmDialogComponent {
     constructor(
         public dialogRef: MatDialogRef<ConfirmDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) public data: { message: string }
+        @Inject(MAT_DIALOG_DATA) public data: { 
+            message: string;
+            confirmText?: string;
+            cancelText?: string;
+        }
     ) {
+        // Set default texts if not provided
+        this.data.confirmText = this.data.confirmText || 'Confirmar';
+        this.data.cancelText = this.data.cancelText || 'Cancelar';
     }
 
     onConfirm(): void {
