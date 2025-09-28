@@ -9,6 +9,12 @@
   flex-direction: column;
 }
 
+/* Override height when collapsed */
+.daily-expenses-card.collapsed {
+  height: auto !important;
+  min-height: auto !important;
+}
+
 .mat-mdc-card-header {
   padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-md) !important;
   border-bottom: 1px solid var(--card-border);
@@ -67,12 +73,6 @@
   overflow: hidden;
   margin: 0 !important;
   border: none !important;
-}
-
-/* Collapsed card styling */
-.daily-expenses-card.collapsed {
-  height: auto !important;
-  min-height: auto !important;
 }
 
 .daily-expenses-card.collapsed .mat-mdc-card-header {

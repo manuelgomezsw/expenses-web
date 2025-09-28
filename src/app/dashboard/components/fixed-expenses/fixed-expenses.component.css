@@ -16,6 +16,12 @@
   flex-direction: column;
 }
 
+/* Override height when collapsed */
+.expenses-card.collapsed {
+  height: auto !important;
+  min-height: auto !important;
+}
+
 /* Card Header */
 .mat-mdc-card-header {
   padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-md) !important;
@@ -75,12 +81,6 @@
   overflow: hidden;
   margin: 0 !important;
   border: none !important;
-}
-
-/* Collapsed card styling */
-.expenses-card.collapsed {
-  height: auto !important;
-  min-height: auto !important;
 }
 
 .expenses-card.collapsed .mat-mdc-card-header {
