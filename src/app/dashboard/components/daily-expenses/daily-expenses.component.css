@@ -3,15 +3,14 @@
   border: 1px solid var(--card-border);
   border-radius: var(--radius-xl);
   box-shadow: var(--card-shadow);
-  height: fit-content;
-  max-height: 85vh;
+  height: 85vh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
 }
 
 .mat-mdc-card-header {
-  padding: var(--spacing-lg) var(--spacing-xl);
+  padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-md) !important;
   border-bottom: 1px solid var(--card-border);
   flex-shrink: 0;
 }
@@ -34,7 +33,7 @@
 .mat-mdc-card-content {
   flex: 1;
   overflow-y: auto;
-  padding: var(--spacing-xl) !important;
+  padding: var(--spacing-lg) !important;
 }
 
 .daily-expenses-content {
