@@ -13,6 +13,8 @@
 .daily-expenses-card.collapsed {
   height: auto !important;
   min-height: auto !important;
+  overflow: visible !important;
+  display: block !important;
 }
 
 .mat-mdc-card-header {
