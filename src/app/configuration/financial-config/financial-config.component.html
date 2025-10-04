@@ -154,9 +154,14 @@
             <div class="expenses-in-pocket" 
                  [class.collapsed]="isPocketCollapsed(pocketName)"
                  [@slideInOut]="isPocketCollapsed(pocketName) ? 'out' : 'in'">
-              <div *ngFor="let expense of getFixedExpensesByPocket()[pocketName]" class="expense-item">
+              <div *ngFor="let expense of getFixedExpensesByPocket()[pocketName]" 
+                   class="expense-item" 
+                   [class.inherited]="!expense.id">
                 <div class="expense-info">
-                  <span class="expense-name">{{ expense.concept_name }}</span>
+                  <span class="expense-name">
+                    {{ expense.concept_name }}
+                    <span *ngIf="!expense.id" class="inherited-badge" title="Heredado del mes anterior">📋</span>
+                  </span>
                   <span class="expense-details">
                     {{ expense.amount | currency:'COP':'symbol':'1.0-0' }} - Día {{ expense.payment_day }}
                   </span>

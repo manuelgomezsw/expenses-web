@@ -159,6 +159,14 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
           this.dailyBudgetForm.monthly_budget = config.dailyExpensesConfig.monthly_budget;
           this.initializeCollapsedPockets();
           this.isLoading = false;
+          
+          // Detectar si es configuración heredada (gastos fijos sin ID)
+          const hasInheritedData = config.fixedExpenses.some(expense => !expense.id);
+          if (hasInheritedData) {
+            this.notificationService.openSnackBar(
+              `📋 Configuración heredada del mes anterior. Edita solo lo que necesites cambiar.`
+            );
+          }
         },
         error: (error) => {
           console.error('Error loading configuration:', error);
@@ -187,7 +195,21 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
    * Handle month change from MonthSelector
    */
   onMonthChanged(newMonth: string): void {
+    // Cancelar cualquier edición en progreso
+    this.cancelAllEditing();
+    
+    // Actualizar URL y cargar nueva configuración
     this.updateUrlWithMonth(newMonth);
+  }
+
+  /**
+   * Cancel all editing modes
+   */
+  private cancelAllEditing(): void {
+    this.isEditingSalary = false;
+    this.isEditingDailyBudget = false;
+    this.isAddingFixedExpense = false;
+    this.editingFixedExpenseId = null;
   }
 
   // Salary Management
