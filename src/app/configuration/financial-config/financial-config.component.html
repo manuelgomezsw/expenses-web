@@ -6,6 +6,7 @@
     (monthChanged)="onMonthChanged($event)">
   </app-month-selector>
 
+
   <!-- Loading State -->
   <div *ngIf="isLoading" class="loading-state">
     <mat-progress-bar mode="indeterminate"></mat-progress-bar>
@@ -15,7 +16,7 @@
   <!-- Error State -->
   <div *ngIf="hasError" class="error-state">
     <mat-icon color="warn">error_outline</mat-icon>
-    <p>Error al cargar la configuración. Intenta de nuevo.</p>
+    <p>{{ errorMessage }}</p>
     <button mat-raised-button color="primary" (click)="loadConfiguration()">Reintentar</button>
   </div>
 

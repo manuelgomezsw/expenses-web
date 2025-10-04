@@ -10,10 +10,10 @@
       <!-- Bolsillo -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Bolsillo</mat-label>
-        <mat-select [(ngModel)]="formData.pocket_name" 
-                    name="pocket_name" 
+        <mat-select [(ngModel)]="formData.pocket_id" 
+                    name="pocket_id" 
                     required>
-          <mat-option *ngFor="let pocket of data.availablePockets" [value]="pocket.name">
+          <mat-option *ngFor="let pocket of data.availablePockets" [value]="pocket.id">
             {{ pocket.name }}
           </mat-option>
         </mat-select>
@@ -58,6 +58,16 @@
                  required>
           <mat-hint>Día del mes (1-31)</mat-hint>
         </mat-form-field>
+      </div>
+
+      <!-- Validation Errors -->
+      <div *ngIf="getValidationErrors().length > 0" class="validation-errors">
+        <mat-icon color="warn">warning</mat-icon>
+        <div class="error-list">
+          <p *ngFor="let error of getValidationErrors()" class="error-message">
+            {{ error }}
+          </p>
+        </div>
       </div>
 
     </form>

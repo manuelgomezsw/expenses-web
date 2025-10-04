@@ -118,7 +118,7 @@ export class MonthlySummaryComponent implements OnInit, OnDestroy, OnChanges {
    */
   getDailyExpensesPercentage(): number {
     if (!this.summary || this.summary.salary.monthly_amount === 0) return 0;
-    return (this.summary.mecatoBudget.monthly_budget / this.summary.salary.monthly_amount) * 100;
+    return (this.summary.dailyExpensesBudget.monthly_budget / this.summary.salary.monthly_amount) * 100;
   }
 
   onToggleCollapse(): void {

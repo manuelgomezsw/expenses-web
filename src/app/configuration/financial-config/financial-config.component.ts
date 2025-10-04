@@ -87,6 +87,7 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
   // Loading states
   isLoading: boolean = true;
   hasError: boolean = false;
+  errorMessage: string = '';
   
   // Edit modes
   isEditingSalary: boolean = false;
@@ -98,7 +99,7 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
   salaryForm = { monthly_amount: 0 };
   dailyBudgetForm = { monthly_budget: 0 };
   fixedExpenseForm: CreateFixedExpenseRequest = {
-    pocket_name: '',
+    pocket_id: 0,
     concept_name: '',
     amount: 0,
     payment_day: 1
@@ -147,6 +148,7 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
   loadConfiguration(): void {
     this.isLoading = true;
     this.hasError = false;
+    this.errorMessage = '';
     
     this.configurationService.getFinancialConfiguration(this.currentMonth)
       .pipe(takeUntil(this.destroy$))
@@ -162,7 +164,8 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
           console.error('Error loading configuration:', error);
           this.hasError = true;
           this.isLoading = false;
-          this.notificationService.openSnackBar('Error cargando configuración');
+          this.errorMessage = error.message || 'Error cargando configuración financiera';
+          this.notificationService.openSnackBar(this.errorMessage);
         }
       });
 
@@ -178,6 +181,7 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
         }
       });
   }
+
 
   /**
    * Handle month change from MonthSelector
@@ -268,7 +272,7 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
   }
 
   saveFixedExpense(): void {
-    if (!this.fixedExpenseForm.pocket_name || !this.fixedExpenseForm.concept_name || 
+    if (!this.fixedExpenseForm.pocket_id || !this.fixedExpenseForm.concept_name || 
         this.fixedExpenseForm.amount <= 0 || this.fixedExpenseForm.payment_day < 1 || 
         this.fixedExpenseForm.payment_day > 31) {
       this.notificationService.openSnackBar('Por favor completa todos los campos correctamente');
@@ -310,7 +314,7 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
 
     const updatedExpense: FixedExpense = {
       ...expenseToUpdate,
-      pocket_name: this.fixedExpenseForm.pocket_name,
+      pocket_id: this.fixedExpenseForm.pocket_id,
       concept_name: this.fixedExpenseForm.concept_name,
       amount: this.fixedExpenseForm.amount,
       payment_day: this.fixedExpenseForm.payment_day
@@ -380,7 +384,7 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
 
   private clearFixedExpenseForm(): void {
     this.fixedExpenseForm = {
-      pocket_name: '',
+      pocket_id: 0,
       concept_name: '',
       amount: 0,
       payment_day: 1
@@ -391,18 +395,49 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
   getFixedExpensesByPocket(): { [key: string]: FixedExpense[] } {
     if (!this.configuration) return {};
     
-    return this.configuration.fixedExpenses.reduce((groups, expense) => {
-      const pocket = expense.pocket_name;
+    const groups = this.configuration.fixedExpenses.reduce((groups, expense) => {
+      const pocket = expense.pocket_name || `Bolsillo ${expense.pocket_id}`;
       if (!groups[pocket]) {
         groups[pocket] = [];
       }
       groups[pocket].push(expense);
       return groups;
     }, {} as { [key: string]: FixedExpense[] });
+
+    // Ordenar gastos dentro de cada bolsillo por monto (mayor a menor)
+    Object.keys(groups).forEach(pocketName => {
+      groups[pocketName].sort((a, b) => b.amount - a.amount);
+    });
+
+    return groups;
   }
 
   getPocketKeys(): string[] {
-    return Object.keys(this.getFixedExpensesByPocket());
+    return this.getPocketKeysOrderedByBudget();
+  }
+
+  /**
+   * Obtiene las claves de bolsillos ordenadas por budget total (mayor a menor)
+   */
+  getPocketKeysOrderedByBudget(): string[] {
+    const pocketTotals = this.getPocketTotals();
+    return Object.keys(pocketTotals)
+      .sort((a, b) => pocketTotals[b] - pocketTotals[a]);
+  }
+
+  /**
+   * Calcula el total de cada bolsillo
+   */
+  getPocketTotals(): { [key: string]: number } {
+    const expensesByPocket = this.getFixedExpensesByPocket();
+    const totals: { [key: string]: number } = {};
+    
+    Object.keys(expensesByPocket).forEach(pocketName => {
+      totals[pocketName] = expensesByPocket[pocketName]
+        .reduce((sum, expense) => sum + expense.amount, 0);
+    });
+    
+    return totals;
   }
 
   getTotalAmountForPocket(pocketName: string): number {
@@ -411,9 +446,15 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
   }
 
   private extractPocketsFromExpenses(expenses: FixedExpense[]): Pocket[] {
-    const pocketNames = [...new Set(expenses.map(e => e.pocket_name))];
-    return pocketNames.map((name, index) => ({
-      id: index + 1,
+    const pocketMap = new Map<number, string>();
+    expenses.forEach(e => {
+      if (e.pocket_name) {
+        pocketMap.set(e.pocket_id, e.pocket_name);
+      }
+    });
+    
+    return Array.from(pocketMap.entries()).map(([id, name]) => ({
+      id: id,
       name: name,
       description: `Bolsillo para gastos de ${name.toLowerCase()}`
     }));
@@ -463,7 +504,7 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
           // Update existing expense
           const updatedExpense: FixedExpense = {
             ...expense,
-            pocket_name: result.pocket_name,
+            pocket_id: result.pocket_id,
             concept_name: result.concept_name,
             amount: result.amount,
             payment_day: result.payment_day
@@ -472,7 +513,7 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
         } else {
           // Create new expense
           const newExpenseRequest: CreateFixedExpenseRequest = {
-            pocket_name: result.pocket_name,
+            pocket_id: result.pocket_id,
             concept_name: result.concept_name,
             amount: result.amount,
             payment_day: result.payment_day
@@ -515,20 +556,37 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
   }
 
   private createFixedExpenseFromModal(request: CreateFixedExpenseRequest): void {
+    console.log('Iniciando creación de gasto fijo:', request, 'para el mes:', this.currentMonth);
+    
     this.configurationService.createFixedExpense(this.currentMonth, request)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (newExpense) => {
+          console.log('Gasto fijo creado exitosamente en el componente:', newExpense);
+          
           if (this.configuration) {
             this.configuration.fixedExpenses.push(newExpense);
             // Update pockets list
             this.configuration.pockets = this.extractPocketsFromExpenses(this.configuration.fixedExpenses);
+            console.log('Configuración actualizada con nuevo gasto fijo');
           }
-          this.notificationService.openSnackBar('Gasto fijo agregado correctamente');
+          
+          this.notificationService.openSnackBar(`Gasto fijo "${newExpense.concept_name}" agregado correctamente`);
         },
         error: (error) => {
-          console.error('Error creating fixed expense:', error);
-          this.notificationService.openSnackBar('Error agregando gasto fijo');
+          console.error('Error creating fixed expense en el componente:', error);
+          
+          // Mostrar mensaje de error más específico
+          let errorMessage = 'Error agregando gasto fijo';
+          if (error.status === 0) {
+            errorMessage = 'Error de conexión con el servidor';
+          } else if (error.status >= 400 && error.status < 500) {
+            errorMessage = 'Error en los datos enviados';
+          } else if (error.status >= 500) {
+            errorMessage = 'Error interno del servidor';
+          }
+          
+          this.notificationService.openSnackBar(errorMessage);
         }
       });
   }
@@ -598,7 +656,9 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
     if (!pocket) return;
 
     // Check if pocket has expenses
-    const hasExpenses = this.configuration?.fixedExpenses.some(e => e.pocket_name === pocketName);
+    const hasExpenses = this.configuration?.fixedExpenses.some(e => 
+      (e.pocket_name || `Bolsillo ${e.pocket_id}`) === pocketName
+    );
     if (hasExpenses) {
       this.notificationService.openSnackBar('No puedes eliminar un bolsillo que tiene gastos asociados');
       return;

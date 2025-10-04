@@ -18,6 +18,23 @@
       }
     },
     {
+      "name": "🧹 Limpiar y Ejecutar Angular",
+      "type": "node-terminal",
+      "request": "launch",
+      "preLaunchTask": "🔥 Matar instancias de Angular",
+      "command": "ng cache clean && npm start",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new",
+        "showReuseMessage": true,
+        "clear": true
+      }
+    },
+    {
       "name": "🐛 Debug Angular App (Chrome)",
       "type": "chrome",
       "request": "launch",
@@ -27,6 +44,9 @@
       "sourceMaps": true,
       "sourceMapPathOverrides": {
         "webpack:/*": "${webRoot}/*",
+        "webpack:///./*": "${webRoot}/*",
+        "webpack:///src/*": "${webRoot}/*",
+        "webpack:///./src/*": "${webRoot}/*",
         "/./*": "${webRoot}/*",
         "/src/*": "${webRoot}/*",
         "/*": "*",
@@ -36,11 +56,19 @@
       "runtimeArgs": [
         "--disable-web-security",
         "--disable-features=VizDisplayCompositor",
-        "--remote-debugging-port=9222"
+        "--remote-debugging-port=9222",
+        "--disable-background-timer-throttling",
+        "--disable-renderer-backgrounding",
+        "--disable-backgrounding-occluded-windows"
       ],
       "console": "integratedTerminal",
       "internalConsoleOptions": "openOnSessionStart",
-      "trace": "verbose"
+      "trace": "verbose",
+      "smartStep": true,
+      "skipFiles": [
+        "<node_internals>/**",
+        "${workspaceFolder}/node_modules/**"
+      ]
     },
     {
       "name": "🔥 Debug Angular App (Edge)",
@@ -100,6 +128,82 @@
       "userDataDir": "${workspaceFolder}/.vscode/chrome-debug-profile-tests",
       "console": "integratedTerminal",
       "trace": "verbose"
+    },
+    {
+      "name": "🔧 Debug Angular Services (Chrome)",
+      "type": "chrome",
+      "request": "launch",
+      "preLaunchTask": "🧹 Limpiar y reiniciar Angular",
+      "url": "http://localhost:4200",
+      "webRoot": "${workspaceFolder}/src",
+      "sourceMaps": true,
+      "sourceMapPathOverrides": {
+        "webpack:/*": "${webRoot}/*",
+        "webpack:///./*": "${webRoot}/*",
+        "webpack:///src/*": "${webRoot}/*",
+        "webpack:///./src/*": "${webRoot}/*",
+        "webpack:///app/*": "${webRoot}/app/*",
+        "/./*": "${webRoot}/*",
+        "/src/*": "${webRoot}/*",
+        "/*": "*",
+        "/./~/*": "${webRoot}/node_modules/*"
+      },
+      "userDataDir": "${workspaceFolder}/.vscode/chrome-debug-services",
+      "runtimeArgs": [
+        "--disable-web-security",
+        "--disable-features=VizDisplayCompositor",
+        "--remote-debugging-port=9225",
+        "--disable-background-timer-throttling",
+        "--disable-renderer-backgrounding",
+        "--disable-backgrounding-occluded-windows",
+        "--no-first-run",
+        "--no-default-browser-check"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "openOnSessionStart",
+      "trace": "verbose",
+      "smartStep": false,
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "breakOnLoad": true,
+      "breakOnLoadStrategy": "instrument"
+    },
+    {
+      "name": "🚀 Debug Limpio (Chrome)",
+      "type": "chrome",
+      "request": "launch",
+      "preLaunchTask": "🔥 Matar instancias de Angular",
+      "url": "http://localhost:4200",
+      "webRoot": "${workspaceFolder}/src",
+      "sourceMaps": true,
+      "sourceMapPathOverrides": {
+        "webpack:/*": "${webRoot}/*",
+        "webpack:///./*": "${webRoot}/*",
+        "webpack:///src/*": "${webRoot}/*",
+        "webpack:///./src/*": "${webRoot}/*",
+        "/./*": "${webRoot}/*",
+        "/src/*": "${webRoot}/*",
+        "/*": "*",
+        "/./~/*": "${webRoot}/node_modules/*"
+      },
+      "userDataDir": "${workspaceFolder}/.vscode/chrome-debug-clean",
+      "runtimeArgs": [
+        "--disable-web-security",
+        "--disable-features=VizDisplayCompositor",
+        "--remote-debugging-port=9226",
+        "--disable-background-timer-throttling",
+        "--disable-renderer-backgrounding",
+        "--disable-backgrounding-occluded-windows"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "openOnSessionStart",
+      "trace": "verbose",
+      "smartStep": true,
+      "skipFiles": [
+        "<node_internals>/**",
+        "${workspaceFolder}/node_modules/**"
+      ]
     },
     {
       "name": "🛠️ Debug con puerto personalizado",

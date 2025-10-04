@@ -18,7 +18,7 @@ export interface ExpenseFormData {
 }
 
 export interface ExpenseFormResult {
-  pocket_name: string;
+  pocket_id: number;
   concept_name: string;
   amount: number;
   payment_day: number;
@@ -43,7 +43,7 @@ export interface ExpenseFormResult {
 export class ExpenseFormModalComponent implements OnInit {
 
   formData: ExpenseFormResult = {
-    pocket_name: '',
+    pocket_id: 0,
     concept_name: '',
     amount: 0,
     payment_day: 1
@@ -57,11 +57,20 @@ export class ExpenseFormModalComponent implements OnInit {
   ngOnInit(): void {
     if (this.data.isEditing && this.data.expense) {
       this.formData = {
-        pocket_name: this.data.expense.pocket_name,
+        pocket_id: this.data.expense.pocket_id,
         concept_name: this.data.expense.concept_name,
         amount: this.data.expense.amount,
         payment_day: this.data.expense.payment_day
       };
+      
+      // Verificar si el pocket_id existe en availablePockets
+      const pocketExists = this.data.availablePockets.find(p => p.id === this.data.expense?.pocket_id);
+      if (!pocketExists) {
+        console.warn('ExpenseFormModal - El pocket_id del gasto no existe en availablePockets:', {
+          expensePocketId: this.data.expense.pocket_id,
+          availablePockets: this.data.availablePockets.map(p => ({ id: p.id, name: p.name }))
+        });
+      }
     }
   }
 
@@ -77,12 +86,34 @@ export class ExpenseFormModalComponent implements OnInit {
 
   isFormValid(): boolean {
     return !!(
-      this.formData.pocket_name &&
+      this.formData.pocket_id &&
       this.formData.concept_name.trim() &&
       this.formData.amount > 0 &&
       this.formData.payment_day >= 1 &&
       this.formData.payment_day <= 31
     );
+  }
+
+  getValidationErrors(): string[] {
+    const errors: string[] = [];
+
+    if (!('pocket_id' in this.formData) || !this.formData.pocket_id) {
+      errors.push('Selecciona un bolsillo');
+    }
+
+    if (!('concept_name' in this.formData) || !this.formData.concept_name.trim()) {
+      errors.push('Ingresa el concepto del gasto');
+    }
+    
+    if (this.formData.amount <= 0) {
+      errors.push('El monto debe ser mayor a 0');
+    }
+    
+    if (this.formData.payment_day < 1 || this.formData.payment_day > 31) {
+      errors.push('El día de pago debe estar entre 1 y 31');
+    }
+    
+    return errors;
   }
 
   getTitle(): string {
@@ -95,5 +126,20 @@ export class ExpenseFormModalComponent implements OnInit {
 
   getSaveButtonIcon(): string {
     return this.data.isEditing ? 'save' : 'add';
+  }
+
+  /**
+   * Obtiene el nombre del bolsillo seleccionado
+   */
+  getSelectedPocketName(): string {
+    const selectedPocket = this.data.availablePockets.find(p => p.id === this.formData.pocket_id);
+    return selectedPocket ? selectedPocket.name : 'Bolsillo no encontrado';
+  }
+
+  /**
+   * Verifica si hay bolsillos disponibles
+   */
+  hasAvailablePockets(): boolean {
+    return this.data.availablePockets && this.data.availablePockets.length > 0;
   }
 }

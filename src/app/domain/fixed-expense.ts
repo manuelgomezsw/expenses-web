@@ -1,6 +1,7 @@
 export interface FixedExpense {
     id?: number;
-    pocket_name: string;
+    pocket_id: number;
+    pocket_name?: string; // Solo para mostrar en UI, viene del backend
     concept_name: string;
     amount: number;
     payment_day: number; // día del mes (1-31)

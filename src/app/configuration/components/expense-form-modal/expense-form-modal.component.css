@@ -64,6 +64,39 @@
   font-size: var(--font-size-xs);
 }
 
+/* Validation Errors */
+.validation-errors {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  background-color: var(--status-overdue-bg);
+  border: 1px solid var(--danger-color);
+  border-radius: var(--radius-md);
+  margin-top: var(--spacing-md);
+}
+
+.validation-errors mat-icon {
+  color: var(--danger-color);
+  margin-top: 2px;
+}
+
+.error-list {
+  flex: 1;
+}
+
+.error-message {
+  margin: 0;
+  color: var(--danger-color);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.error-message:not(:last-child) {
+  margin-bottom: var(--spacing-xs);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .expense-form-modal {

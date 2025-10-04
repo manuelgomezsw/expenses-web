@@ -26,5 +26,8 @@
   "debug.javascript.pauseForSourceMap": false,
   "debug.javascript.unmapMissingSources": true,
   "debug.javascript.autoExpandGetters": true,
-  "debug.javascript.suggestPrettyPrinting": true
+  "debug.javascript.suggestPrettyPrinting": true,
+  "debug.chrome.useV3": false,
+  "debug.javascript.debugByLinkOptions": "always",
+  "debug.allowBreakpointsEverywhere": true
 }

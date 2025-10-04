@@ -70,7 +70,7 @@
           <div class="summary-content">
             <span class="summary-label">Gastos Diarios</span>
             <span class="summary-value neutral">
-              {{ summary.mecatoBudget.monthly_budget | currency:'COP':'symbol':'1.0-0' }}
+              {{ summary.dailyExpensesBudget.monthly_budget | currency:'COP':'symbol':'1.0-0' }}
             </span>
             <span class="summary-percentage">
               {{ getDailyExpensesPercentage() | number:'1.1-1' }}% del salario
