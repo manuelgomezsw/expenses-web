@@ -18,20 +18,69 @@
       }
     },
     {
-      "name": "🐛 Debug Angular App",
+      "name": "🐛 Debug Angular App (Chrome)",
       "type": "chrome",
       "request": "launch",
       "preLaunchTask": "npm: start",
       "url": "http://localhost:4200",
       "webRoot": "${workspaceFolder}/src",
       "sourceMaps": true,
+      "sourceMapPathOverrides": {
+        "webpack:/*": "${webRoot}/*",
+        "/./*": "${webRoot}/*",
+        "/src/*": "${webRoot}/*",
+        "/*": "*",
+        "/./~/*": "${webRoot}/node_modules/*"
+      },
       "userDataDir": "${workspaceFolder}/.vscode/chrome-debug-profile",
       "runtimeArgs": [
         "--disable-web-security",
-        "--disable-features=VizDisplayCompositor"
+        "--disable-features=VizDisplayCompositor",
+        "--remote-debugging-port=9222"
       ],
       "console": "integratedTerminal",
-      "internalConsoleOptions": "openOnSessionStart"
+      "internalConsoleOptions": "openOnSessionStart",
+      "trace": "verbose"
+    },
+    {
+      "name": "🔥 Debug Angular App (Edge)",
+      "type": "msedge",
+      "request": "launch",
+      "preLaunchTask": "npm: start",
+      "url": "http://localhost:4200",
+      "webRoot": "${workspaceFolder}/src",
+      "sourceMaps": true,
+      "sourceMapPathOverrides": {
+        "webpack:/*": "${webRoot}/*",
+        "/./*": "${webRoot}/*",
+        "/src/*": "${webRoot}/*",
+        "/*": "*",
+        "/./~/*": "${webRoot}/node_modules/*"
+      },
+      "userDataDir": "${workspaceFolder}/.vscode/edge-debug-profile",
+      "runtimeArgs": [
+        "--disable-web-security",
+        "--remote-debugging-port=9223"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "openOnSessionStart",
+      "trace": "verbose"
+    },
+    {
+      "name": "🎯 Debug Angular App (Attach to Chrome)",
+      "type": "chrome",
+      "request": "attach",
+      "port": 9222,
+      "webRoot": "${workspaceFolder}/src",
+      "sourceMaps": true,
+      "sourceMapPathOverrides": {
+        "webpack:/*": "${webRoot}/*",
+        "/./*": "${webRoot}/*",
+        "/src/*": "${webRoot}/*",
+        "/*": "*",
+        "/./~/*": "${webRoot}/node_modules/*"
+      },
+      "trace": "verbose"
     },
     {
       "name": "🔧 Debug Angular Tests",
@@ -41,8 +90,40 @@
       "url": "http://localhost:9876/debug.html",
       "webRoot": "${workspaceFolder}/src",
       "sourceMaps": true,
+      "sourceMapPathOverrides": {
+        "webpack:/*": "${webRoot}/*",
+        "/./*": "${webRoot}/*",
+        "/src/*": "${webRoot}/*",
+        "/*": "*",
+        "/./~/*": "${webRoot}/node_modules/*"
+      },
       "userDataDir": "${workspaceFolder}/.vscode/chrome-debug-profile-tests",
-      "console": "integratedTerminal"
+      "console": "integratedTerminal",
+      "trace": "verbose"
+    },
+    {
+      "name": "🛠️ Debug con puerto personalizado",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:4201",
+      "webRoot": "${workspaceFolder}/src",
+      "sourceMaps": true,
+      "sourceMapPathOverrides": {
+        "webpack:/*": "${webRoot}/*",
+        "/./*": "${webRoot}/*",
+        "/src/*": "${webRoot}/*",
+        "/*": "*",
+        "/./~/*": "${webRoot}/node_modules/*"
+      },
+      "userDataDir": "${workspaceFolder}/.vscode/chrome-debug-profile-custom",
+      "runtimeArgs": [
+        "--disable-web-security",
+        "--disable-features=VizDisplayCompositor",
+        "--remote-debugging-port=9224"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "openOnSessionStart",
+      "trace": "verbose"
     }
   ]
 }

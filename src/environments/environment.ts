@@ -7,4 +7,5 @@ export const environment = {
     expensesUrl: 'https://expenses-api-dot-quotes-api-100.ue.r.appspot.com/expenses',
     budgetsUrl: 'https://expenses-api-dot-quotes-api-100.ue.r.appspot.com/budgets',
     conceptsUrl: 'https://expenses-api-dot-quotes-api-100.ue.r.appspot.com/concepts',
+    incomeUrl: 'https://expenses-api-dot-quotes-api-100.ue.r.appspot.com/api/config/income',
 };

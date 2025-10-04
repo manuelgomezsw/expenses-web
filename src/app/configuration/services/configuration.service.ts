@@ -1,12 +1,22 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, forkJoin } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { Observable, of, forkJoin, throwError } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 
 import { Salary } from '../../domain/salary';
 import { FixedExpense } from '../../domain/fixed-expense';
 import { DailyExpensesConfig } from '../../domain/daily-expenses-config';
 import { Pocket } from '../../domain/pocket';
 import { MockDataService } from '../../services/mock-data.service';
+import { NotificationService } from '../../services/notification/notification.service';
+import { environment } from '../../../environments/environment';
+
+// Interfaces para el manejo de errores del backend
+export interface BackendErrorResponse {
+  error: string;
+  message?: string;
+  statusCode?: number;
+}
 
 export interface FinancialConfiguration {
   salary: Salary;
@@ -35,15 +45,59 @@ export interface UpdateDailyBudgetRequest {
 })
 export class ConfigurationService {
 
-  constructor(private mockDataService: MockDataService) { }
+  private httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json'
+    })
+  };
+
+  constructor(
+    private http: HttpClient,
+    private mockDataService: MockDataService,
+    private notificationService: NotificationService
+  ) { }
+
+  /**
+   * Maneja errores HTTP según el contrato estándar del backend
+   */
+  private handleHttpError(error: HttpErrorResponse): Observable<never> {
+    console.error('Error HTTP completo:', {
+      status: error.status,
+      statusText: error.statusText,
+      error: error.error,
+      url: error.url
+    });
+    
+    if (error.status >= 400 && error.status < 500) {
+      // Errores 4xx: mostrar el mensaje del campo "error"
+      const backendError = error.error as BackendErrorResponse;
+      const errorMessage = backendError?.error || 'Error en la solicitud';
+      console.log('Error 4xx - Mostrando mensaje específico:', errorMessage);
+      this.notificationService.openSnackBar(errorMessage);
+    } else if (error.status >= 500) {
+      // Errores 5xx: mensaje genérico
+      console.log('Error 5xx - Mostrando mensaje genérico');
+      this.notificationService.openSnackBar('Ocurrió un error interno. Por favor, inténtalo nuevamente.');
+    } else if (error.status === 0) {
+      // Error de red (servidor no disponible)
+      console.log('Error de red - Servidor no disponible');
+      this.notificationService.openSnackBar('No se pudo conectar al servidor. Verificando disponibilidad...');
+    } else {
+      // Otros errores
+      console.log('Error desconocido:', error.status);
+      this.notificationService.openSnackBar('Error de conexión. Por favor, inténtalo nuevamente.');
+    }
+    
+    return throwError(() => error);
+  }
 
   /**
    * Obtiene toda la configuración financiera del mes
-   * En el futuro se conectará a: GET /api/configuration/{month}
+   * Conecta con el backend para obtener el salario (income)
    */
   getFinancialConfiguration(month: string): Observable<FinancialConfiguration> {
     return forkJoin({
-      salary: this.mockDataService.getSalary(month),
+      salary: this.getSalary(month),
       fixedExpenses: this.mockDataService.getFixedExpenses(month),
       dailyExpensesConfig: this.mockDataService.getDailyExpensesConfig(month)
     }).pipe(
@@ -62,19 +116,108 @@ export class ConfigurationService {
   }
 
   /**
-   * Actualiza el salario mensual
-   * En el futuro se conectará a: PUT /api/salary/{month}
+   * Obtiene el salario/ingreso mensual del backend
+   * GET /api/config/income/{month}
+   * Respuesta: objeto único con propiedad monthly_amount
+   */
+  getSalary(month: string): Observable<Salary> {
+    const url = `${environment.incomeUrl}/${month}`;
+    console.log('Obteniendo salario desde:', url);
+    
+    return this.http.get<{monthly_amount: number}>(url).pipe(
+      map(response => {
+        console.log('Respuesta del backend (objeto único):', response);
+        
+        // El backend retorna solo {monthly_amount: number}
+        if (response && typeof response.monthly_amount === 'number') {
+          const salary: Salary = {
+            id: 1, // ID por defecto ya que el backend no lo retorna
+            monthly_amount: response.monthly_amount,
+            month: month,
+            created_at: new Date().toISOString()
+          };
+          console.log('Salario obtenido exitosamente:', salary);
+          return salary;
+        } else {
+          // Si no hay datos válidos, crear un salario por defecto
+          const defaultSalary: Salary = {
+            id: 0,
+            monthly_amount: 0,
+            month: month,
+            created_at: new Date().toISOString()
+          };
+          console.log('Respuesta inválida, usando valores por defecto:', defaultSalary);
+          return defaultSalary;
+        }
+      }),
+      catchError(error => {
+        console.error('Error obteniendo salario del backend:', error);
+        console.error('URL utilizada:', url);
+        
+        // Manejar error según contrato estándar
+        this.handleHttpError(error);
+        
+        console.log('Usando datos mock como fallback');
+        // Fallback a datos mock en caso de error
+        return this.mockDataService.getSalary(month);
+      })
+    );
+  }
+
+  /**
+   * Actualiza el salario mensual en el backend
+   * PUT /api/config/income/{month}
+   * Respuesta: objeto único con propiedad monthly_amount
    */
   updateSalary(month: string, request: UpdateSalaryRequest): Observable<Salary> {
-    // Mock implementation
-    const updatedSalary: Salary = {
-      id: 1,
-      monthly_amount: request.monthly_amount,
-      month: month,
-      created_at: new Date().toISOString()
-    };
-    console.log('Updating salary:', updatedSalary);
-    return of(updatedSalary);
+    const url = `${environment.incomeUrl}/${month}`;
+    console.log('Actualizando salario en:', url, 'con datos:', request);
+    
+    return this.http.put<{monthly_amount: number}>(url, request, this.httpOptions).pipe(
+      map(response => {
+        console.log('Salario actualizado exitosamente (objeto único):', response);
+        
+        // El backend retorna solo {monthly_amount: number}
+        if (response && typeof response.monthly_amount === 'number') {
+          const updatedSalary: Salary = {
+            id: 1, // ID por defecto ya que el backend no lo retorna
+            monthly_amount: response.monthly_amount,
+            month: month,
+            created_at: new Date().toISOString()
+          };
+          console.log('Salario procesado correctamente:', updatedSalary);
+          return updatedSalary;
+        } else {
+          // Si la respuesta no tiene la estructura esperada, usar los datos enviados
+          const updatedSalary: Salary = {
+            id: 1,
+            monthly_amount: request.monthly_amount,
+            month: month,
+            created_at: new Date().toISOString()
+          };
+          console.log('Respuesta inesperada, usando datos enviados:', updatedSalary);
+          return updatedSalary;
+        }
+      }),
+      catchError(error => {
+        console.error('Error actualizando salario en el backend:', error);
+        console.error('URL utilizada:', url);
+        console.error('Datos enviados:', request);
+        
+        // Manejar error según contrato estándar
+        this.handleHttpError(error);
+        
+        // Fallback a implementación mock en caso de error
+        const updatedSalary: Salary = {
+          id: 1,
+          monthly_amount: request.monthly_amount,
+          month: month,
+          created_at: new Date().toISOString()
+        };
+        console.log('Usando fallback mock para salario:', updatedSalary);
+        return of(updatedSalary);
+      })
+    );
   }
 
   /**

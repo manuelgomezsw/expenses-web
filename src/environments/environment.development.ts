@@ -7,4 +7,5 @@ export const environment = {
     expensesUrl: 'http://localhost:8080/expenses',
     budgetsUrl: 'http://localhost:8080/budgets',
     conceptsUrl: 'http://localhost:8080/concepts',
+    incomeUrl: 'http://localhost:8080/api/config/income',
 };

@@ -1,0 +1,30 @@
+{
+  "debug.allowBreakpointsEverywhere": true,
+  "debug.javascript.usePreview": true,
+  "debug.javascript.codelens.npmScripts": "all",
+  "debug.node.autoAttach": "on",
+  "typescript.preferences.includePackageJsonAutoImports": "on",
+  "typescript.suggest.autoImports": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "angular.enable-strict-mode-prompt": false,
+  "files.exclude": {
+    "**/node_modules": false
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.angular": true
+  },
+  "emmet.includeLanguages": {
+    "typescript": "html"
+  },
+  "html.suggest.angular1": false,
+  "html.suggest.ionic": false,
+  "typescript.surveys.enabled": false,
+  "debug.javascript.breakOnConditionalError": true,
+  "debug.javascript.pauseForSourceMap": false,
+  "debug.javascript.unmapMissingSources": true,
+  "debug.javascript.autoExpandGetters": true,
+  "debug.javascript.suggestPrettyPrinting": true
+}
