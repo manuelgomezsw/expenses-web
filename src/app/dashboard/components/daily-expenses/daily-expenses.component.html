@@ -1,5 +1,7 @@
 <mat-card class="section-card daily-expenses-card" [class.collapsed]="isCollapsed">
-  <mat-card-header class="collapsible-header" (click)="onToggleCollapse()">
+  <mat-card-header class="collapsible-header" 
+                   (click)="onToggleCollapse()" 
+                   (touchstart)="onToggleCollapse()">
     <div class="header-content">
       <mat-card-title>
         <mat-icon>local_cafe</mat-icon>
@@ -7,7 +9,9 @@
       </mat-card-title>
       <mat-card-subtitle>Control de gastos del día a día</mat-card-subtitle>
     </div>
-    <button mat-icon-button class="collapse-button" (click)="$event.stopPropagation()">
+    <button mat-icon-button class="collapse-button" 
+            (click)="onToggleCollapse(); $event.stopPropagation()"
+            (touchstart)="onToggleCollapse(); $event.stopPropagation()">
       <mat-icon>{{ isCollapsed ? 'expand_more' : 'expand_less' }}</mat-icon>
     </button>
   </mat-card-header>

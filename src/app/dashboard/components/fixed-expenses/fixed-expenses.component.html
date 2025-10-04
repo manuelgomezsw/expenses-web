@@ -1,6 +1,8 @@
 <div class="fixed-expenses">
   <mat-card class="expenses-card" [class.collapsed]="isCollapsed">
-    <mat-card-header class="collapsible-header" (click)="onToggleCollapse()">
+    <mat-card-header class="collapsible-header" 
+                     (click)="onToggleCollapse()" 
+                     (touchstart)="onToggleCollapse()">
       <div class="header-content">
         <mat-card-title>
           <mat-icon>account_balance_wallet</mat-icon>
@@ -11,7 +13,9 @@
           ({{ getPaidPercentage() | number:'1.0-0' }}%)
         </mat-card-subtitle>
       </div>
-      <button mat-icon-button class="collapse-button" (click)="$event.stopPropagation()">
+      <button mat-icon-button class="collapse-button" 
+              (click)="onToggleCollapse(); $event.stopPropagation()"
+              (touchstart)="onToggleCollapse(); $event.stopPropagation()">
         <mat-icon>{{ isCollapsed ? 'expand_more' : 'expand_less' }}</mat-icon>
       </button>
     </mat-card-header>
