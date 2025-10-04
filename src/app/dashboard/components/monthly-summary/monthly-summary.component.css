@@ -290,3 +290,106 @@
   background-color: var(--status-due-bg);
   color: var(--status-due);
 }
+
+/* ========================================
+   VERSIÓN MINIMALISTA (CONFIGURACIÓN)
+   ======================================== */
+
+.monthly-summary-minimal {
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background: var(--background-secondary);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.loading-minimal,
+.error-minimal {
+  text-align: center;
+  padding: var(--spacing-sm);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.error-minimal {
+  color: var(--danger-color);
+}
+
+.summary-minimal {
+  /* Contenedor principal minimalista */
+}
+
+.summary-header {
+  margin-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--card-border);
+  padding-bottom: var(--spacing-sm);
+}
+
+.summary-header h3 {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.summary-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm);
+  background: var(--background-tertiary);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid transparent;
+}
+
+.stat-item.balance {
+  border-left-color: var(--primary-color);
+  background: rgba(26, 54, 93, 0.05);
+}
+
+.stat-label {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+}
+
+.stat-value.positive {
+  color: var(--secondary-color);
+}
+
+.stat-value.negative {
+  color: var(--danger-color);
+}
+
+.stat-value.neutral {
+  color: var(--accent-color);
+}
+
+/* Responsive para versión minimalista */
+@media (max-width: 768px) {
+  .summary-stats {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+  }
+  
+  .stat-item {
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+  
+  .stat-label,
+  .stat-value {
+    font-size: var(--font-size-sm);
+  }
+}

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, combineLatest, throwError } from 'rxjs';
+import { Observable, combineLatest, throwError, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 
 import { DailyExpense } from '../../domain/daily-expense';
@@ -71,6 +71,15 @@ export class DailyExpensesService {
       map(response => {
         console.log('Configuración de gastos diarios obtenida exitosamente:', response);
         
+        // Si la respuesta es null o undefined, devolver configuración por defecto
+        if (response === null || response === undefined) {
+          console.log('Backend devolvió null/undefined para configuración, usando valores por defecto');
+          return {
+            month: month,
+            monthly_budget: 0
+          };
+        }
+        
         // Asegurar que la respuesta tenga la estructura correcta
         return {
           ...response,
@@ -82,7 +91,16 @@ export class DailyExpensesService {
         console.error('Error obteniendo configuración de gastos diarios del backend:', error);
         console.error('URL utilizada:', url);
         
-        // Propagar el error sin fallback
+        // Si es un 404, devolver configuración por defecto
+        if (error.status === 404) {
+          console.log('No hay configuración para el mes, usando valores por defecto:', month);
+          return of({
+            month: month,
+            monthly_budget: 0
+          });
+        }
+        
+        // Para otros errores, propagar el error
         return throwError(() => new Error(`Error cargando configuración de gastos diarios: ${error.message || 'Error de conexión'}`));
       })
     );
@@ -100,9 +118,16 @@ export class DailyExpensesService {
       map(response => {
         console.log('Gastos diarios obtenidos exitosamente:', response);
         
+        // Si la respuesta es null o undefined, devolver array vacío
+        if (response === null || response === undefined) {
+          console.log('Backend devolvió null/undefined, interpretando como sin gastos');
+          return [];
+        }
+        
         // Validar que la respuesta sea un array
         if (!Array.isArray(response)) {
-          throw new Error('La respuesta del servidor no es un array válido');
+          console.warn('La respuesta del servidor no es un array válido:', response);
+          return [];
         }
 
         // Ordenar por fecha descendente y asegurar estructura correcta
@@ -117,7 +142,13 @@ export class DailyExpensesService {
         console.error('Error obteniendo gastos diarios del backend:', error);
         console.error('URL utilizada:', url);
         
-        // Propagar el error sin fallback
+        // Si es un 404, significa que no hay gastos para este mes - devolver array vacío
+        if (error.status === 404) {
+          console.log('No hay gastos registrados para el mes:', month);
+          return of([]);
+        }
+        
+        // Para otros errores, propagar el error
         return throwError(() => new Error(`Error cargando gastos diarios: ${error.message || 'Error de conexión'}`));
       })
     );
@@ -141,9 +172,24 @@ export class DailyExpensesService {
       map(response => {
         console.log('Gasto diario agregado exitosamente:', response);
         
+        // Si la respuesta es null o undefined, crear objeto con los datos enviados
+        if (response === null || response === undefined) {
+          console.log('Backend devolvió null/undefined, creando objeto con datos enviados');
+          return {
+            id: Date.now(), // ID temporal
+            description: expense.description,
+            amount: expense.amount,
+            date: expense.date,
+            created_at: new Date().toISOString()
+          };
+        }
+        
         // Asegurar que la respuesta tenga la estructura correcta
         return {
           ...response,
+          description: response.description || expense.description,
+          amount: response.amount || expense.amount,
+          date: response.date || expense.date,
           created_at: response.created_at || new Date().toISOString()
         };
       }),
@@ -175,9 +221,25 @@ export class DailyExpensesService {
       map(response => {
         console.log('Gasto diario actualizado exitosamente:', response);
         
+        // Si la respuesta es null o undefined, devolver el objeto actualizado
+        if (response === null || response === undefined) {
+          console.log('Backend devolvió null/undefined, devolviendo objeto actualizado');
+          return {
+            ...expense,
+            description: expense.description,
+            amount: expense.amount,
+            date: expense.date,
+            created_at: expense.created_at || new Date().toISOString()
+          };
+        }
+        
         // Asegurar que la respuesta tenga la estructura correcta
         return {
           ...response,
+          id: response.id || expense.id,
+          description: response.description || expense.description,
+          amount: response.amount || expense.amount,
+          date: response.date || expense.date,
           created_at: response.created_at || expense.created_at || new Date().toISOString()
         };
       }),

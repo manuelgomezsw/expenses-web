@@ -467,6 +467,37 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
     return `${year}-${month}`;
   }
 
+  // Método para calcular resumen local (sin backend adicional)
+  getLocalMonthlySummary(): any {
+    if (!this.configuration) return null;
+
+    const totalFixedExpenses = this.configuration.fixedExpenses
+      .reduce((total, expense) => total + expense.amount, 0);
+
+    const availableAfterFixed = this.configuration.salary.monthly_amount - totalFixedExpenses;
+    const availableOverall = availableAfterFixed - this.configuration.dailyExpensesConfig.monthly_budget;
+
+    return {
+      salary: this.configuration.salary,
+      totalFixedExpenses: totalFixedExpenses,
+      dailyExpensesBudget: this.configuration.dailyExpensesConfig,
+      availableOverall: availableOverall,
+      fixedExpensesPercentage: this.configuration.salary.monthly_amount > 0 
+        ? (totalFixedExpenses / this.configuration.salary.monthly_amount) * 100 
+        : 0,
+      dailyBudgetPercentage: this.configuration.salary.monthly_amount > 0 
+        ? (this.configuration.dailyExpensesConfig.monthly_budget / this.configuration.salary.monthly_amount) * 100 
+        : 0,
+      overallBalanceStatus: availableOverall > 0 ? 'surplus' : (availableOverall < 0 ? 'deficit' : 'balanced')
+    };
+  }
+
+  getMonthName(month: string): string {
+    const [year, monthNum] = month.split('-').map(Number);
+    const date = new Date(year, monthNum - 1, 1);
+    return date.toLocaleString('es-CO', { month: 'long', year: 'numeric' });
+  }
+
   private isValidMonth(month: string): boolean {
     const regex = /^\d{4}-\d{2}$/;
     if (!regex.test(month)) return false;

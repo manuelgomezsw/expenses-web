@@ -8,7 +8,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 
 // Components
-import { MonthlySummaryComponent } from './components/monthly-summary/monthly-summary.component';
 import { FixedExpensesComponent } from './components/fixed-expenses/fixed-expenses.component';
 import { DailyExpensesComponent } from './components/daily-expenses/daily-expenses.component';
 import { MonthSelectorComponent } from '../shared/components/month-selector/month-selector.component';
@@ -23,7 +22,6 @@ import { environment } from '../../environments/environment';
     MatIconModule,
     MatButtonModule,
     MonthSelectorComponent,
-    MonthlySummaryComponent,
     FixedExpensesComponent,
     DailyExpensesComponent
   ],
@@ -36,7 +34,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   currentMonth: string = this.getCurrentMonth();
   
   // Collapsible components state
-  isMonthlySummaryCollapsed: boolean = false;
   isFixedExpensesCollapsed: boolean = false;
   isDailyExpensesCollapsed: boolean = false;
   
@@ -149,20 +146,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
   setInitialCollapseState(): void {
     if (this.isMobile) {
       // On mobile: keep monthly-summary expanded, collapse others
-      this.isMonthlySummaryCollapsed = false;
       this.isFixedExpensesCollapsed = true;
       this.isDailyExpensesCollapsed = false; // Keep daily expenses expanded for quick access
     } else {
       // On desktop: keep all expanded
-      this.isMonthlySummaryCollapsed = false;
       this.isFixedExpensesCollapsed = false;
       this.isDailyExpensesCollapsed = false;
     }
   }
 
-  toggleMonthlySummary(): void {
-    this.isMonthlySummaryCollapsed = !this.isMonthlySummaryCollapsed;
-  }
 
   toggleFixedExpenses(): void {
     this.isFixedExpensesCollapsed = !this.isFixedExpensesCollapsed;

@@ -6,6 +6,40 @@
     (monthChanged)="onMonthChanged($event)">
   </app-month-selector>
 
+  <!-- Resumen Mensual Informativo (Calculado Localmente) -->
+  <div *ngIf="!isLoading && !hasError && configuration" class="monthly-summary-info">
+    <div class="monthly-summary-minimal">
+      <div class="summary-minimal">
+        <div class="summary-header">
+          <h3>Resumen Financiero - {{ getMonthName(currentMonth) }}</h3>
+        </div>
+        
+        <div class="summary-stats" *ngIf="getLocalMonthlySummary() as summary">
+          <div class="stat-item">
+            <span class="stat-label">Ingresos:</span>
+            <span class="stat-value positive">{{ summary.salary.monthly_amount | currency:'COP':'symbol':'1.0-0' }}</span>
+          </div>
+          
+          <div class="stat-item">
+            <span class="stat-label">Gastos Fijos:</span>
+            <span class="stat-value negative">{{ summary.totalFixedExpenses | currency:'COP':'symbol':'1.0-0' }}</span>
+          </div>
+          
+          <div class="stat-item">
+            <span class="stat-label">Presupuesto Diario:</span>
+            <span class="stat-value neutral">{{ summary.dailyExpensesBudget.monthly_budget | currency:'COP':'symbol':'1.0-0' }}</span>
+          </div>
+          
+          <div class="stat-item balance">
+            <span class="stat-label">Disponible:</span>
+            <span class="stat-value" [class]="summary.availableOverall >= 0 ? 'positive' : 'negative'">
+              {{ summary.availableOverall | currency:'COP':'symbol':'1.0-0' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Loading State -->
   <div *ngIf="isLoading" class="loading-state">

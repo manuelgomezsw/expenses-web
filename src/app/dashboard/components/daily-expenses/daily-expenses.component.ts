@@ -142,12 +142,7 @@ export class DailyExpensesComponent implements OnInit, OnDestroy, OnChanges {
             this.summary.expenses.sort((a, b) => 
               new Date(b.date).getTime() - new Date(a.date).getTime()
             );
-            // Recalculate totals
-            this.summary.totalSpent = this.dailyExpensesService.calculateTotalSpent(this.summary.expenses);
-            this.summary.remaining = this.summary.config.monthly_budget - this.summary.totalSpent;
-            this.summary.progressPercentage = this.summary.config.monthly_budget > 0 
-              ? (this.summary.totalSpent / this.summary.config.monthly_budget) * 100 
-              : 0;
+            this.updateSummaryTotals();
           }
           this.clearDailyForm();
           this.notificationService.openSnackBar('Gasto diario agregado');
@@ -181,12 +176,7 @@ export class DailyExpensesComponent implements OnInit, OnDestroy, OnChanges {
               this.summary.expenses.sort((a, b) => 
                 new Date(b.date).getTime() - new Date(a.date).getTime()
               );
-              // Recalculate totals
-              this.summary.totalSpent = this.dailyExpensesService.calculateTotalSpent(this.summary.expenses);
-              this.summary.remaining = this.summary.config.monthly_budget - this.summary.totalSpent;
-              this.summary.progressPercentage = this.summary.config.monthly_budget > 0 
-                ? (this.summary.totalSpent / this.summary.config.monthly_budget) * 100 
-                : 0;
+              this.updateSummaryTotals();
             }
           }
           this.clearDailyForm();
@@ -243,12 +233,7 @@ export class DailyExpensesComponent implements OnInit, OnDestroy, OnChanges {
             next: () => {
               if (this.summary) {
                 this.summary.expenses = this.summary.expenses.filter(e => e.id !== expenseId);
-                // Recalculate totals
-                this.summary.totalSpent = this.dailyExpensesService.calculateTotalSpent(this.summary.expenses);
-                this.summary.remaining = this.summary.config.monthly_budget - this.summary.totalSpent;
-                this.summary.progressPercentage = this.summary.config.monthly_budget > 0 
-                  ? (this.summary.totalSpent / this.summary.config.monthly_budget) * 100 
-                  : 0;
+                this.updateSummaryTotals();
               }
               this.notificationService.openSnackBar('Gasto eliminado correctamente');
               this.expenseDeleted.emit(); // Notify parent
@@ -276,6 +261,16 @@ export class DailyExpensesComponent implements OnInit, OnDestroy, OnChanges {
     };
     this.isEditingDaily = false;
     this.editingDailyId = null;
+  }
+
+  private updateSummaryTotals(): void {
+    if (!this.summary) return;
+    
+    this.summary.totalSpent = this.dailyExpensesService.calculateTotalSpent(this.summary.expenses);
+    this.summary.remaining = this.summary.config.monthly_budget - this.summary.totalSpent;
+    this.summary.progressPercentage = this.summary.config.monthly_budget > 0 
+      ? (this.summary.totalSpent / this.summary.config.monthly_budget) * 100 
+      : 0;
   }
 
   // Utility methods

@@ -30,6 +30,7 @@ import { NotificationService } from '../../../services/notification/notification
 export class MonthlySummaryComponent implements OnInit, OnDestroy, OnChanges {
   @Input() currentMonth: string = '2024-01';
   @Input() isCollapsed: boolean = false;
+  @Input() isMinimalist: boolean = false;
   @Output() toggleCollapse = new EventEmitter<void>();
 
   summary: MonthlySummary | null = null;

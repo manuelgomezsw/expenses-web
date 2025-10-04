@@ -7,14 +7,6 @@
     (monthChanged)="onMonthChanged($event)">
   </app-month-selector>
   
-  <!-- Sección 1: Resumen Mensual (Top) -->
-  <div class="summary-section">
-    <app-monthly-summary 
-      [currentMonth]="currentMonth"
-      [isCollapsed]="isMonthlySummaryCollapsed"
-      (toggleCollapse)="toggleMonthlySummary()">
-    </app-monthly-summary>
-  </div>
 
   <!-- Sección 2 y 3: Gastos Diarios y Gastos Fijos (Side by side) -->
   <div class="main-content">
