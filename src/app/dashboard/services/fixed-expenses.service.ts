@@ -73,29 +73,35 @@ export class FixedExpensesService {
 
     // Ordenar gastos dentro de cada bolsillo
     Object.keys(groups).forEach(pocketName => {
-      groups[pocketName] = this.sortExpensesByAmountAndStatus(groups[pocketName]);
+      groups[pocketName] = this.sortExpensesByStatusAndAmount(groups[pocketName]);
     });
 
     return groups;
   }
 
   /**
-   * Ordena gastos por monto (mayor a menor) y luego por estado (vencido → pendiente → pagado)
+   * Ordena gastos por estado (vencido → pendiente → pagado) y luego por monto (mayor a menor)
+   * 
+   * Ejemplo de resultado:
+   * 1. Servicios: $300,000 (vencido)
+   * 2. Arriendo: $1,200,000 (pendiente) 
+   * 3. Celular: $50,000 (pendiente)
+   * 4. Internet: $80,000 (pagado)
    */
-  sortExpensesByAmountAndStatus(expenses: FixedExpense[]): FixedExpense[] {
+  sortExpensesByStatusAndAmount(expenses: FixedExpense[]): FixedExpense[] {
     return expenses.sort((a, b) => {
-      // Primer criterio: ordenar por monto (mayor a menor)
-      const amountDiff = b.amount - a.amount;
-      if (amountDiff !== 0) {
-        return amountDiff;
-      }
-
-      // Segundo criterio: ordenar por estado (vencido → pendiente → pagado)
+      // Primer criterio: ordenar por estado (vencido → pendiente → pagado)
       const statusA = this.getExpenseStatus(a);
       const statusB = this.getExpenseStatus(b);
       
       const statusOrder = { 'overdue': 0, 'due': 1, 'paid': 2 };
-      return statusOrder[statusA] - statusOrder[statusB];
+      const statusDiff = statusOrder[statusA] - statusOrder[statusB];
+      if (statusDiff !== 0) {
+        return statusDiff;
+      }
+
+      // Segundo criterio: ordenar por monto (mayor a menor)
+      return b.amount - a.amount;
     });
   }
 
