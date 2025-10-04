@@ -59,10 +59,10 @@ export class FixedExpensesService {
   }
 
   /**
-   * Agrupa los gastos fijos por bolsillo
+   * Agrupa los gastos fijos por bolsillo y los ordena
    */
   groupExpensesByPocket(expenses: FixedExpense[]): FixedExpensesByPocket {
-    return expenses.reduce((groups, expense) => {
+    const groups = expenses.reduce((groups, expense) => {
       const pocket = expense.pocket_name || `Bolsillo ${expense.pocket_id}`;
       if (!groups[pocket]) {
         groups[pocket] = [];
@@ -70,6 +70,52 @@ export class FixedExpensesService {
       groups[pocket].push(expense);
       return groups;
     }, {} as FixedExpensesByPocket);
+
+    // Ordenar gastos dentro de cada bolsillo
+    Object.keys(groups).forEach(pocketName => {
+      groups[pocketName] = this.sortExpensesByAmountAndStatus(groups[pocketName]);
+    });
+
+    return groups;
+  }
+
+  /**
+   * Ordena gastos por monto (mayor a menor) y luego por estado (vencido → pendiente → pagado)
+   */
+  sortExpensesByAmountAndStatus(expenses: FixedExpense[]): FixedExpense[] {
+    return expenses.sort((a, b) => {
+      // Primer criterio: ordenar por monto (mayor a menor)
+      const amountDiff = b.amount - a.amount;
+      if (amountDiff !== 0) {
+        return amountDiff;
+      }
+
+      // Segundo criterio: ordenar por estado (vencido → pendiente → pagado)
+      const statusA = this.getExpenseStatus(a);
+      const statusB = this.getExpenseStatus(b);
+      
+      const statusOrder = { 'overdue': 0, 'due': 1, 'paid': 2 };
+      return statusOrder[statusA] - statusOrder[statusB];
+    });
+  }
+
+  /**
+   * Filtra gastos por estado
+   */
+  filterExpensesByStatus(expenses: FixedExpense[], filter: 'all' | 'paid' | 'pending'): FixedExpense[] {
+    if (filter === 'all') {
+      return expenses;
+    }
+    
+    if (filter === 'paid') {
+      return expenses.filter(expense => expense.is_paid);
+    }
+    
+    if (filter === 'pending') {
+      return expenses.filter(expense => !expense.is_paid);
+    }
+    
+    return expenses;
   }
 
   /**

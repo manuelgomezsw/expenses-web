@@ -87,6 +87,36 @@
   border-bottom: none !important;
 }
 
+/* Floating Action Button */
+.add-expense-fab {
+  position: absolute !important;
+  bottom: var(--spacing-lg) !important;
+  right: var(--spacing-lg) !important;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%) !important;
+  color: white !important;
+  box-shadow: 0 4px 16px rgba(26, 54, 93, 0.3) !important;
+  z-index: 10 !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.add-expense-fab:hover {
+  transform: translateY(-2px) scale(1.05) !important;
+  box-shadow: 0 8px 24px rgba(26, 54, 93, 0.4) !important;
+}
+
+.add-expense-fab:active {
+  transform: translateY(0) scale(0.98) !important;
+}
+
+/* Contenedor fijo del progreso */
+.daily-progress-container {
+  padding: 0 var(--spacing-lg) var(--spacing-md) var(--spacing-lg);
+  background: linear-gradient(135deg, #fafbfc 0%, #f8fafc 100%);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+  backdrop-filter: blur(10px);
+  flex-shrink: 0;
+}
+
 .daily-expenses-content {
   display: flex;
   flex-direction: column;
@@ -95,13 +125,16 @@
 
 /* Progress Section */
 .daily-progress {
-  background: white;
-  border: 1px solid var(--card-border);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-lg);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(8px);
+  margin: var(--spacing-md) 0;
 }
 
 .progress-header {

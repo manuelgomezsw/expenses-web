@@ -44,6 +44,144 @@
   background-color: var(--background-tertiary);
 }
 
+/* Filters Styles - Minimalista */
+.filters-container {
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: linear-gradient(135deg, #fafbfc 0%, #f8fafc 100%);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+  backdrop-filter: blur(10px);
+}
+
+.filter-chip-set {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
+
+.filter-chip {
+  margin-right: var(--spacing-sm) !important;
+  margin-bottom: var(--spacing-xs) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border: 1px solid rgba(148, 163, 184, 0.2) !important;
+  background: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(8px) !important;
+  font-weight: 500 !important;
+  font-size: var(--font-size-sm) !important;
+  height: 36px !important;
+  border-radius: 18px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+}
+
+.filter-chip:hover {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  border-color: rgba(26, 54, 93, 0.3) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+}
+
+.filter-chip.mdc-evolution-chip--selected {
+  background: linear-gradient(135deg, #1a365d 0%, #2d5a87 100%) !important;
+  color: white !important;
+  border-color: transparent !important;
+  box-shadow: 0 2px 8px rgba(26, 54, 93, 0.25) !important;
+}
+
+.filter-chip.mdc-evolution-chip--selected .filter-label {
+  color: white !important;
+}
+
+.filter-chip.mdc-evolution-chip--selected:hover {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 4px 16px rgba(26, 54, 93, 0.35) !important;
+}
+
+
+.filter-chip.mdc-evolution-chip--selected .filter-count {
+  color: rgba(255, 255, 255, 0.95) !important;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  padding: 2px 6px;
+  margin-left: var(--spacing-xs);
+}
+
+/* Ocultar iconos automáticos de Material Design */
+.filter-chip .mdc-evolution-chip__checkmark,
+.filter-chip .mat-mdc-chip-checkmark,
+.filter-chip .mdc-evolution-chip__icon--trailing,
+.filter-chip .mat-mdc-chip-trailing-icon,
+.filter-chip .mdc-evolution-chip__icon--leading,
+.filter-chip .mat-mdc-chip-avatar,
+.filter-chip .mdc-evolution-chip__icon,
+.filter-chip .mat-mdc-chip-graphic,
+.filter-chip mat-icon,
+.filter-chip .mat-icon,
+.filter-chip .material-icons {
+  display: none !important;
+}
+
+
+.filter-label {
+  font-weight: 500;
+  letter-spacing: 0.025em;
+}
+
+.filter-count {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  margin-left: var(--spacing-xs);
+  color: var(--text-muted);
+  background: rgba(148, 163, 184, 0.1);
+  border-radius: 8px;
+  padding: 1px 5px;
+  transition: all 0.3s ease;
+  min-width: 20px;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Responsive Design para Filtros */
+@media (max-width: 768px) {
+  .filters-container {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+  
+  .filter-chip {
+    height: 32px !important;
+    font-size: var(--font-size-xs) !important;
+    margin-right: var(--spacing-xs) !important;
+  }
+  
+  .filter-chip mat-icon {
+    font-size: 16px !important;
+    width: 16px !important;
+    height: 16px !important;
+  }
+  
+  .filter-count {
+    font-size: 10px;
+    padding: 1px 4px;
+    margin-left: 4px;
+  }
+  
+  .filter-label {
+    font-size: var(--font-size-xs);
+  }
+}
+
+@media (max-width: 480px) {
+  .filter-chip-set {
+    gap: var(--spacing-xs);
+  }
+  
+  .filter-chip {
+    height: 28px !important;
+    border-radius: 14px !important;
+  }
+}
+
 .header-content {
   flex: 1;
 }
@@ -126,8 +264,6 @@
 
 /* Pockets Container */
 .pockets-container {
-  max-height: 65vh;
-  overflow-y: auto;
   padding-right: var(--spacing-xs);
 }
 

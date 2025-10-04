@@ -1,0 +1,53 @@
+<h2 mat-dialog-title>{{ getTitle() }}</h2>
+
+<mat-dialog-content>
+  <form #expenseForm="ngForm">
+    
+    <!-- Descripción -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Descripción</mat-label>
+      <input matInput 
+             [(ngModel)]="formData.description" 
+             name="description"
+             placeholder="Ej: Café, almuerzo, libro..."
+             required>
+    </mat-form-field>
+    
+    <!-- Valor -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Valor</mat-label>
+      <input matInput 
+             type="number" 
+             [(ngModel)]="formData.amount" 
+             name="amount"
+             placeholder="0"
+             min="1"
+             required>
+      <span matTextPrefix>$</span>
+    </mat-form-field>
+    
+    <!-- Fecha -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Fecha</mat-label>
+      <input matInput 
+             type="date" 
+             [(ngModel)]="formData.date" 
+             name="date"
+             required>
+    </mat-form-field>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-button (click)="onCancel()">
+    Cancelar
+  </button>
+  
+  <button mat-raised-button 
+          color="primary" 
+          (click)="onSave()"
+          [disabled]="!isFormValid()">
+    {{ getSaveButtonText() }}
+  </button>
+</mat-dialog-actions>

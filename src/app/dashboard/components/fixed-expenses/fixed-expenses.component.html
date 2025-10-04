@@ -16,6 +16,20 @@
       </button>
     </mat-card-header>
 
+    <!-- Filtros -->
+    <div *ngIf="!isCollapsed" class="filters-container" (click)="$event.stopPropagation()">
+      <mat-chip-set aria-label="Filtros de gastos" class="filter-chip-set">
+        <mat-chip-option 
+          *ngFor="let option of filterOptions"
+          [selected]="isFilterActive(option.value)"
+          (click)="setFilter(option.value)"
+          class="filter-chip">
+          <span class="filter-label">{{ option.label }}</span>
+          <span class="filter-count">{{ getFilterCount(option.value) }}</span>
+        </mat-chip-option>
+      </mat-chip-set>
+    </div>
+
     <mat-card-content [class.collapsed]="isCollapsed">
       <!-- Loading State -->
       <div *ngIf="isLoading" class="loading-container">
@@ -40,6 +54,12 @@
         <div *ngIf="expenses.length === 0" class="no-expenses">
           <mat-icon>receipt_long</mat-icon>
           <span>No hay gastos fijos registrados este mes</span>
+        </div>
+
+        <!-- No filtered expenses message -->
+        <div *ngIf="expenses.length > 0 && filteredExpenses.length === 0" class="no-expenses">
+          <mat-icon>filter_list_off</mat-icon>
+          <span>No hay gastos que coincidan con el filtro seleccionado</span>
         </div>
 
         <!-- Expenses by pocket -->
@@ -96,12 +116,15 @@
         </div>
 
         <!-- Summary Footer -->
-        <div *ngIf="expenses.length > 0" class="expenses-summary">
+        <div *ngIf="filteredExpenses.length > 0" class="expenses-summary">
           <mat-divider></mat-divider>
           <div class="summary-row">
-            <span class="summary-label">Total Gastos Fijos:</span>
+            <span class="summary-label">
+              {{ currentFilter === 'all' ? 'Total Gastos Fijos:' : 
+                 currentFilter === 'paid' ? 'Total Pagados:' : 'Total Pendientes:' }}
+            </span>
             <span class="summary-total">
-              {{ getTotalFixedExpenses() | currency:'COP':'symbol':'1.0-0' }}
+              {{ getFilteredTotal() | currency:'COP':'symbol':'1.0-0' }}
             </span>
           </div>
         </div>

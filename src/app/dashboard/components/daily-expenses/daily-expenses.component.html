@@ -11,6 +11,27 @@
       <mat-icon>{{ isCollapsed ? 'expand_more' : 'expand_less' }}</mat-icon>
     </button>
   </mat-card-header>
+  <!-- Progreso del presupuesto - Fijo -->
+  <div *ngIf="!isCollapsed && !isLoading && !hasError && summary" class="daily-progress-container">
+    <div class="daily-progress">
+      <div class="progress-header">
+        <span class="budget-label">Presupuesto Mensual: {{ summary.config.monthly_budget | currency:'COP':'symbol':'1.0-0' }}</span>
+      </div>
+      <div class="progress-info">
+        <span class="spent">Gastado: {{ summary.totalSpent | currency:'COP':'symbol':'1.0-0' }}</span>
+        <span class="remaining" [class]="summary.remaining >= 0 ? 'positive' : 'negative'">
+          Restante: {{ summary.remaining | currency:'COP':'symbol':'1.0-0' }}
+        </span>
+      </div>
+      <mat-progress-bar 
+        mode="determinate" 
+        [value]="summary.progressPercentage"
+        [color]="getProgressColor()">
+      </mat-progress-bar>
+      <span class="progress-percentage">{{ summary.progressPercentage | number:'1.1-1' }}% utilizado</span>
+    </div>
+  </div>
+
   <mat-card-content [class.collapsed]="isCollapsed">
     <div *ngIf="isLoading" class="loading-state">
       <mat-progress-bar mode="indeterminate"></mat-progress-bar>
@@ -24,86 +45,7 @@
     </div>
 
     <div *ngIf="!isLoading && !hasError && summary" class="daily-expenses-content">
-      
-      <!-- Progreso del presupuesto -->
-      <div class="daily-progress">
-        <div class="progress-header">
-          <span class="budget-label">Presupuesto Mensual: {{ summary.config.monthly_budget | currency:'COP':'symbol':'1.0-0' }}</span>
-        </div>
-        <div class="progress-info">
-          <span class="spent">Gastado: {{ summary.totalSpent | currency:'COP':'symbol':'1.0-0' }}</span>
-          <span class="remaining" [class]="summary.remaining >= 0 ? 'positive' : 'negative'">
-            Restante: {{ summary.remaining | currency:'COP':'symbol':'1.0-0' }}
-          </span>
-        </div>
-        <mat-progress-bar 
-          mode="determinate" 
-          [value]="summary.progressPercentage"
-          [color]="getProgressColor()">
-        </mat-progress-bar>
-        <span class="progress-percentage">{{ summary.progressPercentage | number:'1.1-1' }}% utilizado</span>
-      </div>
 
-      <mat-divider></mat-divider>
-
-      <!-- Formulario de entrada rápida -->
-      <div class="quick-entry">
-        <h4>{{ isEditingDaily ? 'Editar Gasto' : 'Agregar Gasto' }}</h4>
-        <form (ngSubmit)="addDailyExpense()" #dailyForm="ngForm">
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>¿Qué compraste?</mat-label>
-            <input matInput 
-                   [(ngModel)]="newDailyExpense.description" 
-                   name="description"
-                   placeholder="Ej: Café, almuerzo, libro..."
-                   required>
-          </mat-form-field>
-          
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="flex-1">
-              <mat-label>Valor</mat-label>
-              <input matInput 
-                     type="number" 
-                     [(ngModel)]="newDailyExpense.amount" 
-                     name="amount"
-                     placeholder="0"
-                     required>
-              <span matTextPrefix>$</span>
-            </mat-form-field>
-            
-            <mat-form-field appearance="outline" class="flex-1">
-              <mat-label>Fecha</mat-label>
-              <input matInput 
-                     type="date" 
-                     [(ngModel)]="newDailyExpense.date" 
-                     name="date"
-                     required>
-            </mat-form-field>
-          </div>
-          
-          <div class="form-buttons">
-            <button mat-raised-button 
-                    color="primary" 
-                    type="submit"
-                    [disabled]="!dailyForm.form.valid"
-                    class="save-button">
-              <mat-icon>{{ isEditingDaily ? 'save' : 'add' }}</mat-icon>
-              {{ isEditingDaily ? 'Guardar Cambios' : 'Agregar Gasto' }}
-            </button>
-            
-            <button *ngIf="isEditingDaily"
-                    mat-button 
-                    type="button"
-                    (click)="cancelEditDaily()"
-                    class="cancel-button">
-              <mat-icon>cancel</mat-icon>
-              Cancelar
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <mat-divider></mat-divider>
 
       <!-- Lista de gastos recientes -->
       <div class="recent-expenses">
@@ -142,4 +84,14 @@
 
     </div>
   </mat-card-content>
+
+  <!-- Floating Action Button -->
+  <button *ngIf="!isCollapsed && !isLoading && !hasError && summary" 
+          mat-fab 
+          color="primary" 
+          class="add-expense-fab"
+          (click)="openAddExpenseModal()"
+          matTooltip="Agregar gasto diario">
+    <mat-icon>add</mat-icon>
+  </button>
 </mat-card>

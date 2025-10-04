@@ -10,12 +10,14 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
+import { MatButtonModule as MatFabModule } from '@angular/material/button';
 
 import { DailyExpense } from '../../../domain/daily-expense';
 import { DailyExpensesConfig } from '../../../domain/daily-expenses-config';
 import { DailyExpensesService, DailyExpensesSummary } from '../../services/daily-expenses.service';
 import { NotificationService } from '../../../services/notification/notification.service';
 import { ConfirmDialogComponent } from '../../../components/confirm-dialog/confirm-dialog.component';
+import { DailyExpenseFormModalComponent, DailyExpenseFormData, DailyExpenseFormResult } from '../daily-expense-form-modal/daily-expense-form-modal.component';
 import { CustomDatePipe } from '../../../pipes/custom-date/custom-date.pipe';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -33,6 +35,7 @@ import { Subject, takeUntil } from 'rxjs';
     MatInputModule,
     MatDividerModule,
     MatTooltipModule,
+    MatFabModule,
     CurrencyPipe,
     CustomDatePipe
   ],
@@ -103,21 +106,33 @@ export class DailyExpensesComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   // Form methods
-  addDailyExpense(): void {
-    if (!this.newDailyExpense.description.trim() || this.newDailyExpense.amount <= 0) {
-      this.notificationService.openSnackBar('Por favor completa todos los campos');
-      return;
-    }
+  openAddExpenseModal(): void {
+    const dialogData: DailyExpenseFormData = {
+      isEditing: false
+    };
 
-    if (this.isEditingDaily) {
-      this.updateDailyExpense();
-    } else {
-      this.createDailyExpense();
-    }
+    const dialogRef = this.dialog.open(DailyExpenseFormModalComponent, {
+      width: '400px',
+      maxWidth: '90vw',
+      data: dialogData,
+      disableClose: false
+    });
+
+    dialogRef.afterClosed().subscribe((result: DailyExpenseFormResult) => {
+      if (result) {
+        this.createDailyExpense(result);
+      }
+    });
   }
 
-  private createDailyExpense(): void {
-    this.dailyExpensesService.addDailyExpense(this.newDailyExpense)
+  private createDailyExpense(expenseData: DailyExpenseFormResult): void {
+    const newExpense: Omit<DailyExpense, 'id'> = {
+      description: expenseData.description,
+      amount: expenseData.amount,
+      date: expenseData.date
+    };
+
+    this.dailyExpensesService.addDailyExpense(newExpense)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (expense) => {
@@ -145,12 +160,14 @@ export class DailyExpensesComponent implements OnInit, OnDestroy, OnChanges {
       });
   }
 
-  private updateDailyExpense(): void {
-    if (!this.editingDailyId || !this.summary) return;
+  private updateDailyExpense(expenseId: number, expenseData: DailyExpenseFormResult): void {
+    if (!this.summary) return;
 
     const updatedExpense: DailyExpense = {
-      ...this.newDailyExpense,
-      id: this.editingDailyId
+      id: expenseId,
+      description: expenseData.description,
+      amount: expenseData.amount,
+      date: expenseData.date
     };
 
     this.dailyExpensesService.updateDailyExpense(updatedExpense)
@@ -158,7 +175,7 @@ export class DailyExpensesComponent implements OnInit, OnDestroy, OnChanges {
       .subscribe({
         next: (expense) => {
           if (this.summary) {
-            const index = this.summary.expenses.findIndex(e => e.id === this.editingDailyId);
+            const index = this.summary.expenses.findIndex(e => e.id === expenseId);
             if (index !== -1) {
               this.summary.expenses[index] = expense;
               this.summary.expenses.sort((a, b) => 
@@ -184,13 +201,23 @@ export class DailyExpensesComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   editDailyExpense(expense: DailyExpense): void {
-    this.isEditingDaily = true;
-    this.editingDailyId = expense.id!;
-    this.newDailyExpense = {
-      description: expense.description,
-      amount: expense.amount,
-      date: expense.date
+    const dialogData: DailyExpenseFormData = {
+      expense: expense,
+      isEditing: true
     };
+
+    const dialogRef = this.dialog.open(DailyExpenseFormModalComponent, {
+      width: '400px',
+      maxWidth: '90vw',
+      data: dialogData,
+      disableClose: false
+    });
+
+    dialogRef.afterClosed().subscribe((result: DailyExpenseFormResult) => {
+      if (result) {
+        this.updateDailyExpense(expense.id!, result);
+      }
+    });
   }
 
   deleteDailyExpense(expenseId: number): void {

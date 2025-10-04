@@ -1,0 +1,95 @@
+/* Modal compacto y minimalista */
+.full-width {
+  width: 100%;
+  margin-bottom: var(--spacing-sm);
+}
+
+/* Form Fields - Más compactos */
+.mat-mdc-form-field {
+  margin-bottom: var(--spacing-sm) !important;
+}
+
+.mat-mdc-form-field:last-of-type {
+  margin-bottom: 0 !important;
+}
+
+/* Ajustar altura de los campos */
+::ng-deep .mat-mdc-form-field .mat-mdc-text-field-wrapper {
+  height: 48px !important;
+}
+
+::ng-deep .mat-mdc-form-field .mdc-text-field {
+  height: 48px !important;
+}
+
+/* Botones minimalistas */
+::ng-deep .mat-dialog-actions {
+  padding: var(--spacing-sm) var(--spacing-md) !important;
+  border-top: 1px solid var(--card-border);
+  background: var(--background-secondary);
+  margin: 0 !important;
+  min-height: auto !important;
+}
+
+::ng-deep .mat-dialog-content {
+  padding: var(--spacing-md) !important;
+  margin: 0 !important;
+  max-height: none !important;
+}
+
+::ng-deep .mat-dialog-title {
+  padding: var(--spacing-sm) var(--spacing-md) !important;
+  margin: 0 !important;
+  font-size: var(--font-size-lg) !important;
+  font-weight: 500 !important;
+  color: var(--text-primary) !important;
+  border-bottom: 1px solid var(--card-border);
+}
+
+/* Botones */
+::ng-deep .mat-mdc-button {
+  font-size: var(--font-size-sm) !important;
+  padding: 8px 16px !important;
+  min-width: auto !important;
+}
+
+::ng-deep .mat-mdc-raised-button {
+  background: var(--primary-color) !important;
+  color: white !important;
+  box-shadow: none !important;
+}
+
+::ng-deep .mat-mdc-raised-button:hover:not([disabled]) {
+  background: var(--primary-light) !important;
+}
+
+::ng-deep .mat-mdc-raised-button:disabled {
+  background: var(--text-muted) !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+::ng-deep .mat-mdc-button:not(.mat-mdc-raised-button) {
+  color: var(--text-secondary) !important;
+}
+
+::ng-deep .mat-mdc-button:not(.mat-mdc-raised-button):hover {
+  background: var(--background-tertiary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  ::ng-deep .mat-dialog-container {
+    max-width: 90vw !important;
+    width: 90vw !important;
+  }
+  
+  ::ng-deep .mat-dialog-actions {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+  
+  ::ng-deep .mat-dialog-actions button {
+    width: 100%;
+  }
+}

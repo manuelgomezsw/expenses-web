@@ -9,6 +9,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
+import { MatChipsModule } from '@angular/material/chips';
 
 // Pipes
 import { CurrencyPipe } from '@angular/common';
@@ -29,6 +30,7 @@ import { NotificationService } from '../../../services/notification/notification
     MatDividerModule,
     MatProgressSpinnerModule,
     MatButtonModule,
+    MatChipsModule,
     CurrencyPipe
   ],
   templateUrl: './fixed-expenses.component.html',
@@ -41,9 +43,20 @@ export class FixedExpensesComponent implements OnInit, OnDestroy, OnChanges {
   @Output() expenseStatusChanged = new EventEmitter<void>();
 
   expenses: FixedExpense[] = [];
+  filteredExpenses: FixedExpense[] = [];
   expensesByPocket: FixedExpensesByPocket = {};
   isLoading = false;
   error: string | null = null;
+  
+  // Filtro actual
+  currentFilter: 'all' | 'paid' | 'pending' = 'all';
+  
+  // Opciones de filtro
+  filterOptions: Array<{value: 'all' | 'paid' | 'pending', label: string}> = [
+    { value: 'all', label: 'Todos' },
+    { value: 'paid', label: 'Pagados' },
+    { value: 'pending', label: 'Pendientes' }
+  ];
 
   private destroy$ = new Subject<void>();
 
@@ -79,7 +92,7 @@ export class FixedExpensesComponent implements OnInit, OnDestroy, OnChanges {
       .subscribe({
         next: (expenses) => {
           this.expenses = expenses;
-          this.expensesByPocket = this.fixedExpensesService.groupExpensesByPocket(expenses);
+          this.applyFilter();
           this.isLoading = false;
         },
         error: (error) => {
@@ -112,8 +125,8 @@ export class FixedExpensesComponent implements OnInit, OnDestroy, OnChanges {
           expense.is_paid = newStatus;
           expense.paid_date = newStatus ? new Date().toISOString().split('T')[0] : undefined;
           
-          // Reagrupar por bolsillos
-          this.expensesByPocket = this.fixedExpensesService.groupExpensesByPocket(this.expenses);
+          // Reagrupar por bolsillos con filtro aplicado
+          this.applyFilter();
           
           // Emitir evento para notificar al componente padre
           this.expenseStatusChanged.emit(); // Notify parent
@@ -182,5 +195,49 @@ export class FixedExpensesComponent implements OnInit, OnDestroy, OnChanges {
 
   onToggleCollapse(): void {
     this.toggleCollapse.emit();
+  }
+
+  /**
+   * Aplica el filtro actual a los gastos
+   */
+  private applyFilter(): void {
+    this.filteredExpenses = this.fixedExpensesService.filterExpensesByStatus(this.expenses, this.currentFilter);
+    this.expensesByPocket = this.fixedExpensesService.groupExpensesByPocket(this.filteredExpenses);
+  }
+
+  /**
+   * Cambia el filtro actual
+   */
+  setFilter(filter: string): void {
+    this.currentFilter = filter as 'all' | 'paid' | 'pending';
+    this.applyFilter();
+  }
+
+  /**
+   * Obtiene el conteo de gastos por filtro
+   */
+  getFilterCount(filter: string): number {
+    const filterType = filter as 'all' | 'paid' | 'pending';
+    if (filterType === 'all') {
+      return this.expenses.length;
+    } else if (filterType === 'paid') {
+      return this.expenses.filter(expense => expense.is_paid).length;
+    } else {
+      return this.expenses.filter(expense => !expense.is_paid).length;
+    }
+  }
+
+  /**
+   * Verifica si un filtro está activo
+   */
+  isFilterActive(filter: string): boolean {
+    return this.currentFilter === filter;
+  }
+
+  /**
+   * Calcula el total de los gastos filtrados
+   */
+  getFilteredTotal(): number {
+    return this.fixedExpensesService.calculateTotal(this.filteredExpenses);
   }
 }
