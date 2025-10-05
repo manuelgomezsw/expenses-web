@@ -19,10 +19,10 @@ import { CurrencyPipe } from '@angular/common';
 
 // Services and Models
 import { FixedExpensesService, FixedExpensesByPocket } from '../../services/fixed-expenses.service';
-import { FixedExpense, HybridTransaction } from '../../../domain/fixed-expense';
+import { FixedExpense, HybridTransaction, CreateHybridTransactionBackendRequest } from '../../../domain/fixed-expense';
 import { NotificationService } from '../../../services/notification/notification.service';
 import { HybridTransactionsService } from '../../../configuration/services/hybrid-transactions.service';
-import { HybridTransactionsModalComponent } from '../../../configuration/components/hybrid-transactions-modal/hybrid-transactions-modal.component';
+import { HybridTransactionsModalComponent, HybridTransactionsData, HybridTransactionsResult } from '../../../configuration/components/hybrid-transactions-modal/hybrid-transactions-modal.component';
 
 @Component({
   selector: 'app-fixed-expenses',
@@ -308,19 +308,25 @@ export class FixedExpensesComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
 
+    if (expense.expense_type !== 'hybrid') {
+      this.notificationService.openSnackBar('Este gasto no es híbrido');
+      return;
+    }
+
+    const dialogData: HybridTransactionsData = {
+      expense: expense
+    };
+
     const dialogRef = this.dialog.open(HybridTransactionsModalComponent, {
       width: '800px',
       maxWidth: '95vw',
-      data: {
-        expense: expense
-      },
+      data: dialogData,
       disableClose: false
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
+    dialogRef.afterClosed().subscribe((result: HybridTransactionsResult | undefined) => {
       if (result) {
-        // Recargar gastos para obtener datos actualizados
-        this.loadFixedExpenses();
+        this.handleHybridTransactionResult(expense, result);
       }
     });
   }
@@ -359,5 +365,95 @@ export class FixedExpensesComponent implements OnInit, OnDestroy, OnChanges {
     const budgetLimit = expense.budget_limit || 0;
     const currentSpent = expense.current_spent || 0;
     return Math.max(budgetLimit - currentSpent, 0);
+  }
+
+  // ========================================
+  // MÉTODOS PARA TRANSACCIONES HÍBRIDAS
+  // ========================================
+
+  /**
+   * Maneja el resultado del modal de transacciones híbridas
+   */
+  private handleHybridTransactionResult(expense: FixedExpense, result: HybridTransactionsResult): void {
+    switch (result.action) {
+      case 'add':
+        if (result.transactionRequest) {
+          this.addHybridTransaction(expense, result.transactionRequest);
+        }
+        break;
+      case 'delete':
+        if (result.transactionId) {
+          this.deleteHybridTransaction(expense, result.transactionId);
+        }
+        break;
+    }
+  }
+
+  /**
+   * Agrega una nueva transacción híbrida
+   */
+  private addHybridTransaction(expense: FixedExpense, request: CreateHybridTransactionBackendRequest): void {
+    if (!expense.id) {
+      console.error('No se puede crear transacción: expense.id es undefined');
+      return;
+    }
+    
+    this.hybridTransactionsService.createTransaction(expense.id, request)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (newTransaction) => {
+          // Actualizar el gasto con la nueva transacción
+          if (expense.transactions) {
+            expense.transactions.push(newTransaction);
+          } else {
+            expense.transactions = [newTransaction];
+          }
+          
+          // Recalcular el gasto actual
+          expense.current_spent = this.hybridTransactionsService.calculateTotalSpent(expense.transactions);
+          
+          this.notificationService.openSnackBar('Transacción agregada correctamente');
+          
+          // Recargar la lista de gastos para obtener datos actualizados del backend
+          this.loadFixedExpenses();
+        },
+        error: (error) => {
+          console.error('Error adding hybrid transaction:', error);
+          this.notificationService.openSnackBar('Error agregando transacción. Intenta de nuevo.');
+        }
+      });
+  }
+
+  /**
+   * Elimina una transacción híbrida
+   */
+  private deleteHybridTransaction(expense: FixedExpense, transactionId: number): void {
+    if (!expense.id) {
+      console.error('No se puede eliminar transacción: expense.id es undefined');
+      return;
+    }
+    
+    this.hybridTransactionsService.deleteTransaction(expense.id, transactionId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          // Remover la transacción de la lista local
+          if (expense.transactions) {
+            expense.transactions = expense.transactions.filter(t => t.id !== transactionId);
+            
+            // Recalcular el gasto actual
+            expense.current_spent = this.hybridTransactionsService.calculateTotalSpent(expense.transactions);
+          }
+          
+          this.notificationService.openSnackBar('Transacción eliminada correctamente');
+          
+          // Recargar la lista de gastos para obtener datos actualizados del backend
+          this.loadFixedExpenses();
+        },
+        error: (error) => {
+          console.error('Error deleting hybrid transaction:', error);
+          this.notificationService.openSnackBar('Error eliminando transacción. Intenta de nuevo.');
+        }
+      });
   }
 }
