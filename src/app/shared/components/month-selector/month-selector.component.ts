@@ -4,6 +4,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
+// Utilities
+import { DateUtils } from '../../utils/date.utils';
+
 @Component({
   selector: 'app-month-selector',
   standalone: true,
@@ -53,16 +56,7 @@ export class MonthSelectorComponent {
    * Obtiene el nombre del mes en español
    */
   getMonthName(): string {
-    if (!this.currentMonth) return '';
-
-    const [year, monthNum] = this.currentMonth.split('-').map(Number);
-    const monthNames = [
-      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-    ];
-    
-    const monthIndex = monthNum - 1;
-    return `${monthNames[monthIndex]} ${year}`;
+    return DateUtils.getMonthName(this.currentMonth);
   }
 
   /**
