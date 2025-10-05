@@ -386,17 +386,34 @@ export class ViewHybridTransactionsModalComponent {
   }
 
   getCurrentSpent(): number {
-    return this.data.expense.current_spent || 0;
+    // Calcular la suma de todas las transacciones en el modal
+    const transactions = this.getTransactions();
+    const totalSpent = transactions.reduce((total, transaction) => total + transaction.amount, 0);
+    
+    // Debug: Log para verificar cálculos
+    console.log('Modal - Transacciones:', transactions);
+    console.log('Modal - Total calculado:', totalSpent);
+    console.log('Modal - Backend current_spent:', this.data.expense.current_spent);
+    
+    return totalSpent;
   }
 
   getRemainingBudget(): number {
-    return this.getBudgetLimit() - this.getCurrentSpent();
+    const remaining = this.getBudgetLimit() - this.getCurrentSpent();
+    console.log('Modal - Presupuesto:', this.getBudgetLimit());
+    console.log('Modal - Gastado:', this.getCurrentSpent());
+    console.log('Modal - Disponible:', remaining);
+    return remaining;
   }
 
   getProgressPercentage(): number {
     const budgetLimit = this.getBudgetLimit();
+    const currentSpent = this.getCurrentSpent();
     if (budgetLimit === 0) return 0;
-    return Math.min((this.getCurrentSpent() / budgetLimit) * 100, 100);
+    
+    const percentage = Math.min((currentSpent / budgetLimit) * 100, 100);
+    console.log('Modal - Porcentaje:', percentage);
+    return percentage;
   }
 
   getProgressColor(): 'primary' | 'accent' | 'warn' {
