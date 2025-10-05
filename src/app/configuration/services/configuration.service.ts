@@ -192,7 +192,7 @@ export class ConfigurationService {
    * Respuesta: array de gastos fijos
    */
   getFixedExpenses(month: string): Observable<FixedExpense[]> {
-    const url = `${environment.fixedExpensesUrl}/${month}`;
+    const url = `${environment.fixedExpensesUrl}/by-month/${month}`;
     console.log('Obteniendo gastos fijos desde:', url);
     
     return this.http.get<FixedExpense[]>(url).pipe(

@@ -4,14 +4,15 @@ import { Observable, throwError, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { environment } from '../../../environments/environment';
-import { HybridTransaction, CreateHybridTransactionRequest, UpdateHybridTransactionRequest } from '../../domain/fixed-expense';
+import { HybridTransaction, CreateHybridTransactionRequest, CreateHybridTransactionBackendRequest, UpdateHybridTransactionRequest } from '../../domain/fixed-expense';
 
 @Injectable({
   providedIn: 'root'
 })
 export class HybridTransactionsService {
 
-  private readonly baseUrl = `${environment.fixedExpensesUrl}/transactions`;
+  // Base URL actualizada según cambios del backend
+  private readonly baseUrl = environment.fixedExpensesUrl;
   
   private readonly httpOptions = {
     headers: new HttpHeaders({
@@ -23,9 +24,10 @@ export class HybridTransactionsService {
 
   /**
    * Obtiene todas las transacciones de un gasto híbrido
+   * GET /api/fixed-expenses/:id/transactions
    */
   getTransactionsByExpenseId(expenseId: number): Observable<HybridTransaction[]> {
-    const url = `${this.baseUrl}/${expenseId}`;
+    const url = `${this.baseUrl}/${expenseId}/transactions`;
     
     return this.http.get<HybridTransaction[]>(url).pipe(
       map(response => {
@@ -48,15 +50,17 @@ export class HybridTransactionsService {
 
   /**
    * Crea una nueva transacción híbrida
+   * POST /api/fixed-expenses/:id/transactions
    */
-  createTransaction(request: CreateHybridTransactionRequest): Observable<HybridTransaction> {
-    return this.http.post<HybridTransaction>(this.baseUrl, request, this.httpOptions).pipe(
+  createTransaction(expenseId: number, request: CreateHybridTransactionBackendRequest): Observable<HybridTransaction> {
+    const url = `${this.baseUrl}/${expenseId}/transactions`;
+    return this.http.post<HybridTransaction>(url, request, this.httpOptions).pipe(
       map(response => {
         if (!response) {
           // Si el backend retorna null, construir objeto local
           return {
             id: Date.now(), // ID temporal
-            fixed_expense_id: request.fixed_expense_id,
+            fixed_expense_id: expenseId,
             amount: request.amount,
             description: request.description,
             transaction_date: request.transaction_date,
@@ -74,9 +78,10 @@ export class HybridTransactionsService {
 
   /**
    * Actualiza una transacción híbrida existente
+   * PUT /api/fixed-expenses/:expenseId/transactions/:transactionId
    */
-  updateTransaction(transactionId: number, request: UpdateHybridTransactionRequest): Observable<HybridTransaction> {
-    const url = `${this.baseUrl}/${transactionId}`;
+  updateTransaction(expenseId: number, transactionId: number, request: UpdateHybridTransactionRequest): Observable<HybridTransaction> {
+    const url = `${this.baseUrl}/${expenseId}/transactions/${transactionId}`;
     
     return this.http.put<HybridTransaction>(url, request, this.httpOptions).pipe(
       map(response => {
@@ -84,7 +89,7 @@ export class HybridTransactionsService {
           // Si el backend retorna null, construir objeto local
           return {
             id: transactionId,
-            fixed_expense_id: 0, // Se actualizará desde el componente
+            fixed_expense_id: expenseId,
             amount: request.amount || 0,
             description: request.description,
             transaction_date: request.transaction_date || new Date().toISOString().split('T')[0],
@@ -102,9 +107,10 @@ export class HybridTransactionsService {
 
   /**
    * Elimina una transacción híbrida
+   * DELETE /api/fixed-expenses/:expenseId/transactions/:transactionId
    */
-  deleteTransaction(transactionId: number): Observable<void> {
-    const url = `${this.baseUrl}/${transactionId}`;
+  deleteTransaction(expenseId: number, transactionId: number): Observable<void> {
+    const url = `${this.baseUrl}/${expenseId}/transactions/${transactionId}`;
     
     return this.http.delete<void>(url).pipe(
       catchError(error => {

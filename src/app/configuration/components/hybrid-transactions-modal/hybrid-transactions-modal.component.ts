@@ -11,7 +11,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-import { FixedExpense, HybridTransaction, CreateHybridTransactionRequest } from '../../../domain/fixed-expense';
+import { FixedExpense, HybridTransaction, CreateHybridTransactionRequest, CreateHybridTransactionBackendRequest } from '../../../domain/fixed-expense';
 
 export interface HybridTransactionsData {
   expense: FixedExpense;
@@ -20,7 +20,7 @@ export interface HybridTransactionsData {
 export interface HybridTransactionsResult {
   action: 'add' | 'edit' | 'delete';
   transaction?: HybridTransaction;
-  transactionRequest?: CreateHybridTransactionRequest;
+  transactionRequest?: CreateHybridTransactionBackendRequest;
   transactionId?: number;
 }
 
@@ -97,15 +97,18 @@ export class HybridTransactionsModalComponent implements OnInit {
       this.newTransaction.amount > 0 &&
       this.newTransaction.amount <= this.remainingBudget &&
       this.newTransaction.transaction_date &&
-      this.newTransaction.fixed_expense_id > 0
+      this.data.expense.id // Validar que el expense tenga ID
     );
   }
 
   addTransaction(): void {
     if (this.isTransactionFormValid()) {
+      // Remover fixed_expense_id del request según nuevos cambios del backend
+      const { fixed_expense_id, ...transactionRequest } = this.newTransaction;
+      
       const result: HybridTransactionsResult = {
         action: 'add',
-        transactionRequest: { ...this.newTransaction }
+        transactionRequest: transactionRequest
       };
       this.dialogRef.close(result);
     }

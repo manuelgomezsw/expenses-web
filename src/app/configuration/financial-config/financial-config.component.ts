@@ -192,7 +192,12 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
    * Agrega una nueva transacción híbrida
    */
   private addHybridTransaction(expense: FixedExpense, request: any): void {
-    this.hybridTransactionsService.createTransaction(request)
+    if (!expense.id) {
+      console.error('No se puede crear transacción: expense.id es undefined');
+      return;
+    }
+    
+    this.hybridTransactionsService.createTransaction(expense.id, request)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (newTransaction) => {
@@ -222,7 +227,12 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
    * Elimina una transacción híbrida
    */
   private deleteHybridTransaction(expense: FixedExpense, transactionId: number): void {
-    this.hybridTransactionsService.deleteTransaction(transactionId)
+    if (!expense.id) {
+      console.error('No se puede eliminar transacción: expense.id es undefined');
+      return;
+    }
+    
+    this.hybridTransactionsService.deleteTransaction(expense.id, transactionId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {

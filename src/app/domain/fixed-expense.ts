@@ -34,6 +34,13 @@ export interface CreateHybridTransactionRequest {
     transaction_date: string;
 }
 
+// Interface para el request al backend (sin fixed_expense_id)
+export interface CreateHybridTransactionBackendRequest {
+    amount: number;
+    description?: string;
+    transaction_date: string;
+}
+
 export interface UpdateHybridTransactionRequest {
     amount?: number;
     description?: string;
