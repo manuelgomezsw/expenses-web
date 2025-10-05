@@ -4,6 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 
 import { FixedExpense } from '../../domain/fixed-expense';
+import { HttpErrorHandlerService } from '../../shared/services/http-error-handler.service';
 import { environment } from '../../../environments/environment';
 
 export interface FixedExpensesByPocket {
@@ -21,7 +22,10 @@ export class FixedExpensesService {
     })
   };
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private errorHandler: HttpErrorHandlerService
+  ) { }
 
   /**
    * Obtiene todos los gastos fijos del mes desde el backend
@@ -169,16 +173,5 @@ export class FixedExpensesService {
     return expenses.reduce((sum, expense) => sum + expense.amount, 0);
   }
 
-  /**
-   * Maneja errores HTTP de manera consistente
-   */
-  private handleHttpError(error: any): void {
-    if (error.status === 0) {
-      console.error('Error de red - No se puede conectar al servidor');
-    } else if (error.status >= 400 && error.status < 500) {
-      console.error('Error del cliente:', error.status, error.message);
-    } else if (error.status >= 500) {
-      console.error('Error del servidor:', error.status, error.message);
-    }
-  }
+  // Método handleHttpError movido a HttpErrorHandlerService para evitar duplicación
 }

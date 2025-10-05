@@ -8,6 +8,7 @@ import { FixedExpense } from '../../domain/fixed-expense';
 import { DailyExpensesConfig } from '../../domain/daily-expenses-config';
 import { Pocket } from '../../domain/pocket';
 import { NotificationService } from '../../services/notification/notification.service';
+import { HttpErrorHandlerService } from '../../shared/services/http-error-handler.service';
 import { environment } from '../../../environments/environment';
 
 // Interfaces para el manejo de errores del backend
@@ -29,6 +30,8 @@ export interface CreateFixedExpenseRequest {
   concept_name: string;
   amount: number;
   payment_day: number;
+  expense_type?: 'fixed' | 'hybrid';
+  budget_limit?: number;
 }
 
 export interface CreateFixedExpenseBackendRequest extends CreateFixedExpenseRequest {
@@ -56,42 +59,11 @@ export class ConfigurationService {
 
   constructor(
     private http: HttpClient,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private errorHandler: HttpErrorHandlerService
   ) { }
 
-  /**
-   * Maneja errores HTTP según el contrato estándar del backend
-   */
-  private handleHttpError(error: HttpErrorResponse): Observable<never> {
-    console.error('Error HTTP completo:', {
-      status: error.status,
-      statusText: error.statusText,
-      error: error.error,
-      url: error.url
-    });
-    
-    if (error.status >= 400 && error.status < 500) {
-      // Errores 4xx: mostrar el mensaje del campo "error"
-      const backendError = error.error as BackendErrorResponse;
-      const errorMessage = backendError?.error || 'Error en la solicitud';
-      console.log('Error 4xx - Mostrando mensaje específico:', errorMessage);
-      this.notificationService.openSnackBar(errorMessage);
-    } else if (error.status >= 500) {
-      // Errores 5xx: mensaje genérico
-      console.log('Error 5xx - Mostrando mensaje genérico');
-      this.notificationService.openSnackBar('Ocurrió un error interno. Por favor, inténtalo nuevamente.');
-    } else if (error.status === 0) {
-      // Error de red (servidor no disponible)
-      console.log('Error de red - Servidor no disponible');
-      this.notificationService.openSnackBar('No se pudo conectar al servidor. Verificando disponibilidad...');
-    } else {
-      // Otros errores
-      console.log('Error desconocido:', error.status);
-      this.notificationService.openSnackBar('Error de conexión. Por favor, inténtalo nuevamente.');
-    }
-    
-    return throwError(() => error);
-  }
+  // Método handleHttpError movido a HttpErrorHandlerService para evitar duplicación
 
   /**
    * Obtiene toda la configuración financiera del mes
@@ -157,7 +129,7 @@ export class ConfigurationService {
         console.error('URL utilizada:', url);
         
         // Manejar error según contrato estándar
-        this.handleHttpError(error);
+        this.errorHandler.handleError(error);
         
         // Propagar el error sin fallback
         return throwError(() => new Error(`Error cargando salario: ${error.message || 'Error de conexión'}`));
@@ -206,7 +178,7 @@ export class ConfigurationService {
         console.error('Datos enviados:', request);
         
         // Manejar error según contrato estándar
-        this.handleHttpError(error);
+        this.errorHandler.handleError(error);
         
         // Propagar el error sin fallback
         return throwError(() => new Error(`Error actualizando salario: ${error.message || 'Error de conexión'}`));
@@ -246,7 +218,7 @@ export class ConfigurationService {
         console.error('URL utilizada:', url);
         
         // Manejar error según contrato estándar
-        this.handleHttpError(error);
+        this.errorHandler.handleError(error);
         
         // Propagar el error sin fallback
         return throwError(() => new Error(`Error cargando gastos fijos: ${error.message || 'Error de conexión'}`));
@@ -278,7 +250,7 @@ export class ConfigurationService {
         console.error('URL utilizada:', url);
         
         // Manejar error según contrato estándar
-        this.handleHttpError(error);
+        this.errorHandler.handleError(error);
         
         // Propagar el error sin fallback
         return throwError(() => new Error(`Error cargando configuración de gastos diarios: ${error.message || 'Error de conexión'}`));
@@ -313,7 +285,7 @@ export class ConfigurationService {
         console.error('Datos enviados:', request);
         
         // Manejar error según contrato estándar
-        this.handleHttpError(error);
+        this.errorHandler.handleError(error);
         
         // Propagar el error sin fallback
         return throwError(() => new Error(`Error actualizando presupuesto diario: ${error.message || 'Error de conexión'}`));
@@ -345,6 +317,10 @@ export class ConfigurationService {
           month: response.month || month,
           is_paid: response.is_paid || false,
           paid_date: response.paid_date || undefined,
+          expense_type: response.expense_type || request.expense_type || 'fixed',
+          budget_limit: response.budget_limit || request.budget_limit,
+          current_spent: response.current_spent || 0,
+          transactions: response.transactions || [],
           created_at: response.created_at || new Date().toISOString()
         };
         
@@ -356,7 +332,7 @@ export class ConfigurationService {
         console.error('Datos enviados:', requestWithMonth);
         
         // Manejar error según contrato estándar
-        this.handleHttpError(error);
+        this.errorHandler.handleError(error);
         
         // Propagar el error sin fallback
         return throwError(() => new Error(`Error creando gasto fijo: ${error.message || 'Error de conexión'}`));
@@ -391,7 +367,7 @@ export class ConfigurationService {
         console.error('Datos enviados:', expense);
         
         // Manejar error según contrato estándar
-        this.handleHttpError(error);
+        this.errorHandler.handleError(error);
         
         // Propagar el error sin fallback
         return throwError(() => new Error(`Error actualizando gasto fijo: ${error.message || 'Error de conexión'}`));
@@ -417,7 +393,7 @@ export class ConfigurationService {
         console.error('URL utilizada:', url);
         
         // Manejar error según contrato estándar
-        this.handleHttpError(error);
+        this.errorHandler.handleError(error);
         
         // Propagar el error sin fallback
         return throwError(() => new Error(`Error eliminando gasto fijo: ${error.message || 'Error de conexión'}`));
@@ -452,7 +428,7 @@ export class ConfigurationService {
         console.error('Datos enviados:', request);
         
         // Manejar error según contrato estándar
-        this.handleHttpError(error);
+        this.errorHandler.handleError(error);
         
         // Propagar el error sin fallback
         return throwError(() => new Error(`Error creando bolsillo: ${error.message || 'Error de conexión'}`));
@@ -486,7 +462,7 @@ export class ConfigurationService {
         console.error('Datos enviados:', pocket);
         
         // Manejar error según contrato estándar
-        this.handleHttpError(error);
+        this.errorHandler.handleError(error);
         
         // Propagar el error sin fallback
         return throwError(() => new Error(`Error actualizando bolsillo: ${error.message || 'Error de conexión'}`));
@@ -512,7 +488,7 @@ export class ConfigurationService {
         console.error('URL utilizada:', url);
         
         // Manejar error según contrato estándar
-        this.handleHttpError(error);
+        this.errorHandler.handleError(error);
         
         // Propagar el error sin fallback
         return throwError(() => new Error(`Error eliminando bolsillo: ${error.message || 'Error de conexión'}`));
@@ -567,7 +543,7 @@ export class ConfigurationService {
         console.error('URL utilizada:', url);
         
         // Manejar error según contrato estándar
-        this.handleHttpError(error);
+        this.errorHandler.handleError(error);
         
         // Propagar el error sin fallback
         return throwError(() => new Error(`Error cargando bolsillos: ${error.message || 'Error de conexión'}`));
@@ -641,7 +617,7 @@ export class ConfigurationService {
         console.error('Datos enviados:', request);
         
         // Manejar error según contrato estándar
-        this.handleHttpError(error);
+        this.errorHandler.handleError(error);
         
         // Propagar el error sin fallback
         return throwError(() => new Error(`Error cambiando estado de pago: ${error.message || 'Error de conexión'}`));

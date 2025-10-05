@@ -5,6 +5,7 @@ import { map, catchError } from 'rxjs/operators';
 
 import { DailyExpense } from '../../domain/daily-expense';
 import { DailyExpensesConfig } from '../../domain/daily-expenses-config';
+import { HttpErrorHandlerService } from '../../shared/services/http-error-handler.service';
 import { environment } from '../../../environments/environment';
 
 export interface DailyExpensesSummary {
@@ -26,7 +27,10 @@ export class DailyExpensesService {
     })
   };
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private errorHandler: HttpErrorHandlerService
+  ) { }
 
   /**
    * Obtiene el resumen completo de gastos diarios del mes
@@ -323,16 +327,5 @@ export class DailyExpensesService {
     return 'primary';
   }
 
-  /**
-   * Maneja errores HTTP de manera consistente
-   */
-  private handleHttpError(error: any): void {
-    if (error.status === 0) {
-      console.error('Error de red - No se puede conectar al servidor');
-    } else if (error.status >= 400 && error.status < 500) {
-      console.error('Error del cliente:', error.status, error.message);
-    } else if (error.status >= 500) {
-      console.error('Error del servidor:', error.status, error.message);
-    }
-  }
+  // Método handleHttpError movido a HttpErrorHandlerService para evitar duplicación
 }
