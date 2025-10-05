@@ -22,6 +22,8 @@ export interface ExpenseFormResult {
   concept_name: string;
   amount: number;
   payment_day: number;
+  expense_type: 'fixed' | 'hybrid';
+  budget_limit?: number;
 }
 
 @Component({
@@ -46,7 +48,9 @@ export class ExpenseFormModalComponent implements OnInit {
     pocket_id: 0,
     concept_name: '',
     amount: 0,
-    payment_day: 1
+    payment_day: 1,
+    expense_type: 'fixed',
+    budget_limit: 0
   };
 
   constructor(
@@ -60,7 +64,9 @@ export class ExpenseFormModalComponent implements OnInit {
         pocket_id: this.data.expense.pocket_id,
         concept_name: this.data.expense.concept_name,
         amount: this.data.expense.amount,
-        payment_day: this.data.expense.payment_day
+        payment_day: this.data.expense.payment_day,
+        expense_type: this.data.expense.expense_type || 'fixed',
+        budget_limit: this.data.expense.budget_limit || 0
       };
       
       // Verificar si el pocket_id existe en availablePockets
@@ -85,13 +91,24 @@ export class ExpenseFormModalComponent implements OnInit {
   }
 
   isFormValid(): boolean {
-    return !!(
+    const baseValid = !!(
       this.formData.pocket_id &&
       this.formData.concept_name.trim() &&
-      this.formData.amount > 0 &&
-      this.formData.payment_day >= 1 &&
-      this.formData.payment_day <= 31
+      this.formData.expense_type
     );
+
+    if (this.formData.expense_type === 'fixed') {
+      return baseValid && 
+        this.formData.amount > 0 &&
+        this.formData.payment_day >= 1 &&
+        this.formData.payment_day <= 31;
+    } else if (this.formData.expense_type === 'hybrid') {
+      return baseValid && 
+        this.formData.budget_limit !== undefined &&
+        this.formData.budget_limit > 0;
+    }
+
+    return false;
   }
 
   getValidationErrors(): string[] {
@@ -104,20 +121,34 @@ export class ExpenseFormModalComponent implements OnInit {
     if (!('concept_name' in this.formData) || !this.formData.concept_name.trim()) {
       errors.push('Ingresa el concepto del gasto');
     }
-    
-    if (this.formData.amount <= 0) {
-      errors.push('El monto debe ser mayor a 0');
+
+    if (!this.formData.expense_type) {
+      errors.push('Selecciona el tipo de gasto');
     }
-    
-    if (this.formData.payment_day < 1 || this.formData.payment_day > 31) {
-      errors.push('El día de pago debe estar entre 1 y 31');
+
+    if (this.formData.expense_type === 'fixed') {
+      if (this.formData.amount <= 0) {
+        errors.push('El monto debe ser mayor a 0');
+      }
+      
+      if (this.formData.payment_day < 1 || this.formData.payment_day > 31) {
+        errors.push('El día de pago debe estar entre 1 y 31');
+      }
+    } else if (this.formData.expense_type === 'hybrid') {
+      if (!this.formData.budget_limit || this.formData.budget_limit <= 0) {
+        errors.push('El presupuesto mensual debe ser mayor a 0');
+      }
     }
     
     return errors;
   }
 
   getTitle(): string {
-    return this.data.isEditing ? 'Editar Gasto Fijo' : 'Agregar Nuevo Gasto Fijo';
+    if (this.data.isEditing) {
+      return this.formData.expense_type === 'hybrid' ? 'Editar Gasto Híbrido' : 'Editar Gasto Fijo';
+    } else {
+      return this.formData.expense_type === 'hybrid' ? 'Agregar Gasto Híbrido' : 'Agregar Gasto Fijo';
+    }
   }
 
   getSaveButtonText(): string {
@@ -126,6 +157,34 @@ export class ExpenseFormModalComponent implements OnInit {
 
   getSaveButtonIcon(): string {
     return this.data.isEditing ? 'save' : 'add';
+  }
+
+  onExpenseTypeChange(): void {
+    // Limpiar campos específicos cuando cambia el tipo
+    if (this.formData.expense_type === 'fixed') {
+      this.formData.budget_limit = 0;
+      if (!this.formData.amount) {
+        this.formData.amount = 0;
+      }
+      if (!this.formData.payment_day) {
+        this.formData.payment_day = 1;
+      }
+    } else if (this.formData.expense_type === 'hybrid') {
+      this.formData.amount = 0;
+      this.formData.payment_day = 1;
+      if (!this.formData.budget_limit) {
+        this.formData.budget_limit = 0;
+      }
+    }
+  }
+
+  getExpenseTypeHint(): string {
+    if (this.formData.expense_type === 'fixed') {
+      return 'Monto fijo que se paga en una fecha específica cada mes';
+    } else if (this.formData.expense_type === 'hybrid') {
+      return 'Presupuesto variable que se consume en múltiples transacciones';
+    }
+    return 'Selecciona el tipo de gasto que deseas crear';
   }
 
   /**

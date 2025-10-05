@@ -1,0 +1,149 @@
+<div class="hybrid-transactions-modal">
+  <h2 mat-dialog-title>
+    <mat-icon>receipt_long</mat-icon>
+    Transacciones - {{ expenseName }}
+  </h2>
+
+  <mat-dialog-content>
+    <!-- Resumen del Gasto Híbrido -->
+    <div class="expense-summary">
+      <div class="budget-info">
+        <div class="budget-item">
+          <span class="label">Presupuesto:</span>
+          <span class="value budget">{{ budgetLimit | currency:'COP':'symbol':'1.0-0' }}</span>
+        </div>
+        <div class="budget-item">
+          <span class="label">Gastado:</span>
+          <span class="value spent">{{ currentSpent | currency:'COP':'symbol':'1.0-0' }}</span>
+        </div>
+        <div class="budget-item">
+          <span class="label">Disponible:</span>
+          <span class="value" [class.available]="remainingBudget > 0" [class.exceeded]="remainingBudget < 0">
+            {{ remainingBudget | currency:'COP':'symbol':'1.0-0' }}
+          </span>
+        </div>
+      </div>
+      
+      <div class="progress-container">
+        <mat-progress-bar 
+          mode="determinate" 
+          [value]="getProgressPercentage()"
+          [color]="getProgressColor()">
+        </mat-progress-bar>
+        <span class="progress-text">{{ getProgressPercentage() | number:'1.0-0' }}%</span>
+      </div>
+    </div>
+
+    <!-- Formulario para Nueva Transacción -->
+    <div class="transaction-form" *ngIf="!isExceeded()">
+      <h3>
+        <mat-icon>add</mat-icon>
+        Nueva Transacción
+      </h3>
+      
+      <form #transactionForm="ngForm" class="form-content">
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="flex-1">
+            <mat-label>Monto</mat-label>
+            <input matInput 
+                   type="number" 
+                   [(ngModel)]="newTransaction.amount"
+                   name="amount"
+                   placeholder="0"
+                   min="1"
+                   [max]="remainingBudget"
+                   required>
+            <span matTextPrefix>$</span>
+            <mat-hint>Máximo disponible: {{ remainingBudget | currency:'COP':'symbol':'1.0-0' }}</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="flex-1">
+            <mat-label>Fecha</mat-label>
+            <input matInput 
+                   [matDatepicker]="picker"
+                   [(ngModel)]="newTransaction.transaction_date"
+                   name="transaction_date"
+                   required>
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Descripción (Opcional)</mat-label>
+          <input matInput 
+                 [(ngModel)]="newTransaction.description"
+                 name="description"
+                 placeholder="Ej: Gasolina estación Shell, Mercado del sábado...">
+        </mat-form-field>
+
+        <button mat-raised-button 
+                color="primary" 
+                (click)="addTransaction()"
+                [disabled]="!isTransactionFormValid()"
+                class="add-transaction-btn">
+          <mat-icon>add</mat-icon>
+          Agregar Transacción
+        </button>
+      </form>
+    </div>
+
+    <!-- Mensaje cuando se excede el presupuesto -->
+    <div class="exceeded-message" *ngIf="isExceeded()">
+      <mat-icon color="warn">warning</mat-icon>
+      <div class="message-content">
+        <h4>Presupuesto Excedido</h4>
+        <p>Has superado el límite de presupuesto para este gasto. No puedes agregar más transacciones.</p>
+      </div>
+    </div>
+
+    <!-- Lista de Transacciones -->
+    <div class="transactions-list" *ngIf="transactions.length > 0">
+      <h3>
+        <mat-icon>history</mat-icon>
+        Transacciones ({{ transactions.length }})
+      </h3>
+      
+      <div class="transaction-item" *ngFor="let transaction of transactions; trackBy: trackByTransactionId">
+        <div class="transaction-info">
+          <div class="transaction-header">
+            <span class="amount">{{ transaction.amount | currency:'COP':'symbol':'1.0-0' }}</span>
+            <span class="date">{{ transaction.transaction_date | date:'dd/MM/yyyy' }}</span>
+          </div>
+          <div class="description" *ngIf="transaction.description">
+            {{ transaction.description }}
+          </div>
+        </div>
+        
+        <div class="transaction-actions">
+          <button mat-icon-button 
+                  (click)="editTransaction(transaction)"
+                  matTooltip="Editar transacción">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button 
+                  color="warn"
+                  (click)="deleteTransaction(transaction)"
+                  matTooltip="Eliminar transacción">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estado vacío -->
+    <div class="empty-state" *ngIf="transactions.length === 0">
+      <mat-icon>receipt</mat-icon>
+      <h4>Sin Transacciones</h4>
+      <p>Aún no has registrado ninguna transacción para este gasto híbrido.</p>
+    </div>
+
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onClose()">
+      <mat-icon>close</mat-icon>
+      Cerrar
+    </button>
+  </mat-dialog-actions>
+</div>

@@ -20,6 +20,19 @@
         <mat-hint>Selecciona la categoría del gasto</mat-hint>
       </mat-form-field>
 
+      <!-- Tipo de Gasto -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Tipo de Gasto</mat-label>
+        <mat-select [(ngModel)]="formData.expense_type" 
+                    name="expense_type" 
+                    required
+                    (selectionChange)="onExpenseTypeChange()">
+          <mat-option value="fixed">Gasto Fijo</mat-option>
+          <mat-option value="hybrid">Gasto Híbrido (Presupuesto Variable)</mat-option>
+        </mat-select>
+        <mat-hint>{{ getExpenseTypeHint() }}</mat-hint>
+      </mat-form-field>
+
       <!-- Concepto -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Concepto</mat-label>
@@ -31,10 +44,10 @@
         <mat-hint>Describe el gasto específico</mat-hint>
       </mat-form-field>
 
-      <!-- Monto y Día de Pago -->
-      <div class="form-row">
+      <!-- Campos para Gasto Fijo -->
+      <div *ngIf="formData.expense_type === 'fixed'" class="form-row">
         <mat-form-field appearance="outline" class="flex-1">
-          <mat-label>Monto</mat-label>
+          <mat-label>Monto Fijo</mat-label>
           <input matInput 
                  type="number" 
                  [(ngModel)]="formData.amount"
@@ -43,7 +56,7 @@
                  min="1"
                  required>
           <span matTextPrefix>$</span>
-          <mat-hint>Valor mensual del gasto</mat-hint>
+          <mat-hint>Valor fijo mensual</mat-hint>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="flex-1">
@@ -58,6 +71,30 @@
                  required>
           <mat-hint>Día del mes (1-31)</mat-hint>
         </mat-form-field>
+      </div>
+
+      <!-- Campos para Gasto Híbrido -->
+      <div *ngIf="formData.expense_type === 'hybrid'">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Presupuesto Mensual</mat-label>
+          <input matInput 
+                 type="number" 
+                 [(ngModel)]="formData.budget_limit"
+                 name="budget_limit"
+                 placeholder="0"
+                 min="1"
+                 required>
+          <span matTextPrefix>$</span>
+          <mat-hint>Límite de presupuesto para el mes</mat-hint>
+        </mat-form-field>
+        
+        <div class="hybrid-info-card">
+          <mat-icon color="primary">info</mat-icon>
+          <div class="info-content">
+            <p><strong>Gasto Híbrido:</strong></p>
+            <p>Podrás registrar múltiples transacciones durante el mes hasta alcanzar tu presupuesto límite.</p>
+          </div>
+        </div>
       </div>
 
       <!-- Validation Errors -->

@@ -156,17 +156,46 @@
                  [@slideInOut]="isPocketCollapsed(pocketName) ? 'out' : 'in'">
               <div *ngFor="let expense of getFixedExpensesByPocket()[pocketName]" 
                    class="expense-item" 
-                   [class.inherited]="!expense.id">
+                   [class.inherited]="!expense.id"
+                   [class.hybrid-expense]="expense.expense_type === 'hybrid'">
                 <div class="expense-info">
                   <span class="expense-name">
                     {{ expense.concept_name }}
                     <span *ngIf="!expense.id" class="inherited-badge" title="Heredado del mes anterior">📋</span>
+                    <span *ngIf="expense.expense_type === 'hybrid'" class="hybrid-badge" title="Gasto Híbrido">🔄</span>
                   </span>
-                  <span class="expense-details">
+                  
+                  <!-- Gasto Fijo Tradicional -->
+                  <span *ngIf="expense.expense_type !== 'hybrid'" class="expense-details">
                     {{ expense.amount | currency:'COP':'symbol':'1.0-0' }} - Día {{ expense.payment_day }}
                   </span>
+                  
+                  <!-- Gasto Híbrido -->
+                  <div *ngIf="expense.expense_type === 'hybrid'" class="hybrid-details">
+                    <div class="budget-info">
+                      <span class="budget-limit">Presupuesto: {{ expense.budget_limit | currency:'COP':'symbol':'1.0-0' }}</span>
+                      <span class="current-spent">Gastado: {{ expense.current_spent | currency:'COP':'symbol':'1.0-0' }}</span>
+                    </div>
+                    <div class="progress-bar-container">
+                      <mat-progress-bar 
+                        mode="determinate" 
+                        [value]="getHybridProgressPercentage(expense)"
+                        [color]="getHybridProgressColor(expense)">
+                      </mat-progress-bar>
+                      <span class="progress-text">{{ getHybridProgressPercentage(expense) | number:'1.0-0' }}%</span>
+                    </div>
+                  </div>
                 </div>
                 <div class="expense-actions">
+                  <!-- Botón específico para gastos híbridos -->
+                  <button *ngIf="expense.expense_type === 'hybrid'" 
+                          mat-icon-button 
+                          (click)="openHybridTransactionsModal(expense)"
+                          matTooltip="Ver transacciones"
+                          color="primary">
+                    <mat-icon>receipt_long</mat-icon>
+                  </button>
+                  
                   <button mat-icon-button 
                           (click)="editFixedExpense(expense)"
                           matTooltip="Editar gasto">

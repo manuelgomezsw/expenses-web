@@ -9,4 +9,33 @@ export interface FixedExpense {
     month: string; // "2024-01"
     paid_date?: string;
     created_at?: string;
+    
+    // Campos para gastos híbridos
+    expense_type?: 'fixed' | 'hybrid'; // Tipo de gasto
+    budget_limit?: number; // Límite de presupuesto para gastos híbridos
+    current_spent?: number; // Cantidad gastada actualmente
+    transactions?: HybridTransaction[]; // Transacciones asociadas
+}
+
+export interface HybridTransaction {
+    id?: number;
+    fixed_expense_id: number;
+    amount: number;
+    description?: string;
+    transaction_date: string; // ISO date string
+    created_at?: string;
+}
+
+// Interfaces para formularios y requests
+export interface CreateHybridTransactionRequest {
+    fixed_expense_id: number;
+    amount: number;
+    description?: string;
+    transaction_date: string;
+}
+
+export interface UpdateHybridTransactionRequest {
+    amount?: number;
+    description?: string;
+    transaction_date?: string;
 }
