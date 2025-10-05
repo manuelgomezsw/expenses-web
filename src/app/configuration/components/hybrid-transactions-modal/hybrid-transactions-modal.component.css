@@ -192,7 +192,9 @@
   flex: 1;
   overflow-y: auto;
   max-height: 300px;
+  min-height: 100px;
   padding-right: var(--spacing-xs);
+  border: 1px solid transparent; /* Fuerza el contexto de scroll */
 }
 
 /* Scrollbar personalizado para la lista de transacciones */
@@ -341,5 +343,17 @@
 
   .transactions-container {
     max-height: 200px;
+  }
+}
+
+/* Estilos globales para el diálogo */
+::ng-deep .hybrid-transactions-dialog {
+  .mat-mdc-dialog-container {
+    padding: 0;
+    overflow: hidden;
+  }
+  
+  .mat-mdc-dialog-surface {
+    overflow: hidden;
   }
 }

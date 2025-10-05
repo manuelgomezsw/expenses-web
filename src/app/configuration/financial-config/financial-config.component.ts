@@ -157,10 +157,13 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
     };
 
     const dialogRef = this.dialog.open(HybridTransactionsModalComponent, {
-      width: '700px',
-      maxHeight: '80vh',
+      width: '800px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
       data: dialogData,
-      disableClose: false
+      disableClose: false,
+      hasBackdrop: true,
+      panelClass: 'hybrid-transactions-dialog'
     });
 
     dialogRef.afterClosed().subscribe((result: HybridTransactionsResult | undefined) => {

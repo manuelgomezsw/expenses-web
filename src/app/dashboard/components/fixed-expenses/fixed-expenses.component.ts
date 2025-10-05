@@ -320,8 +320,11 @@ export class FixedExpensesComponent implements OnInit, OnDestroy, OnChanges {
     const dialogRef = this.dialog.open(HybridTransactionsModalComponent, {
       width: '800px',
       maxWidth: '95vw',
+      maxHeight: '90vh',
       data: dialogData,
-      disableClose: false
+      disableClose: false,
+      hasBackdrop: true,
+      panelClass: 'hybrid-transactions-dialog'
     });
 
     dialogRef.afterClosed().subscribe((result: HybridTransactionsResult | undefined) => {
@@ -402,19 +405,10 @@ export class FixedExpensesComponent implements OnInit, OnDestroy, OnChanges {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (newTransaction) => {
-          // Actualizar el gasto con la nueva transacción
-          if (expense.transactions) {
-            expense.transactions.push(newTransaction);
-          } else {
-            expense.transactions = [newTransaction];
-          }
-          
-          // Recalcular el gasto actual
-          expense.current_spent = this.hybridTransactionsService.calculateTotalSpent(expense.transactions);
-          
           this.notificationService.openSnackBar('Transacción agregada correctamente');
           
-          // Recargar la lista de gastos para obtener datos actualizados del backend
+          // Recargar la lista completa de gastos para obtener datos actualizados del backend
+          // Esto asegura que todos los datos estén sincronizados
           this.loadFixedExpenses();
         },
         error: (error) => {
@@ -437,17 +431,10 @@ export class FixedExpensesComponent implements OnInit, OnDestroy, OnChanges {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
-          // Remover la transacción de la lista local
-          if (expense.transactions) {
-            expense.transactions = expense.transactions.filter(t => t.id !== transactionId);
-            
-            // Recalcular el gasto actual
-            expense.current_spent = this.hybridTransactionsService.calculateTotalSpent(expense.transactions);
-          }
-          
           this.notificationService.openSnackBar('Transacción eliminada correctamente');
           
-          // Recargar la lista de gastos para obtener datos actualizados del backend
+          // Recargar la lista completa de gastos para obtener datos actualizados del backend
+          // Esto asegura que todos los datos estén sincronizados
           this.loadFixedExpenses();
         },
         error: (error) => {
