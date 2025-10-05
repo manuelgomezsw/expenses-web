@@ -24,6 +24,10 @@ import { NotificationService } from '../../../services/notification/notification
 import { HybridTransactionsService } from '../../../configuration/services/hybrid-transactions.service';
 import { HybridTransactionsModalComponent, HybridTransactionsData, HybridTransactionsResult } from '../../../configuration/components/hybrid-transactions-modal/hybrid-transactions-modal.component';
 
+// New Modals
+import { AddHybridTransactionModalComponent, AddHybridTransactionData, AddHybridTransactionResult } from '../../../shared/components/add-hybrid-transaction-modal/add-hybrid-transaction-modal.component';
+import { ViewHybridTransactionsModalComponent, ViewHybridTransactionsData, ViewHybridTransactionsResult } from '../../../shared/components/view-hybrid-transactions-modal/view-hybrid-transactions-modal.component';
+
 @Component({
   selector: 'app-fixed-expenses',
   standalone: true,
@@ -300,7 +304,7 @@ export class FixedExpensesComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   /**
-   * Abre el modal para ver/gestionar transacciones híbridas
+   * Abre el modal para ver transacciones híbridas
    */
   openHybridTransactionsModal(expense: FixedExpense): void {
     if (!expense.id) {
@@ -313,23 +317,22 @@ export class FixedExpensesComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
 
-    const dialogData: HybridTransactionsData = {
+    const dialogData: ViewHybridTransactionsData = {
       expense: expense
     };
 
-    const dialogRef = this.dialog.open(HybridTransactionsModalComponent, {
-      width: '800px',
+    const dialogRef = this.dialog.open(ViewHybridTransactionsModalComponent, {
+      width: '600px',
       maxWidth: '95vw',
       maxHeight: '90vh',
       data: dialogData,
       disableClose: false,
-      hasBackdrop: true,
-      panelClass: 'hybrid-transactions-dialog'
+      hasBackdrop: true
     });
 
-    dialogRef.afterClosed().subscribe((result: HybridTransactionsResult | undefined) => {
-      if (result) {
-        this.handleHybridTransactionResult(expense, result);
+    dialogRef.afterClosed().subscribe((result: ViewHybridTransactionsResult | undefined) => {
+      if (result && result.action === 'delete') {
+        this.deleteHybridTransaction(expense, result.transactionId);
       }
     });
   }
@@ -338,9 +341,45 @@ export class FixedExpensesComponent implements OnInit, OnDestroy, OnChanges {
    * Abre modal compacto para agregar transacción rápida
    */
   openQuickTransactionModal(expense: FixedExpense): void {
-    // Por ahora reutilizamos el modal completo
-    // En el futuro se puede crear un modal más compacto
-    this.openHybridTransactionsModal(expense);
+    if (!expense.id) {
+      console.error('No se puede abrir modal: expense.id es undefined');
+      return;
+    }
+
+    if (expense.expense_type !== 'hybrid') {
+      this.notificationService.openSnackBar('Este gasto no es híbrido');
+      return;
+    }
+
+    const remainingBudget = this.getRemainingBudget(expense);
+    if (remainingBudget <= 0) {
+      this.notificationService.openSnackBar('No hay presupuesto disponible para nuevas transacciones');
+      return;
+    }
+
+    const dialogData: AddHybridTransactionData = {
+      expenseName: expense.concept_name,
+      remainingBudget: remainingBudget
+    };
+
+    const dialogRef = this.dialog.open(AddHybridTransactionModalComponent, {
+      width: '500px',
+      maxWidth: '95vw',
+      data: dialogData,
+      disableClose: false,
+      hasBackdrop: true
+    });
+
+    dialogRef.afterClosed().subscribe((result: AddHybridTransactionResult | undefined) => {
+      if (result) {
+        const request: CreateHybridTransactionBackendRequest = {
+          amount: result.amount,
+          description: result.description,
+          transaction_date: result.transaction_date
+        };
+        this.addHybridTransaction(expense, request);
+      }
+    });
   }
 
   /**
@@ -374,23 +413,6 @@ export class FixedExpensesComponent implements OnInit, OnDestroy, OnChanges {
   // MÉTODOS PARA TRANSACCIONES HÍBRIDAS
   // ========================================
 
-  /**
-   * Maneja el resultado del modal de transacciones híbridas
-   */
-  private handleHybridTransactionResult(expense: FixedExpense, result: HybridTransactionsResult): void {
-    switch (result.action) {
-      case 'add':
-        if (result.transactionRequest) {
-          this.addHybridTransaction(expense, result.transactionRequest);
-        }
-        break;
-      case 'delete':
-        if (result.transactionId) {
-          this.deleteHybridTransaction(expense, result.transactionId);
-        }
-        break;
-    }
-  }
 
   /**
    * Agrega una nueva transacción híbrida
