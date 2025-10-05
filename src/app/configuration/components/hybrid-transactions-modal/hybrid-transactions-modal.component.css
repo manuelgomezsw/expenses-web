@@ -175,6 +175,8 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
+  position: relative;
+  overflow: hidden;
 }
 
 .transactions-list h3 {
@@ -194,6 +196,8 @@
   max-height: 300px;
   min-height: 100px;
   padding-right: var(--spacing-xs);
+  position: relative;
+  width: 100%;
 }
 
 /* Scrollbar personalizado para la lista de transacciones */
@@ -225,6 +229,9 @@
   margin-bottom: var(--spacing-sm);
   background: #fafafa;
   transition: all 0.2s ease;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .transaction-item:hover {
