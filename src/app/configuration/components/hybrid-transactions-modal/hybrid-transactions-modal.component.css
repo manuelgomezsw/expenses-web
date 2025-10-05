@@ -19,7 +19,7 @@
 
 .mat-mdc-dialog-content {
   padding: 0 var(--spacing-lg) var(--spacing-lg) var(--spacing-lg);
-  overflow: visible;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -175,6 +175,8 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  position: relative;
 }
 
 .transactions-list h3 {
@@ -194,7 +196,9 @@
   max-height: 300px;
   min-height: 100px;
   padding-right: var(--spacing-xs);
-  border: 1px solid transparent; /* Fuerza el contexto de scroll */
+  margin: 0;
+  position: relative;
+  z-index: 1;
 }
 
 /* Scrollbar personalizado para la lista de transacciones */
@@ -351,9 +355,17 @@
   .mat-mdc-dialog-container {
     padding: 0;
     overflow: hidden;
+    position: relative;
   }
   
   .mat-mdc-dialog-surface {
     overflow: hidden;
+    position: relative;
+    z-index: auto;
+  }
+  
+  .mat-mdc-dialog-content {
+    position: relative;
+    z-index: 1;
   }
 }
