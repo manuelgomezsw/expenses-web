@@ -104,29 +104,31 @@
         Transacciones ({{ transactions.length }})
       </h3>
       
-      <div class="transaction-item" *ngFor="let transaction of transactions; trackBy: trackByTransactionId">
-        <div class="transaction-info">
-          <div class="transaction-header">
-            <span class="amount">{{ transaction.amount | currency:'COP':'symbol':'1.0-0' }}</span>
-            <span class="date">{{ transaction.transaction_date | date:'dd/MM/yyyy' }}</span>
+      <div class="transactions-container">
+        <div class="transaction-item" *ngFor="let transaction of transactions; trackBy: trackByTransactionId">
+          <div class="transaction-info">
+            <div class="transaction-header">
+              <span class="amount">{{ transaction.amount | currency:'COP':'symbol':'1.0-0' }}</span>
+              <span class="date">{{ transaction.transaction_date | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="description" *ngIf="transaction.description">
+              {{ transaction.description }}
+            </div>
           </div>
-          <div class="description" *ngIf="transaction.description">
-            {{ transaction.description }}
+          
+          <div class="transaction-actions">
+            <button mat-icon-button 
+                    (click)="editTransaction(transaction)"
+                    matTooltip="Editar transacción">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button 
+                    color="warn"
+                    (click)="deleteTransaction(transaction)"
+                    matTooltip="Eliminar transacción">
+              <mat-icon>delete</mat-icon>
+            </button>
           </div>
-        </div>
-        
-        <div class="transaction-actions">
-          <button mat-icon-button 
-                  (click)="editTransaction(transaction)"
-                  matTooltip="Editar transacción">
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button mat-icon-button 
-                  color="warn"
-                  (click)="deleteTransaction(transaction)"
-                  matTooltip="Eliminar transacción">
-            <mat-icon>delete</mat-icon>
-          </button>
         </div>
       </div>
     </div>
