@@ -12,6 +12,9 @@ import { FixedExpensesComponent } from './components/fixed-expenses/fixed-expens
 import { DailyExpensesComponent } from './components/daily-expenses/daily-expenses.component';
 import { MonthSelectorComponent } from '../shared/components/month-selector/month-selector.component';
 
+// Utilities
+import { DateUtils } from '../shared/utils/date.utils';
+
 import { environment } from '../../environments/environment';
 
 @Component({
@@ -31,7 +34,7 @@ import { environment } from '../../environments/environment';
 export class DashboardComponent implements OnInit, OnDestroy {
   
   // Current month for all components
-  currentMonth: string = this.getCurrentMonth();
+  currentMonth: string = DateUtils.getCurrentMonth();
   
   // Collapsible components state
   isFixedExpensesCollapsed: boolean = false;
@@ -65,14 +68,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(params => {
         const monthParam = params['month'];
-        if (monthParam && this.isValidMonth(monthParam)) {
+        if (monthParam && DateUtils.isValidMonth(monthParam)) {
           this.currentMonth = monthParam;
         } else {
           // If no valid month param, redirect to current month
-          this.currentMonth = this.getCurrentMonth();
+          this.currentMonth = DateUtils.getCurrentMonth();
           this.updateUrlWithMonth(this.currentMonth);
-        }
-      });
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -110,26 +113,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.updateUrlWithMonth(newMonth);
   }
 
-  /**
-   * Get current month in YYYY-MM format
-   */
-  private getCurrentMonth(): string {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = (now.getMonth() + 1).toString().padStart(2, '0');
-    return `${year}-${month}`;
-  }
-
-  /**
-   * Validate month format (YYYY-MM)
-   */
-  private isValidMonth(month: string): boolean {
-    const regex = /^\d{4}-\d{2}$/;
-    if (!regex.test(month)) return false;
-    
-    const [year, monthNum] = month.split('-').map(Number);
-    return year >= 2020 && year <= 2030 && monthNum >= 1 && monthNum <= 12;
-  }
+  // Métodos de fecha movidos a DateUtils para evitar duplicación
 
   /**
    * Update URL with month parameter

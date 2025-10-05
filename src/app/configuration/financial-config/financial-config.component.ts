@@ -23,8 +23,13 @@ import { MonthSelectorComponent } from '../../shared/components/month-selector/m
 import { ConfirmDialogComponent } from '../../components/confirm-dialog/confirm-dialog.component';
 import { ExpenseFormModalComponent, ExpenseFormData, ExpenseFormResult } from '../components/expense-form-modal/expense-form-modal.component';
 import { PocketFormModalComponent, PocketFormData, PocketFormResult } from '../components/pocket-form-modal/pocket-form-modal.component';
+import { HybridTransactionsModalComponent, HybridTransactionsData, HybridTransactionsResult } from '../components/hybrid-transactions-modal/hybrid-transactions-modal.component';
 import { ConfigurationService, FinancialConfiguration, CreateFixedExpenseRequest, UpdateSalaryRequest, UpdateDailyBudgetRequest } from '../services/configuration.service';
+import { HybridTransactionsService } from '../services/hybrid-transactions.service';
 import { NotificationService } from '../../services/notification/notification.service';
+
+// Utilities
+import { DateUtils } from '../../shared/utils/date.utils';
 
 // Domain Models
 import { Salary } from '../../domain/salary';
@@ -78,7 +83,7 @@ import { environment } from '../../../environments/environment';
 export class FinancialConfigComponent implements OnInit, OnDestroy {
   
   // Current month
-  currentMonth: string = this.getCurrentMonth();
+  currentMonth: string = DateUtils.getCurrentMonth();
   
   // Configuration data
   configuration: FinancialConfiguration | null = null;
@@ -115,6 +120,7 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private configurationService: ConfigurationService,
+    private hybridTransactionsService: HybridTransactionsService,
     private notificationService: NotificationService,
     private dialog: MatDialog
   ) {}
@@ -130,11 +136,133 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
         if (monthParam && this.isValidMonth(monthParam)) {
           this.currentMonth = monthParam;
         } else {
-          this.currentMonth = this.getCurrentMonth();
+          this.currentMonth = DateUtils.getCurrentMonth();
           this.updateUrlWithMonth(this.currentMonth);
         }
         this.loadConfiguration();
       });
+  }
+
+  /**
+   * Abre el modal de transacciones híbridas
+   */
+  openHybridTransactionsModal(expense: FixedExpense): void {
+    if (expense.expense_type !== 'hybrid') {
+      this.notificationService.openSnackBar('Este gasto no es híbrido');
+      return;
+    }
+
+    const dialogData: HybridTransactionsData = {
+      expense: expense
+    };
+
+    const dialogRef = this.dialog.open(HybridTransactionsModalComponent, {
+      width: '700px',
+      maxHeight: '80vh',
+      data: dialogData,
+      disableClose: false
+    });
+
+    dialogRef.afterClosed().subscribe((result: HybridTransactionsResult | undefined) => {
+      if (result) {
+        this.handleHybridTransactionResult(expense, result);
+      }
+    });
+  }
+
+  /**
+   * Maneja el resultado del modal de transacciones híbridas
+   */
+  private handleHybridTransactionResult(expense: FixedExpense, result: HybridTransactionsResult): void {
+    switch (result.action) {
+      case 'add':
+        if (result.transactionRequest) {
+          this.addHybridTransaction(expense, result.transactionRequest);
+        }
+        break;
+      case 'delete':
+        if (result.transactionId) {
+          this.deleteHybridTransaction(expense, result.transactionId);
+        }
+        break;
+    }
+  }
+
+  /**
+   * Agrega una nueva transacción híbrida
+   */
+  private addHybridTransaction(expense: FixedExpense, request: any): void {
+    this.hybridTransactionsService.createTransaction(request)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (newTransaction) => {
+          // Actualizar el gasto con la nueva transacción
+          if (expense.transactions) {
+            expense.transactions.push(newTransaction);
+          } else {
+            expense.transactions = [newTransaction];
+          }
+          
+          // Recalcular el gasto actual
+          expense.current_spent = this.hybridTransactionsService.calculateTotalSpent(expense.transactions);
+          
+          this.notificationService.openSnackBar('Transacción agregada correctamente');
+          
+          // Recargar la configuración para obtener datos actualizados
+          this.loadConfiguration();
+        },
+        error: (error) => {
+          console.error('Error adding hybrid transaction:', error);
+          this.notificationService.openSnackBar('Error agregando transacción');
+        }
+      });
+  }
+
+  /**
+   * Elimina una transacción híbrida
+   */
+  private deleteHybridTransaction(expense: FixedExpense, transactionId: number): void {
+    this.hybridTransactionsService.deleteTransaction(transactionId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          // Remover la transacción de la lista local
+          if (expense.transactions) {
+            expense.transactions = expense.transactions.filter(t => t.id !== transactionId);
+            
+            // Recalcular el gasto actual
+            expense.current_spent = this.hybridTransactionsService.calculateTotalSpent(expense.transactions);
+          }
+          
+          this.notificationService.openSnackBar('Transacción eliminada correctamente');
+          
+          // Recargar la configuración para obtener datos actualizados
+          this.loadConfiguration();
+        },
+        error: (error) => {
+          console.error('Error deleting hybrid transaction:', error);
+          this.notificationService.openSnackBar('Error eliminando transacción');
+        }
+      });
+  }
+
+  /**
+   * Calcula el porcentaje de progreso para un gasto híbrido
+   */
+  getHybridProgressPercentage(expense: FixedExpense): number {
+    if (!expense.budget_limit || expense.budget_limit === 0) return 0;
+    const currentSpent = expense.current_spent || 0;
+    return Math.min((currentSpent / expense.budget_limit) * 100, 100);
+  }
+
+  /**
+   * Obtiene el color del progreso para un gasto híbrido
+   */
+  getHybridProgressColor(expense: FixedExpense): 'primary' | 'accent' | 'warn' {
+    const percentage = this.getHybridProgressPercentage(expense);
+    if (percentage >= 100) return 'warn';
+    if (percentage >= 80) return 'accent';
+    return 'primary';
   }
 
   ngOnDestroy(): void {
@@ -482,12 +610,7 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
     }));
   }
 
-  private getCurrentMonth(): string {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = (now.getMonth() + 1).toString().padStart(2, '0');
-    return `${year}-${month}`;
-  }
+  // Método getCurrentMonth() movido a DateUtils para evitar duplicación
 
   // Método para calcular resumen local (sin backend adicional)
   getLocalMonthlySummary(): any {
@@ -515,17 +638,11 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
   }
 
   getMonthName(month: string): string {
-    const [year, monthNum] = month.split('-').map(Number);
-    const date = new Date(year, monthNum - 1, 1);
-    return date.toLocaleString('es-CO', { month: 'long', year: 'numeric' });
+    return DateUtils.getMonthName(month);
   }
 
   private isValidMonth(month: string): boolean {
-    const regex = /^\d{4}-\d{2}$/;
-    if (!regex.test(month)) return false;
-    
-    const [year, monthNum] = month.split('-').map(Number);
-    return year >= 2020 && year <= 2030 && monthNum >= 1 && monthNum <= 12;
+    return DateUtils.isValidMonth(month);
   }
 
   private updateUrlWithMonth(month: string): void {
@@ -624,7 +741,8 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
             console.log('Configuración actualizada con nuevo gasto fijo');
           }
           
-          this.notificationService.openSnackBar(`Gasto fijo "${newExpense.concept_name}" agregado correctamente`);
+          const expenseType = newExpense.expense_type === 'hybrid' ? 'híbrido' : 'fijo';
+          this.notificationService.openSnackBar(`Gasto ${expenseType} "${newExpense.concept_name}" agregado correctamente`);
         },
         error: (error) => {
           console.error('Error creating fixed expense en el componente:', error);
