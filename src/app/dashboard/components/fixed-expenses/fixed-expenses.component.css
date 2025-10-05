@@ -521,3 +521,190 @@ mat-divider {
     text-align: center;
   }
 }
+
+/* ========================================
+   ESTILOS PARA GASTOS HÍBRIDOS
+   ======================================== */
+
+/* Gasto Híbrido Base */
+.expense-item.hybrid-expense {
+  border-left: 4px solid var(--primary-color);
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--spacing-sm);
+}
+
+/* Estados de Gastos Híbridos */
+.expense-item.hybrid-expense.unused::before {
+  background: var(--text-muted);
+}
+
+.expense-item.hybrid-expense.under-budget::before {
+  background: var(--success-color);
+}
+
+.expense-item.hybrid-expense.near-limit::before {
+  background: var(--warning-color);
+}
+
+.expense-item.hybrid-expense.over-budget::before {
+  background: var(--danger-color);
+}
+
+/* Progress Indicator */
+.progress-indicator {
+  width: 100%;
+  margin-bottom: var(--spacing-xs);
+}
+
+.progress-indicator .mat-mdc-progress-bar {
+  height: 8px !important;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+/* Hybrid Details */
+.hybrid-details {
+  gap: var(--spacing-sm);
+}
+
+.expense-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+}
+
+.expense-header .expense-name {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  flex: 1;
+  min-width: 0;
+}
+
+.hybrid-icon {
+  color: var(--primary-color);
+  font-size: 20px !important;
+  width: 20px !important;
+  height: 20px !important;
+  flex-shrink: 0;
+}
+
+.expense-budget {
+  font-weight: 700;
+  font-size: var(--font-size-lg);
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+/* Expense Meta */
+.expense-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.progress-text {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.remaining-budget {
+  font-size: var(--font-size-xs);
+  color: var(--success-color);
+  font-weight: 600;
+}
+
+/* Expense Actions */
+.expense-actions {
+  display: flex;
+  gap: var(--spacing-xs);
+  align-self: flex-end;
+  margin-top: var(--spacing-xs);
+}
+
+.quick-add-btn {
+  color: var(--success-color) !important;
+}
+
+.quick-add-btn:disabled {
+  color: var(--text-muted) !important;
+  opacity: 0.5;
+}
+
+.details-btn {
+  color: var(--primary-color) !important;
+}
+
+.expense-actions .mat-mdc-icon-button {
+  width: 36px !important;
+  height: 36px !important;
+  padding: 6px !important;
+}
+
+.expense-actions .mat-mdc-icon-button mat-icon {
+  font-size: 20px !important;
+  width: 20px !important;
+  height: 20px !important;
+}
+
+/* Estados específicos para texto de progreso */
+.hybrid-expense.unused .progress-text {
+  color: var(--text-muted);
+}
+
+.hybrid-expense.under-budget .progress-text {
+  color: var(--success-color);
+}
+
+.hybrid-expense.near-limit .progress-text {
+  color: var(--warning-color);
+}
+
+.hybrid-expense.over-budget .progress-text {
+  color: var(--danger-color);
+  font-weight: 600;
+}
+
+/* Responsive para gastos híbridos */
+@media (max-width: 768px) {
+  .expense-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+  }
+  
+  .expense-budget {
+    font-size: var(--font-size-base);
+  }
+  
+  .expense-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+  
+  .expense-actions {
+    align-self: flex-start;
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .hybrid-details .expense-name {
+    font-size: var(--font-size-sm);
+  }
+  
+  .expense-budget {
+    font-size: var(--font-size-sm);
+  }
+  
+  .progress-text,
+  .remaining-budget {
+    font-size: var(--font-size-xs);
+  }
+}

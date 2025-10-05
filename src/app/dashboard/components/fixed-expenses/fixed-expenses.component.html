@@ -86,33 +86,89 @@
           <div class="expenses-list">
             <div *ngFor="let expense of expensesByPocket[pocketName]" 
                  class="expense-item"
-                 [class]="getExpenseStatus(expense)">
+                 [class]="isHybridExpense(expense) ? 'hybrid-expense ' + getHybridStatus(expense) : getExpenseStatus(expense)">
               
-              <!-- Checkbox -->
-              <mat-checkbox 
-                [checked]="expense.is_paid"
-                (change)="togglePaymentStatus(expense)"
-                [color]="'primary'">
-              </mat-checkbox>
+              <!-- GASTO FIJO TRADICIONAL -->
+              <ng-container *ngIf="!isHybridExpense(expense)">
+                <!-- Checkbox -->
+                <mat-checkbox 
+                  [checked]="expense.is_paid"
+                  (change)="togglePaymentStatus(expense)"
+                  [color]="'primary'">
+                </mat-checkbox>
 
-              <!-- Expense Details -->
-              <div class="expense-details">
-                <span class="expense-name">{{ expense.concept_name }}</span>
-                <span class="expense-amount">
-                  {{ expense.amount | currency:'COP':'symbol':'1.0-0' }}
-                </span>
-                <span class="expense-date">
-                  Día {{ expense.payment_day }}
-                  <span *ngIf="expense.paid_date" class="paid-date">
-                    - Pagado {{ expense.paid_date }}
+                <!-- Expense Details -->
+                <div class="expense-details">
+                  <span class="expense-name">{{ expense.concept_name }}</span>
+                  <span class="expense-amount">
+                    {{ expense.amount | currency:'COP':'symbol':'1.0-0' }}
                   </span>
-                </span>
-              </div>
+                  <span class="expense-date">
+                    Día {{ expense.payment_day }}
+                    <span *ngIf="expense.paid_date" class="paid-date">
+                      - Pagado {{ expense.paid_date }}
+                    </span>
+                  </span>
+                </div>
 
-              <!-- Status Text -->
-              <span class="status-text" [class]="getExpenseStatus(expense)">
-                {{ expense.is_paid ? 'Pagado' : (getExpenseStatus(expense) === 'overdue' ? 'Vencido' : 'Pendiente') }}
-              </span>
+                <!-- Status Text -->
+                <span class="status-text" [class]="getExpenseStatus(expense)">
+                  {{ expense.is_paid ? 'Pagado' : (getExpenseStatus(expense) === 'overdue' ? 'Vencido' : 'Pendiente') }}
+                </span>
+              </ng-container>
+
+              <!-- GASTO HÍBRIDO -->
+              <ng-container *ngIf="isHybridExpense(expense)">
+                <!-- Progress Indicator -->
+                <div class="progress-indicator">
+                  <mat-progress-bar 
+                    [value]="getProgressPercentage(expense)"
+                    [color]="getProgressColor(expense)"
+                    mode="determinate">
+                  </mat-progress-bar>
+                </div>
+
+                <!-- Expense Details -->
+                <div class="expense-details hybrid-details">
+                  <div class="expense-header">
+                    <span class="expense-name">
+                      <mat-icon class="hybrid-icon">trending_up</mat-icon>
+                      {{ expense.concept_name }}
+                    </span>
+                    <span class="expense-budget">
+                      {{ (expense.current_spent || 0) | currency:'COP':'symbol':'1.0-0' }} / 
+                      {{ (expense.budget_limit || 0) | currency:'COP':'symbol':'1.0-0' }}
+                    </span>
+                  </div>
+                  
+                  <div class="expense-meta">
+                    <span class="progress-text">
+                      {{ getBudgetStatusText(expense) }}
+                    </span>
+                    <span class="remaining-budget" *ngIf="getRemainingBudget(expense) > 0">
+                      Disponible: {{ getRemainingBudget(expense) | currency:'COP':'symbol':'1.0-0' }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="expense-actions">
+                  <button mat-icon-button 
+                          (click)="openQuickTransactionModal(expense)"
+                          class="quick-add-btn"
+                          matTooltip="Agregar transacción"
+                          [disabled]="getProgressPercentage(expense) >= 100">
+                    <mat-icon>add_circle</mat-icon>
+                  </button>
+                  
+                  <button mat-icon-button 
+                          (click)="openHybridTransactionsModal(expense)"
+                          class="details-btn"
+                          matTooltip="Ver detalles">
+                    <mat-icon>visibility</mat-icon>
+                  </button>
+                </div>
+              </ng-container>
             </div>
           </div>
 

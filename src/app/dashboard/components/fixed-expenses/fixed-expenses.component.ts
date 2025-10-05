@@ -10,14 +10,19 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 
 // Pipes
 import { CurrencyPipe } from '@angular/common';
 
 // Services and Models
 import { FixedExpensesService, FixedExpensesByPocket } from '../../services/fixed-expenses.service';
-import { FixedExpense } from '../../../domain/fixed-expense';
+import { FixedExpense, HybridTransaction } from '../../../domain/fixed-expense';
 import { NotificationService } from '../../../services/notification/notification.service';
+import { HybridTransactionsService } from '../../../configuration/services/hybrid-transactions.service';
+import { HybridTransactionsModalComponent } from '../../../configuration/components/hybrid-transactions-modal/hybrid-transactions-modal.component';
 
 @Component({
   selector: 'app-fixed-expenses',
@@ -31,6 +36,9 @@ import { NotificationService } from '../../../services/notification/notification
     MatProgressSpinnerModule,
     MatButtonModule,
     MatChipsModule,
+    MatProgressBarModule,
+    MatTooltipModule,
+    MatDialogModule,
     CurrencyPipe
   ],
   templateUrl: './fixed-expenses.component.html',
@@ -62,7 +70,9 @@ export class FixedExpensesComponent implements OnInit, OnDestroy, OnChanges {
 
   constructor(
     private fixedExpensesService: FixedExpensesService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private hybridTransactionsService: HybridTransactionsService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -239,5 +249,115 @@ export class FixedExpensesComponent implements OnInit, OnDestroy, OnChanges {
    */
   getFilteredTotal(): number {
     return this.fixedExpensesService.calculateTotal(this.filteredExpenses);
+  }
+
+  // ========================================
+  // MÉTODOS PARA GASTOS HÍBRIDOS
+  // ========================================
+
+  /**
+   * Verifica si un gasto es híbrido
+   */
+  isHybridExpense(expense: FixedExpense): boolean {
+    return expense.expense_type === 'hybrid';
+  }
+
+  /**
+   * Calcula el porcentaje de progreso para gastos híbridos
+   */
+  getProgressPercentage(expense: FixedExpense): number {
+    if (!expense.budget_limit || expense.budget_limit === 0) return 0;
+    const spent = expense.current_spent || 0;
+    return Math.min((spent / expense.budget_limit) * 100, 100);
+  }
+
+  /**
+   * Obtiene el color de la barra de progreso según el porcentaje usado
+   */
+  getProgressColor(expense: FixedExpense): string {
+    const percentage = this.getProgressPercentage(expense);
+    if (percentage < 80) return 'primary';
+    if (percentage < 95) return 'accent';
+    return 'warn';
+  }
+
+  /**
+   * Obtiene el estado visual del gasto híbrido
+   */
+  getHybridStatus(expense: FixedExpense): string {
+    const percentage = this.getProgressPercentage(expense);
+    if (percentage === 0) return 'unused';
+    if (percentage < 80) return 'under-budget';
+    if (percentage < 95) return 'near-limit';
+    return 'over-budget';
+  }
+
+  /**
+   * Obtiene el número de transacciones de un gasto híbrido
+   */
+  getTransactionCount(expense: FixedExpense): number {
+    return expense.transactions?.length || 0;
+  }
+
+  /**
+   * Abre el modal para ver/gestionar transacciones híbridas
+   */
+  openHybridTransactionsModal(expense: FixedExpense): void {
+    if (!expense.id) {
+      console.error('No se puede abrir modal: expense.id es undefined');
+      return;
+    }
+
+    const dialogRef = this.dialog.open(HybridTransactionsModalComponent, {
+      width: '800px',
+      maxWidth: '95vw',
+      data: {
+        expense: expense
+      },
+      disableClose: false
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        // Recargar gastos para obtener datos actualizados
+        this.loadFixedExpenses();
+      }
+    });
+  }
+
+  /**
+   * Abre modal compacto para agregar transacción rápida
+   */
+  openQuickTransactionModal(expense: FixedExpense): void {
+    // Por ahora reutilizamos el modal completo
+    // En el futuro se puede crear un modal más compacto
+    this.openHybridTransactionsModal(expense);
+  }
+
+  /**
+   * Obtiene el texto del estado del presupuesto
+   */
+  getBudgetStatusText(expense: FixedExpense): string {
+    const percentage = this.getProgressPercentage(expense);
+    const transactionCount = this.getTransactionCount(expense);
+    
+    if (percentage === 0) {
+      return 'Sin transacciones';
+    } else if (percentage < 80) {
+      return `${percentage.toFixed(0)}% usado - ${transactionCount} transacciones`;
+    } else if (percentage < 95) {
+      return `${percentage.toFixed(0)}% usado - Cerca del límite`;
+    } else {
+      return `${percentage.toFixed(0)}% usado - Sobre presupuesto`;
+    }
+  }
+
+  /**
+   * Obtiene el monto disponible restante
+   */
+  getRemainingBudget(expense: FixedExpense): number {
+    const budgetLimit = expense.budget_limit || 0;
+    const currentSpent = expense.current_spent || 0;
+    return Math.max(budgetLimit - currentSpent, 0);
   }
 }
