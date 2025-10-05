@@ -44,6 +44,29 @@
         <mat-hint>Describe el gasto específico</mat-hint>
       </mat-form-field>
 
+      <!-- Mes -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Mes</mat-label>
+        <input matInput 
+               type="month"
+               [(ngModel)]="formData.month"
+               name="month"
+               required>
+        <mat-hint>Mes al que pertenece este gasto</mat-hint>
+      </mat-form-field>
+
+      <!-- Advertencia de Conversión -->
+      <div *ngIf="isConversion() && getConversionWarning()" 
+           class="conversion-warning"
+           [class.destructive]="isDestructiveConversion()">
+        <mat-icon [color]="isDestructiveConversion() ? 'warn' : 'primary'">
+          {{ isDestructiveConversion() ? 'warning' : 'info' }}
+        </mat-icon>
+        <div class="warning-content">
+          <p>{{ getConversionWarning() }}</p>
+        </div>
+      </div>
+
       <!-- Campos para Gasto Fijo -->
       <div *ngIf="formData.expense_type === 'fixed'" class="form-row">
         <mat-form-field appearance="outline" class="flex-1">

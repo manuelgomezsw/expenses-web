@@ -681,24 +681,23 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe((result: ExpenseFormResult) => {
       if (result) {
         if (expense) {
-          // Update existing expense
-          const updatedExpense: FixedExpense = {
-            ...expense,
-            pocket_id: result.pocket_id,
-            concept_name: result.concept_name,
-            amount: result.amount,
-            payment_day: result.payment_day
-          };
-          this.updateFixedExpenseFromModal(updatedExpense);
+          // Update existing expense - detectar si es conversión
+          const isConversion = expense.expense_type !== result.expense_type;
+          const isDestructiveConversion = isConversion && 
+                                        expense.expense_type === 'hybrid' && 
+                                        result.expense_type === 'fixed' && 
+                                        (expense.transactions?.length || 0) > 0;
+
+          if (isDestructiveConversion) {
+            // Mostrar confirmación para conversiones destructivas
+            this.showConversionConfirmation(result, expense);
+          } else {
+            // Proceder con actualización normal
+            this.performExpenseUpdate(result, expense);
+          }
         } else {
           // Create new expense
-          const newExpenseRequest: CreateFixedExpenseRequest = {
-            pocket_id: result.pocket_id,
-            concept_name: result.concept_name,
-            amount: result.amount,
-            payment_day: result.payment_day
-          };
-          this.createFixedExpenseFromModal(newExpenseRequest);
+          this.createFixedExpenseFromModal(result);
         }
       }
     });
@@ -735,7 +734,9 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
     });
   }
 
-  private createFixedExpenseFromModal(request: CreateFixedExpenseRequest): void {
+  private createFixedExpenseFromModal(result: ExpenseFormResult): void {
+    // Construir request según el tipo de gasto
+    const request: CreateFixedExpenseRequest = this.buildCreateRequest(result);
     console.log('Iniciando creación de gasto fijo:', request, 'para el mes:', this.currentMonth);
     
     this.configurationService.createFixedExpense(this.currentMonth, request)
@@ -787,9 +788,121 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error('Error updating fixed expense:', error);
-          this.notificationService.openSnackBar('Error actualizando gasto fijo');
+          this.handleUpdateError(error);
         }
       });
+  }
+
+  /**
+   * Construye el request para crear un nuevo gasto
+   */
+  private buildCreateRequest(result: ExpenseFormResult): CreateFixedExpenseRequest {
+    const baseRequest = {
+      pocket_id: result.pocket_id,
+      concept_name: result.concept_name
+    };
+
+    if (result.expense_type === 'fixed') {
+      return {
+        ...baseRequest,
+        amount: result.amount!,
+        payment_day: result.payment_day!
+      };
+    } else {
+      // Para gastos híbridos en creación, usar amount = 0 y payment_day = 0
+      return {
+        ...baseRequest,
+        amount: 0,
+        payment_day: 0
+      };
+    }
+  }
+
+  /**
+   * Construye el request para actualizar un gasto existente
+   */
+  private buildUpdateRequest(result: ExpenseFormResult, originalExpense: FixedExpense): any {
+    const baseRequest = {
+      concept_name: result.concept_name,
+      month: result.month,
+      pocket_id: result.pocket_id,
+      expense_type: result.expense_type
+    };
+
+    if (result.expense_type === 'fixed') {
+      return {
+        ...baseRequest,
+        amount: result.amount,
+        payment_day: result.payment_day
+      };
+    } else {
+      return {
+        ...baseRequest,
+        budget_limit: result.budget_limit
+      };
+    }
+  }
+
+  /**
+   * Procesa la actualización de un gasto (con o sin conversión)
+   */
+  private performExpenseUpdate(result: ExpenseFormResult, originalExpense: FixedExpense): void {
+    const updateRequest = this.buildUpdateRequest(result, originalExpense);
+    
+    // Crear objeto FixedExpense para el servicio (mantener compatibilidad)
+    const updatedExpense: FixedExpense = {
+      ...originalExpense,
+      ...updateRequest
+    };
+
+    this.updateFixedExpenseFromModal(updatedExpense);
+  }
+
+  /**
+   * Muestra confirmación para conversiones destructivas
+   */
+  private showConversionConfirmation(result: ExpenseFormResult, originalExpense: FixedExpense): void {
+    const transactionCount = originalExpense.transactions?.length || 0;
+    
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '500px',
+      data: {
+        message: `⚠️ Al convertir "${originalExpense.concept_name}" de gasto híbrido a fijo se eliminarán permanentemente ${transactionCount} transacciones. ¿Estás seguro?`,
+        confirmText: 'Convertir y Eliminar',
+        cancelText: 'Cancelar'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (confirmed === true) {
+        this.performExpenseUpdate(result, originalExpense);
+      }
+    });
+  }
+
+  /**
+   * Maneja errores específicos de actualización
+   */
+  private handleUpdateError(error: any): void {
+    if (error.status === 400) {
+      const details = error.error?.details || '';
+      
+      if (details.includes('cannot convert to hybrid')) {
+        this.notificationService.openSnackBar('Error: No se puede convertir a híbrido. Verifica el presupuesto.');
+      } else if (details.includes('cannot convert to fixed')) {
+        this.notificationService.openSnackBar('Error: No se puede convertir a fijo. Verifica el día de pago.');
+      } else if (details.includes('payment_day must be between 1 and 31')) {
+        this.notificationService.openSnackBar('Error: El día de pago debe estar entre 1 y 31.');
+      } else if (details.includes('invalid month format')) {
+        this.notificationService.openSnackBar('Error: Formato de mes inválido. Debe ser YYYY-MM.');
+      } else {
+        this.notificationService.openSnackBar(`Error de validación: ${details}`);
+      }
+    } else if (error.status === 404) {
+      this.notificationService.openSnackBar('Error: Gasto no encontrado.');
+    } else {
+      this.notificationService.openSnackBar('Error actualizando gasto fijo');
+    }
   }
 
   private createPocketFromModal(name: string, description?: string): void {

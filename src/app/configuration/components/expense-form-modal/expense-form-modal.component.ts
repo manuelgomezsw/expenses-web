@@ -20,10 +20,21 @@ export interface ExpenseFormData {
 export interface ExpenseFormResult {
   pocket_id: number;
   concept_name: string;
-  amount: number;
-  payment_day: number;
+  month: string;                    // ✅ AGREGAR para backend
   expense_type: 'fixed' | 'hybrid';
-  budget_limit?: number;
+  
+  // Campos condicionales según tipo
+  amount?: number;                  // ✅ Opcional para híbridos
+  payment_day?: number;             // ✅ Opcional para híbridos  
+  budget_limit?: number;            // ✅ Opcional para fijos
+}
+
+export interface ExpenseConversionWarning {
+  isConversion: boolean;
+  fromType: 'fixed' | 'hybrid';
+  toType: 'fixed' | 'hybrid';
+  willLoseTransactions: boolean;
+  transactionCount: number;
 }
 
 @Component({
@@ -47,11 +58,17 @@ export class ExpenseFormModalComponent implements OnInit {
   formData: ExpenseFormResult = {
     pocket_id: 0,
     concept_name: '',
+    month: '',
+    expense_type: 'fixed',
     amount: 0,
     payment_day: 1,
-    expense_type: 'fixed',
     budget_limit: 0
   };
+
+  // Variables para detectar conversiones
+  originalExpenseType: 'fixed' | 'hybrid' = 'fixed';
+  originalAmount: number = 0;
+  originalBudgetLimit: number = 0;
 
   constructor(
     public dialogRef: MatDialogRef<ExpenseFormModalComponent>,
@@ -59,14 +76,23 @@ export class ExpenseFormModalComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Obtener el mes actual para nuevos gastos
+    const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
+    
     if (this.data.isEditing && this.data.expense) {
+      // Guardar valores originales para detectar conversiones
+      this.originalExpenseType = this.data.expense.expense_type || 'fixed';
+      this.originalAmount = this.data.expense.amount || 0;
+      this.originalBudgetLimit = this.data.expense.budget_limit || 0;
+      
       this.formData = {
         pocket_id: this.data.expense.pocket_id,
         concept_name: this.data.expense.concept_name,
+        month: this.data.expense.month || currentMonth,
+        expense_type: this.data.expense.expense_type || 'fixed',
         amount: this.data.expense.amount,
         payment_day: this.data.expense.payment_day,
-        expense_type: this.data.expense.expense_type || 'fixed',
-        budget_limit: this.data.expense.budget_limit || 0
+        budget_limit: this.data.expense.budget_limit
       };
       
       // Verificar si el pocket_id existe en availablePockets
@@ -77,6 +103,9 @@ export class ExpenseFormModalComponent implements OnInit {
           availablePockets: this.data.availablePockets.map(p => ({ id: p.id, name: p.name }))
         });
       }
+    } else {
+      // Nuevo gasto
+      this.formData.month = currentMonth;
     }
   }
 
@@ -94,18 +123,19 @@ export class ExpenseFormModalComponent implements OnInit {
     const baseValid = !!(
       this.formData.pocket_id &&
       this.formData.concept_name.trim() &&
-      this.formData.expense_type
+      this.formData.expense_type &&
+      this.formData.month
     );
 
+    if (!baseValid) return false;
+
+    // Validaciones específicas por tipo
     if (this.formData.expense_type === 'fixed') {
-      return baseValid && 
-        this.formData.amount > 0 &&
-        this.formData.payment_day >= 1 &&
-        this.formData.payment_day <= 31;
+      return !!(this.formData.amount && this.formData.amount > 0 &&
+               this.formData.payment_day && this.formData.payment_day >= 1 && 
+               this.formData.payment_day <= 31);
     } else if (this.formData.expense_type === 'hybrid') {
-      return baseValid && 
-        this.formData.budget_limit !== undefined &&
-        this.formData.budget_limit > 0;
+      return !!(this.formData.budget_limit && this.formData.budget_limit > 0);
     }
 
     return false;
@@ -114,11 +144,11 @@ export class ExpenseFormModalComponent implements OnInit {
   getValidationErrors(): string[] {
     const errors: string[] = [];
 
-    if (!('pocket_id' in this.formData) || !this.formData.pocket_id) {
+    if (!this.formData.pocket_id) {
       errors.push('Selecciona un bolsillo');
     }
 
-    if (!('concept_name' in this.formData) || !this.formData.concept_name.trim()) {
+    if (!this.formData.concept_name.trim()) {
       errors.push('Ingresa el concepto del gasto');
     }
 
@@ -126,17 +156,36 @@ export class ExpenseFormModalComponent implements OnInit {
       errors.push('Selecciona el tipo de gasto');
     }
 
+    if (!this.formData.month) {
+      errors.push('Selecciona el mes');
+    }
+
+    // Validaciones específicas por tipo
     if (this.formData.expense_type === 'fixed') {
-      if (this.formData.amount <= 0) {
+      if (!this.formData.amount || this.formData.amount <= 0) {
         errors.push('El monto debe ser mayor a 0');
       }
       
-      if (this.formData.payment_day < 1 || this.formData.payment_day > 31) {
+      if (!this.formData.payment_day || this.formData.payment_day < 1 || this.formData.payment_day > 31) {
         errors.push('El día de pago debe estar entre 1 y 31');
       }
     } else if (this.formData.expense_type === 'hybrid') {
       if (!this.formData.budget_limit || this.formData.budget_limit <= 0) {
         errors.push('El presupuesto mensual debe ser mayor a 0');
+      }
+    }
+
+    // Validaciones de conversión
+    if (this.data.isEditing && this.isConversion()) {
+      const conversionInfo = this.getConversionInfo();
+      if (conversionInfo.fromType === 'fixed' && conversionInfo.toType === 'hybrid') {
+        if (!this.formData.budget_limit && this.originalAmount <= 0) {
+          errors.push('Proporciona un presupuesto o el gasto debe tener un monto > 0');
+        }
+      } else if (conversionInfo.fromType === 'hybrid' && conversionInfo.toType === 'fixed') {
+        if (!this.formData.payment_day) {
+          errors.push('Debes proporcionar un día de pago válido para gastos fijos');
+        }
       }
     }
     
@@ -160,9 +209,26 @@ export class ExpenseFormModalComponent implements OnInit {
   }
 
   onExpenseTypeChange(): void {
+    // Manejar conversiones inteligentes
+    if (this.data.isEditing && this.originalExpenseType !== this.formData.expense_type) {
+      // Es una conversión
+      if (this.formData.expense_type === 'hybrid' && !this.formData.budget_limit) {
+        // Fixed → Hybrid: Copiar amount → budget_limit si no hay budget_limit
+        this.formData.budget_limit = this.originalAmount || 0;
+      } else if (this.formData.expense_type === 'fixed' && !this.formData.amount) {
+        // Hybrid → Fixed: Copiar budget_limit → amount si no hay amount
+        this.formData.amount = this.originalBudgetLimit || 0;
+        if (!this.formData.payment_day) {
+          this.formData.payment_day = 1;
+        }
+      }
+    }
+
     // Limpiar campos específicos cuando cambia el tipo
     if (this.formData.expense_type === 'fixed') {
-      this.formData.budget_limit = 0;
+      if (!this.data.isEditing || this.originalExpenseType === 'hybrid') {
+        this.formData.budget_limit = undefined;
+      }
       if (!this.formData.amount) {
         this.formData.amount = 0;
       }
@@ -170,8 +236,10 @@ export class ExpenseFormModalComponent implements OnInit {
         this.formData.payment_day = 1;
       }
     } else if (this.formData.expense_type === 'hybrid') {
-      this.formData.amount = 0;
-      this.formData.payment_day = 1;
+      if (!this.data.isEditing || this.originalExpenseType === 'fixed') {
+        this.formData.amount = undefined;
+        this.formData.payment_day = undefined;
+      }
       if (!this.formData.budget_limit) {
         this.formData.budget_limit = 0;
       }
@@ -200,5 +268,56 @@ export class ExpenseFormModalComponent implements OnInit {
    */
   hasAvailablePockets(): boolean {
     return this.data.availablePockets && this.data.availablePockets.length > 0;
+  }
+
+  /**
+   * Detecta si se está realizando una conversión de tipo
+   */
+  isConversion(): boolean {
+    return this.data.isEditing && this.originalExpenseType !== this.formData.expense_type;
+  }
+
+  /**
+   * Obtiene información sobre la conversión
+   */
+  getConversionInfo(): ExpenseConversionWarning {
+    const isConversion = this.isConversion();
+    const transactionCount = this.data.expense?.transactions?.length || 0;
+    
+    return {
+      isConversion,
+      fromType: this.originalExpenseType,
+      toType: this.formData.expense_type,
+      willLoseTransactions: isConversion && 
+                           this.originalExpenseType === 'hybrid' && 
+                           this.formData.expense_type === 'fixed' && 
+                           transactionCount > 0,
+      transactionCount
+    };
+  }
+
+  /**
+   * Obtiene mensaje de advertencia para conversiones
+   */
+  getConversionWarning(): string {
+    if (!this.isConversion()) return '';
+    
+    const info = this.getConversionInfo();
+    
+    if (info.fromType === 'hybrid' && info.toType === 'fixed' && info.willLoseTransactions) {
+      return `⚠️ Al convertir a gasto fijo se eliminarán permanentemente ${info.transactionCount} transacciones.`;
+    } else if (info.fromType === 'fixed' && info.toType === 'hybrid') {
+      return `ℹ️ Al convertir a gasto híbrido podrás registrar múltiples transacciones.`;
+    }
+    
+    return '';
+  }
+
+  /**
+   * Verifica si la conversión es destructiva
+   */
+  isDestructiveConversion(): boolean {
+    const info = this.getConversionInfo();
+    return info.willLoseTransactions;
   }
 }

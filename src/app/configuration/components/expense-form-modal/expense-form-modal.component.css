@@ -97,6 +97,39 @@
   margin-bottom: var(--spacing-xs);
 }
 
+/* Conversion Warning */
+.conversion-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  background: linear-gradient(135deg, #e3f2fd 0%, #f0f8ff 100%);
+  border: 1px solid var(--primary-color);
+  border-radius: var(--radius-md);
+  margin: var(--spacing-md) 0;
+}
+
+.conversion-warning.destructive {
+  background: linear-gradient(135deg, #fff3e0 0%, #ffebee 100%);
+  border-color: var(--danger-color);
+}
+
+.conversion-warning mat-icon {
+  margin-top: 2px;
+}
+
+.warning-content {
+  flex: 1;
+}
+
+.warning-content p {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text-primary);
+}
+
 /* Hybrid Info Card */
 .hybrid-info-card {
   display: flex;
