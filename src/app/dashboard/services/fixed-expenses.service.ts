@@ -29,10 +29,10 @@ export class FixedExpensesService {
 
   /**
    * Obtiene todos los gastos fijos del mes desde el backend
-   * GET /api/fixed-expenses/{month}
+   * GET /api/fixed-expenses/by-month/{month}
    */
   getFixedExpenses(month: string): Observable<FixedExpense[]> {
-    const url = `${environment.fixedExpensesUrl}/${month}`;
+    const url = `${environment.fixedExpensesUrl}/by-month/${month}`;
     console.log('Obteniendo gastos fijos desde:', url);
 
     return this.http.get<FixedExpense[]>(url).pipe(
