@@ -1,12 +1,13 @@
 import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { FixedExpense, HybridTransaction } from '../../../domain/fixed-expense';
+import { ConfirmDialogComponent } from '../../../components/confirm-dialog/confirm-dialog.component';
 
 export interface ViewHybridTransactionsData {
   expense: FixedExpense;
@@ -85,12 +86,15 @@ export interface ViewHybridTransactionsResult {
               </div>
               
               <div class="transaction-actions">
-                <button mat-icon-button 
-                        color="warn"
-                        (click)="deleteTransaction(transaction)"
-                        matTooltip="Eliminar transacción">
-                  <mat-icon>delete</mat-icon>
-                </button>
+                <div class="action-buttons">
+                  <button mat-icon-button 
+                          color="warn"
+                          (click)="deleteTransaction(transaction)"
+                          matTooltip="Eliminar transacción"
+                          class="delete-button">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -211,11 +215,18 @@ export interface ViewHybridTransactionsResult {
       margin-bottom: 8px;
       background: #fafafa;
       transition: all 0.2s ease;
+      position: relative;
     }
 
     .transaction-item:hover {
       background: #f5f5f5;
       border-color: #e0e0e0;
+    }
+
+    .transaction-item:hover .action-buttons {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(0);
     }
 
     .transaction-item:last-child {
@@ -252,7 +263,34 @@ export interface ViewHybridTransactionsResult {
 
     .transaction-actions {
       display: flex;
+      align-items: center;
+    }
+
+    .action-buttons {
+      display: flex;
       gap: 4px;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      transform: translateX(10px);
+    }
+
+    .delete-button {
+      width: 32px !important;
+      height: 32px !important;
+      min-width: 32px !important;
+      padding: 0 !important;
+      color: #f44336 !important;
+    }
+
+    .delete-button:hover {
+      background: rgba(244, 67, 54, 0.1) !important;
+    }
+
+    .delete-button mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
     }
 
     /* Empty State */
@@ -339,7 +377,8 @@ export interface ViewHybridTransactionsResult {
 export class ViewHybridTransactionsModalComponent {
   constructor(
     private dialogRef: MatDialogRef<ViewHybridTransactionsModalComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: ViewHybridTransactionsData
+    @Inject(MAT_DIALOG_DATA) public data: ViewHybridTransactionsData,
+    private dialog: MatDialog
   ) {}
 
   getBudgetLimit(): number {
@@ -380,12 +419,28 @@ export class ViewHybridTransactionsModalComponent {
       console.error('No se puede eliminar transacción: ID no definido');
       return;
     }
+
+    const transactionDescription = transaction.description || 
+      `COP${transaction.amount.toLocaleString()} del ${new Date(transaction.transaction_date).toLocaleDateString('es-CO')}`;
     
-    const result: ViewHybridTransactionsResult = {
-      action: 'delete',
-      transactionId: transaction.id
-    };
-    this.dialogRef.close(result);
+    const confirmDialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        message: `¿Estás seguro de que quieres eliminar la transacción "${transactionDescription}"?`,
+        confirmText: 'Eliminar',
+        cancelText: 'Cancelar'
+      }
+    });
+
+    confirmDialogRef.afterClosed().subscribe((confirmed) => {
+      if (confirmed === true) {
+        const result: ViewHybridTransactionsResult = {
+          action: 'delete',
+          transactionId: transaction.id!
+        };
+        this.dialogRef.close(result);
+      }
+    });
   }
 
   onClose(): void {
