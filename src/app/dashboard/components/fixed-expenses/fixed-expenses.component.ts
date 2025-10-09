@@ -373,10 +373,6 @@ export class FixedExpensesComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     const remainingBudget = this.getRemainingBudget(expense);
-    if (remainingBudget <= 0) {
-      this.notificationService.openSnackBar('No hay presupuesto disponible para nuevas transacciones');
-      return;
-    }
 
     const dialogData: AddHybridTransactionData = {
       pocketName: expense.pocket_name || `Bolsillo ${expense.pocket_id}`,

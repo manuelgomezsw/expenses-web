@@ -45,7 +45,7 @@ export interface AddHybridTransactionResult {
       <mat-dialog-content>
         <div class="expense-info">
           <span class="expense-name">{{ data.expenseName }}</span>
-          <span class="available-budget">Disponible: {{ data.remainingBudget | currency:'COP':'symbol':'1.0-0' }}</span>
+          <span class="available-budget">Restante: {{ data.remainingBudget | currency:'COP':'symbol':'1.0-0' }}</span>
         </div>
 
         <form class="transaction-form">
@@ -57,10 +57,9 @@ export interface AddHybridTransactionResult {
                    name="amount"
                    placeholder="Ingresa el monto"
                    min="1"
-                   [max]="data.remainingBudget"
                    required>
             <span matTextPrefix>$</span>
-            <mat-hint>Máximo: {{ data.remainingBudget | currency:'COP':'symbol':'1.0-0' }}</mat-hint>
+            <mat-hint>Restante del presupuesto: {{ data.remainingBudget | currency:'COP':'symbol':'1.0-0' }}</mat-hint>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="full-width">
@@ -176,7 +175,6 @@ export class AddHybridTransactionModalComponent {
   isFormValid(): boolean {
     return this.formData.amount !== null &&
            this.formData.amount > 0 && 
-           this.formData.amount <= this.data.remainingBudget &&
            !!this.formData.transaction_date;
   }
 
