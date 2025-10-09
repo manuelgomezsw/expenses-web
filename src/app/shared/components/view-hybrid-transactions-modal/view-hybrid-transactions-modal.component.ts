@@ -389,20 +389,11 @@ export class ViewHybridTransactionsModalComponent {
     // Calcular la suma de todas las transacciones en el modal
     const transactions = this.getTransactions();
     const totalSpent = transactions.reduce((total, transaction) => total + transaction.amount, 0);
-    
-    // Debug: Log para verificar cálculos
-    console.log('Modal - Transacciones:', transactions);
-    console.log('Modal - Total calculado:', totalSpent);
-    console.log('Modal - Backend current_spent:', this.data.expense.current_spent);
-    
     return totalSpent;
   }
 
   getRemainingBudget(): number {
     const remaining = this.getBudgetLimit() - this.getCurrentSpent();
-    console.log('Modal - Presupuesto:', this.getBudgetLimit());
-    console.log('Modal - Gastado:', this.getCurrentSpent());
-    console.log('Modal - Disponible:', remaining);
     return remaining;
   }
 
@@ -412,7 +403,6 @@ export class ViewHybridTransactionsModalComponent {
     if (budgetLimit === 0) return 0;
     
     const percentage = Math.min((currentSpent / budgetLimit) * 100, 100);
-    console.log('Modal - Porcentaje:', percentage);
     return percentage;
   }
 

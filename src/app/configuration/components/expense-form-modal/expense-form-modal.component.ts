@@ -98,10 +98,7 @@ export class ExpenseFormModalComponent implements OnInit {
       // Verificar si el pocket_id existe en availablePockets
       const pocketExists = this.data.availablePockets.find(p => p.id === this.data.expense?.pocket_id);
       if (!pocketExists) {
-        console.warn('ExpenseFormModal - El pocket_id del gasto no existe en availablePockets:', {
-          expensePocketId: this.data.expense.pocket_id,
-          availablePockets: this.data.availablePockets.map(p => ({ id: p.id, name: p.name }))
-        });
+        // Pocket no encontrado, se usará el primer pocket disponible por defecto
       }
     } else {
       // Nuevo gasto

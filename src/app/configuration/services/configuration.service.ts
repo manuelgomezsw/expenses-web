@@ -96,11 +96,8 @@ export class ConfigurationService {
    */
   getSalary(month: string): Observable<Salary> {
     const url = `${environment.incomeUrl}/${month}`;
-    console.log('Obteniendo salario desde:', url);
-    
     return this.http.get<{monthly_amount: number}>(url).pipe(
       map(response => {
-        console.log('Respuesta del backend (objeto único):', response);
         
         // El backend retorna solo {monthly_amount: number}
         if (response && typeof response.monthly_amount === 'number') {
@@ -110,7 +107,6 @@ export class ConfigurationService {
             month: month,
             created_at: new Date().toISOString()
           };
-          console.log('Salario obtenido exitosamente:', salary);
           return salary;
         } else {
           // Si no hay datos válidos, crear un salario por defecto
@@ -120,13 +116,11 @@ export class ConfigurationService {
             month: month,
             created_at: new Date().toISOString()
           };
-          console.log('Respuesta inválida, usando valores por defecto:', defaultSalary);
           return defaultSalary;
         }
       }),
       catchError(error => {
         console.error('Error obteniendo salario del backend:', error);
-        console.error('URL utilizada:', url);
         
         // Manejar error según contrato estándar
         this.errorHandler.handleError(error);
@@ -144,11 +138,8 @@ export class ConfigurationService {
    */
   updateSalary(month: string, request: UpdateSalaryRequest): Observable<Salary> {
     const url = `${environment.incomeUrl}/${month}`;
-    console.log('Actualizando salario en:', url, 'con datos:', request);
-    
     return this.http.put<{monthly_amount: number}>(url, request, this.httpOptions).pipe(
       map(response => {
-        console.log('Salario actualizado exitosamente (objeto único):', response);
         
         // El backend retorna solo {monthly_amount: number}
         if (response && typeof response.monthly_amount === 'number') {
@@ -158,7 +149,6 @@ export class ConfigurationService {
             month: month,
             created_at: new Date().toISOString()
           };
-          console.log('Salario procesado correctamente:', updatedSalary);
           return updatedSalary;
         } else {
           // Si la respuesta no tiene la estructura esperada, usar los datos enviados
@@ -168,7 +158,6 @@ export class ConfigurationService {
             month: month,
             created_at: new Date().toISOString()
           };
-          console.log('Respuesta inesperada, usando datos enviados:', updatedSalary);
           return updatedSalary;
         }
       }),
@@ -193,11 +182,9 @@ export class ConfigurationService {
    */
   getFixedExpenses(month: string): Observable<FixedExpense[]> {
     const url = `${environment.fixedExpensesUrl}/by-month/${month}`;
-    console.log('Obteniendo gastos fijos desde:', url);
     
     return this.http.get<FixedExpense[]>(url).pipe(
       map(response => {
-        console.log('Gastos fijos obtenidos exitosamente:', response);
         
         // Validar que la respuesta sea un array
         if (Array.isArray(response)) {
@@ -209,7 +196,6 @@ export class ConfigurationService {
             created_at: expense.created_at || new Date().toISOString()
           }));
         } else {
-          console.log('Respuesta no es array, retornando array vacío');
           return [];
         }
       }),
@@ -232,11 +218,9 @@ export class ConfigurationService {
    */
   getDailyExpensesConfig(month: string): Observable<DailyExpensesConfig> {
     const url = `${environment.dailyExpensesConfigUrl}/${month}`;
-    console.log('Obteniendo configuración de gastos diarios desde:', url);
 
     return this.http.get<DailyExpensesConfig>(url).pipe(
       map(response => {
-        console.log('Configuración de gastos diarios obtenida exitosamente:', response);
         
         // Asegurar que la respuesta tenga la estructura correcta
         return {
@@ -264,11 +248,9 @@ export class ConfigurationService {
    */
   updateDailyBudget(month: string, request: UpdateDailyBudgetRequest): Observable<DailyExpensesConfig> {
     const url = `${environment.dailyExpensesConfigUrl}/${month}`;
-    console.log('Actualizando presupuesto diario en:', url, 'con datos:', request);
     
     return this.http.put<DailyExpensesConfig>(url, request, this.httpOptions).pipe(
       map(response => {
-        console.log('Presupuesto diario actualizado exitosamente:', response);
         
         // Asegurar que la respuesta tenga la estructura correcta
         const updatedConfig: DailyExpensesConfig = {
@@ -300,11 +282,9 @@ export class ConfigurationService {
   createFixedExpense(month: string, request: CreateFixedExpenseRequest): Observable<FixedExpense> {
     const url = environment.fixedExpensesUrl;
     const requestWithMonth: CreateFixedExpenseBackendRequest = { ...request, month };
-    console.log('Creando gasto fijo en:', url, 'con datos:', requestWithMonth);
     
     return this.http.post<FixedExpense>(url, requestWithMonth, this.httpOptions).pipe(
       map(response => {
-        console.log('Gasto fijo creado exitosamente:', response);
         
         // Asegurar que la respuesta tenga la estructura correcta
         const newExpense: FixedExpense = {
@@ -346,11 +326,9 @@ export class ConfigurationService {
    */
   updateFixedExpense(expense: FixedExpense): Observable<FixedExpense> {
     const url = `${environment.fixedExpensesUrl}/${expense.id}`;
-    console.log('Actualizando gasto fijo en:', url, 'con datos:', expense);
     
     return this.http.put<FixedExpense>(url, expense, this.httpOptions).pipe(
       map(response => {
-        console.log('Gasto fijo actualizado exitosamente:', response);
         
         // Asegurar que la respuesta tenga la estructura correcta
         const updatedExpense: FixedExpense = {
@@ -381,11 +359,9 @@ export class ConfigurationService {
    */
   deleteFixedExpense(expenseId: number): Observable<boolean> {
     const url = `${environment.fixedExpensesUrl}/${expenseId}`;
-    console.log('Eliminando gasto fijo en:', url);
     
     return this.http.delete<void>(url, this.httpOptions).pipe(
       map(() => {
-        console.log('Gasto fijo eliminado exitosamente');
         return true;
       }),
       catchError(error => {
@@ -408,11 +384,9 @@ export class ConfigurationService {
   createPocket(name: string, description?: string): Observable<Pocket> {
     const url = environment.pocketsApiUrl;
     const request = { name, description };
-    console.log('Creando bolsillo en:', url, 'con datos:', request);
     
     return this.http.post<Pocket>(url, request, this.httpOptions).pipe(
       map(response => {
-        console.log('Bolsillo creado exitosamente:', response);
         
         // Asegurar que la respuesta tenga la estructura correcta
         const newPocket: Pocket = {
@@ -442,11 +416,9 @@ export class ConfigurationService {
    */
   updatePocket(pocket: Pocket): Observable<Pocket> {
     const url = `${environment.pocketsApiUrl}/${pocket.id}`;
-    console.log('Actualizando bolsillo en:', url, 'con datos:', pocket);
     
     return this.http.put<Pocket>(url, pocket, this.httpOptions).pipe(
       map(response => {
-        console.log('Bolsillo actualizado exitosamente:', response);
         
         // Asegurar que la respuesta tenga la estructura correcta
         const updatedPocket: Pocket = {
@@ -476,11 +448,9 @@ export class ConfigurationService {
    */
   deletePocket(pocketId: number): Observable<boolean> {
     const url = `${environment.pocketsApiUrl}/${pocketId}`;
-    console.log('Eliminando bolsillo en:', url);
     
     return this.http.delete<void>(url, this.httpOptions).pipe(
       map(() => {
-        console.log('Bolsillo eliminado exitosamente');
         return true;
       }),
       catchError(error => {
@@ -520,11 +490,9 @@ export class ConfigurationService {
    */
   getAvailablePockets(): Observable<Pocket[]> {
     const url = environment.pocketsApiUrl;
-    console.log('Obteniendo bolsillos disponibles desde:', url);
     
     return this.http.get<Pocket[]>(url).pipe(
       map(response => {
-        console.log('Bolsillos obtenidos exitosamente:', response);
         
         // Validar que la respuesta sea un array
         if (Array.isArray(response)) {
@@ -534,7 +502,6 @@ export class ConfigurationService {
             created_at: pocket.created_at || new Date().toISOString()
           }));
         } else {
-          console.log('Respuesta no es array, retornando array vacío');
           return [];
         }
       }),
@@ -557,11 +524,9 @@ export class ConfigurationService {
    */
   testFixedExpensesEndpoint(): Observable<{status: string, message: string}> {
     const url = `${environment.fixedExpensesUrl}/test`;
-    console.log('Probando endpoint de fixed-expenses:', url);
     
     return this.http.get<{status: string, message: string}>(url).pipe(
       map(response => {
-        console.log('Endpoint de fixed-expenses disponible:', response);
         return response;
       }),
       catchError(error => {
@@ -580,11 +545,9 @@ export class ConfigurationService {
    */
   testBackendConnectivity(): Observable<{status: string, timestamp: string}> {
     const url = `${environment.pocketsApiUrl.replace('/pockets', '/health')}`;
-    console.log('Probando conectividad del backend:', url);
     
     return this.http.get<{status: string, timestamp: string}>(url).pipe(
       map(response => {
-        console.log('Backend conectado exitosamente:', response);
         return response;
       }),
       catchError(error => {
@@ -604,11 +567,9 @@ export class ConfigurationService {
   toggleFixedExpensePaymentStatus(expenseId: number, isPaid: boolean, paidDate?: string): Observable<FixedExpense> {
     const url = `${environment.fixedExpensesUrl}/${expenseId}/payment-status`;
     const request = { is_paid: isPaid, paid_date: paidDate };
-    console.log('Actualizando estado de pago en:', url, 'con datos:', request);
     
     return this.http.patch<FixedExpense>(url, request, this.httpOptions).pipe(
       map(response => {
-        console.log('Estado de pago actualizado exitosamente:', response);
         return response;
       }),
       catchError(error => {

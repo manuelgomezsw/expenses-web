@@ -117,7 +117,6 @@ export class HybridTransactionsModalComponent implements OnInit {
   editTransaction(transaction: HybridTransaction): void {
     // Para simplificar, por ahora solo permitimos eliminar
     // En una implementación completa, abriríamos otro modal de edición
-    console.log('Edit transaction:', transaction);
   }
 
   deleteTransaction(transaction: HybridTransaction): void {

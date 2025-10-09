@@ -69,15 +69,11 @@ export class DailyExpensesService {
    */
   getDailyExpensesConfig(month: string): Observable<DailyExpensesConfig> {
     const url = `${environment.dailyExpensesConfigUrl}/${month}`;
-    console.log('Obteniendo configuración de gastos diarios desde:', url);
 
     return this.http.get<DailyExpensesConfig>(url).pipe(
       map(response => {
-        console.log('Configuración de gastos diarios obtenida exitosamente:', response);
-        
         // Si la respuesta es null o undefined, devolver configuración por defecto
         if (response === null || response === undefined) {
-          console.log('Backend devolvió null/undefined para configuración, usando valores por defecto');
           return {
             month: month,
             monthly_budget: 0
@@ -93,11 +89,9 @@ export class DailyExpensesService {
       }),
       catchError(error => {
         console.error('Error obteniendo configuración de gastos diarios del backend:', error);
-        console.error('URL utilizada:', url);
         
         // Si es un 404, devolver configuración por defecto
         if (error.status === 404) {
-          console.log('No hay configuración para el mes, usando valores por defecto:', month);
           return of({
             month: month,
             monthly_budget: 0
@@ -116,21 +110,15 @@ export class DailyExpensesService {
    */
   getDailyExpenses(month: string): Observable<DailyExpense[]> {
     const url = `${environment.dailyExpensesUrl}/${month}`;
-    console.log('Obteniendo gastos diarios desde:', url);
-
     return this.http.get<DailyExpense[]>(url).pipe(
       map(response => {
-        console.log('Gastos diarios obtenidos exitosamente:', response);
-        
         // Si la respuesta es null o undefined, devolver array vacío
         if (response === null || response === undefined) {
-          console.log('Backend devolvió null/undefined, interpretando como sin gastos');
           return [];
         }
         
         // Validar que la respuesta sea un array
         if (!Array.isArray(response)) {
-          console.warn('La respuesta del servidor no es un array válido:', response);
           return [];
         }
 
@@ -148,7 +136,6 @@ export class DailyExpensesService {
         
         // Si es un 404, significa que no hay gastos para este mes - devolver array vacío
         if (error.status === 404) {
-          console.log('No hay gastos registrados para el mes:', month);
           return of([]);
         }
         
@@ -164,7 +151,6 @@ export class DailyExpensesService {
    */
   addDailyExpense(expense: DailyExpense): Observable<DailyExpense> {
     const url = environment.dailyExpensesUrl;
-    console.log('Agregando gasto diario:', expense);
 
     const body = {
       description: expense.description,
@@ -174,11 +160,9 @@ export class DailyExpensesService {
 
     return this.http.post<DailyExpense>(url, body, this.httpOptions).pipe(
       map(response => {
-        console.log('Gasto diario agregado exitosamente:', response);
         
         // Si la respuesta es null o undefined, crear objeto con los datos enviados
         if (response === null || response === undefined) {
-          console.log('Backend devolvió null/undefined, creando objeto con datos enviados');
           return {
             id: Date.now(), // ID temporal
             description: expense.description,
@@ -213,7 +197,6 @@ export class DailyExpensesService {
    */
   updateDailyExpense(expense: DailyExpense): Observable<DailyExpense> {
     const url = `${environment.dailyExpensesUrl}/${expense.id}`;
-    console.log('Actualizando gasto diario:', expense);
 
     const body = {
       description: expense.description,
@@ -223,11 +206,9 @@ export class DailyExpensesService {
 
     return this.http.put<DailyExpense>(url, body, this.httpOptions).pipe(
       map(response => {
-        console.log('Gasto diario actualizado exitosamente:', response);
         
         // Si la respuesta es null o undefined, devolver el objeto actualizado
         if (response === null || response === undefined) {
-          console.log('Backend devolvió null/undefined, devolviendo objeto actualizado');
           return {
             ...expense,
             description: expense.description,
@@ -263,11 +244,9 @@ export class DailyExpensesService {
    */
   deleteDailyExpense(expenseId: number): Observable<boolean> {
     const url = `${environment.dailyExpensesUrl}/${expenseId}`;
-    console.log('Eliminando gasto diario:', expenseId);
 
     return this.http.delete<{success: boolean}>(url).pipe(
       map(response => {
-        console.log('Gasto diario eliminado exitosamente:', response);
         return response.success || true;
       }),
       catchError(error => {
@@ -286,13 +265,11 @@ export class DailyExpensesService {
    */
   updateDailyExpensesBudget(month: string, budget: number): Observable<DailyExpensesConfig> {
     const url = `${environment.dailyExpensesConfigUrl}/${month}`;
-    console.log('Actualizando presupuesto de gastos diarios:', budget);
 
     const body = { monthly_budget: budget };
 
     return this.http.put<DailyExpensesConfig>(url, body, this.httpOptions).pipe(
       map(response => {
-        console.log('Presupuesto de gastos diarios actualizado exitosamente:', response);
         
         // Asegurar que la respuesta tenga la estructura correcta
         return {

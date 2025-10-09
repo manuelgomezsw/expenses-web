@@ -89,21 +89,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
   onFixedExpenseStatusChanged(): void {
     // The monthly summary component will automatically refresh
     // when fixed expenses change since it uses its own service
-    console.log('Fixed expense status changed - summary will auto-refresh');
   }
 
   onDailyExpenseAdded(): void {
     // The monthly summary component will automatically refresh
     // when daily expenses change since it uses its own service
-    console.log('Daily expense added - summary will auto-refresh');
   }
 
   onDailyExpenseUpdated(): void {
-    console.log('Daily expense updated - summary will auto-refresh');
+    // The monthly summary component will automatically refresh
   }
 
   onDailyExpenseDeleted(): void {
-    console.log('Daily expense deleted - summary will auto-refresh');
+    // The monthly summary component will automatically refresh
   }
 
   /**

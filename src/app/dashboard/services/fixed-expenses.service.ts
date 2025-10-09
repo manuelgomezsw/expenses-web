@@ -33,11 +33,9 @@ export class FixedExpensesService {
    */
   getFixedExpenses(month: string): Observable<FixedExpense[]> {
     const url = `${environment.fixedExpensesUrl}/by-month/${month}`;
-    console.log('Obteniendo gastos fijos desde:', url);
 
     return this.http.get<FixedExpense[]>(url).pipe(
       map(response => {
-        console.log('Gastos fijos obtenidos exitosamente:', response);
         
         // Validar que la respuesta sea un array
         if (!Array.isArray(response)) {
@@ -54,7 +52,6 @@ export class FixedExpensesService {
       }),
       catchError(error => {
         console.error('Error obteniendo gastos fijos del backend:', error);
-        console.error('URL utilizada:', url);
         
         // Propagar el error sin fallback
         return throwError(() => new Error(`Error cargando gastos fijos: ${error.message || 'Error de conexión'}`));
@@ -134,18 +131,15 @@ export class FixedExpensesService {
    */
   togglePaymentStatus(expenseId: number, isPaid: boolean): Observable<boolean> {
     const url = `${environment.fixedExpensesUrl}/${expenseId}/status`;
-    console.log(`Cambiando estado de pago para gasto ${expenseId} a:`, isPaid);
 
     const body = { is_paid: isPaid };
 
     return this.http.put<{success: boolean}>(url, body, this.httpOptions).pipe(
       map(response => {
-        console.log('Estado de pago actualizado exitosamente:', response);
         return response.success || true;
       }),
       catchError(error => {
         console.error('Error actualizando estado de pago:', error);
-        console.error('URL utilizada:', url);
         
         // Propagar el error sin fallback
         return throwError(() => new Error(`Error actualizando estado de pago: ${error.message || 'Error de conexión'}`));

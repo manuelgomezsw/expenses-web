@@ -745,19 +745,15 @@ export class FinancialConfigComponent implements OnInit, OnDestroy {
       amount: result.amount || 0,
       payment_day: result.payment_day || 1
     };
-    console.log('Iniciando creación de gasto fijo:', request, 'para el mes:', this.currentMonth);
     
     this.configurationService.createFixedExpense(this.currentMonth, request)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (newExpense) => {
-          console.log('Gasto fijo creado exitosamente en el componente:', newExpense);
-          
           if (this.configuration) {
             this.configuration.fixedExpenses.push(newExpense);
             // Update pockets list
             this.configuration.pockets = this.extractPocketsFromExpenses(this.configuration.fixedExpenses);
-            console.log('Configuración actualizada con nuevo gasto fijo');
           }
           
           const expenseType = newExpense.expense_type === 'hybrid' ? 'híbrido' : 'fijo';
