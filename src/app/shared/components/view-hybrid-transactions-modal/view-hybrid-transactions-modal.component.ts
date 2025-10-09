@@ -62,8 +62,8 @@ export interface ViewHybridTransactionsResult {
               [value]="getProgressPercentage()"
               [color]="getProgressColor()">
             </mat-progress-bar>
-            <span class="progress-text">{{ getProgressPercentage() | number:'1.0-0' }}%</span>
           </div>
+          <div class="progress-text">{{ getProgressPercentage() | number:'1.0-0' }}%</div>
         </div>
 
         <!-- Lista de Transacciones -->
@@ -125,9 +125,9 @@ export interface ViewHybridTransactionsResult {
 
     /* Expense Summary */
     .expense-summary {
-      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-      border: 1px solid #dee2e6;
-      border-radius: 12px;
+      background: #f8f9fa;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
       padding: 20px;
       margin-bottom: 24px;
     }
@@ -175,17 +175,15 @@ export interface ViewHybridTransactionsResult {
 
     .progress-container {
       position: relative;
+      margin-bottom: 8px;
     }
 
     .progress-text {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      text-align: center;
       font-size: 12px;
       font-weight: 600;
-      color: #ffffff;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      color: #666666;
+      margin-top: 4px;
     }
 
     /* Transactions Section */
@@ -202,6 +200,7 @@ export interface ViewHybridTransactionsResult {
     .transactions-list {
       max-height: 300px;
       overflow-y: auto;
+      overflow-x: hidden;
       padding-right: 4px;
     }
 
@@ -216,6 +215,8 @@ export interface ViewHybridTransactionsResult {
       background: #fafafa;
       transition: all 0.2s ease;
       position: relative;
+      min-width: 0;
+      box-sizing: border-box;
     }
 
     .transaction-item:hover {
@@ -235,6 +236,8 @@ export interface ViewHybridTransactionsResult {
 
     .transaction-info {
       flex: 1;
+      min-width: 0;
+      overflow: hidden;
     }
 
     .transaction-header {
@@ -259,6 +262,9 @@ export interface ViewHybridTransactionsResult {
       font-size: 12px;
       color: #6c757d;
       font-style: italic;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .transaction-actions {
