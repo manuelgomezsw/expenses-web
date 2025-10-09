@@ -15,7 +15,7 @@ export interface AddHybridTransactionData {
 }
 
 export interface AddHybridTransactionResult {
-  amount: number;
+  amount: number | null;
   description?: string;
   transaction_date: string;
 }
@@ -54,7 +54,7 @@ export interface AddHybridTransactionResult {
                    type="number" 
                    [(ngModel)]="formData.amount"
                    name="amount"
-                   placeholder="0"
+                   placeholder="Ingresa el monto"
                    min="1"
                    [max]="data.remainingBudget"
                    required>
@@ -109,9 +109,9 @@ export interface AddHybridTransactionResult {
       justify-content: space-between;
       align-items: center;
       padding: 12px 16px;
-      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-      border: 1px solid #dee2e6;
-      border-radius: 8px;
+      background: #f8f9fa;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
       margin-bottom: 24px;
     }
 
@@ -162,7 +162,7 @@ export interface AddHybridTransactionResult {
 })
 export class AddHybridTransactionModalComponent {
   formData: AddHybridTransactionResult = {
-    amount: 0,
+    amount: null,
     description: '',
     transaction_date: new Date().toISOString().split('T')[0]
   };
@@ -173,14 +173,20 @@ export class AddHybridTransactionModalComponent {
   ) {}
 
   isFormValid(): boolean {
-    return this.formData.amount > 0 && 
+    return this.formData.amount !== null &&
+           this.formData.amount > 0 && 
            this.formData.amount <= this.data.remainingBudget &&
            !!this.formData.transaction_date;
   }
 
   onSave(): void {
     if (this.isFormValid()) {
-      this.dialogRef.close(this.formData);
+      // Asegurar que amount sea un número válido antes de enviar
+      const result: AddHybridTransactionResult = {
+        ...this.formData,
+        amount: this.formData.amount || 0
+      };
+      this.dialogRef.close(result);
     }
   }
 

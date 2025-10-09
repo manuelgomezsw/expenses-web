@@ -371,7 +371,7 @@ export class FixedExpensesComponent implements OnInit, OnDestroy, OnChanges {
     });
 
     dialogRef.afterClosed().subscribe((result: AddHybridTransactionResult | undefined) => {
-      if (result) {
+      if (result && result.amount !== null && result.amount > 0) {
         const request: CreateHybridTransactionBackendRequest = {
           amount: result.amount,
           description: result.description,
