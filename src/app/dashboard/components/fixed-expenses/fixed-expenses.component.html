@@ -136,7 +136,7 @@
                       {{ expense.concept_name }}
                     </span>
                     <span class="expense-budget">
-                      {{ (expense.current_spent || 0) | currency:'COP':'symbol':'1.0-0' }} / 
+                      {{ getCurrentSpent(expense) | currency:'COP':'symbol':'1.0-0' }} / 
                       {{ (expense.budget_limit || 0) | currency:'COP':'symbol':'1.0-0' }}
                     </span>
                   </div>

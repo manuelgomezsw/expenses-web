@@ -271,7 +271,16 @@ export class FixedExpensesComponent implements OnInit, OnDestroy, OnChanges {
    */
   getProgressPercentage(expense: FixedExpense): number {
     if (!expense.budget_limit || expense.budget_limit === 0) return 0;
-    const spent = expense.current_spent || 0;
+    
+    // Calcular el gasto basándose en las transacciones locales si están disponibles
+    let spent = 0;
+    if (expense.transactions && expense.transactions.length > 0) {
+      spent = expense.transactions.reduce((total, transaction) => total + transaction.amount, 0);
+    } else {
+      // Fallback al valor del backend si no hay transacciones locales
+      spent = expense.current_spent || 0;
+    }
+    
     return Math.min((spent / expense.budget_limit) * 100, 100);
   }
 
@@ -301,6 +310,18 @@ export class FixedExpensesComponent implements OnInit, OnDestroy, OnChanges {
    */
   getTransactionCount(expense: FixedExpense): number {
     return expense.transactions?.length || 0;
+  }
+
+  /**
+   * Obtiene el monto gastado actual calculado desde las transacciones
+   */
+  getCurrentSpent(expense: FixedExpense): number {
+    if (expense.transactions && expense.transactions.length > 0) {
+      return expense.transactions.reduce((total, transaction) => total + transaction.amount, 0);
+    } else {
+      // Fallback al valor del backend si no hay transacciones locales
+      return expense.current_spent || 0;
+    }
   }
 
   /**
@@ -406,7 +427,16 @@ export class FixedExpensesComponent implements OnInit, OnDestroy, OnChanges {
    */
   getRemainingBudget(expense: FixedExpense): number {
     const budgetLimit = expense.budget_limit || 0;
-    const currentSpent = expense.current_spent || 0;
+    
+    // Calcular el gasto basándose en las transacciones locales si están disponibles
+    let currentSpent = 0;
+    if (expense.transactions && expense.transactions.length > 0) {
+      currentSpent = expense.transactions.reduce((total, transaction) => total + transaction.amount, 0);
+    } else {
+      // Fallback al valor del backend si no hay transacciones locales
+      currentSpent = expense.current_spent || 0;
+    }
+    
     return Math.max(budgetLimit - currentSpent, 0);
   }
 
