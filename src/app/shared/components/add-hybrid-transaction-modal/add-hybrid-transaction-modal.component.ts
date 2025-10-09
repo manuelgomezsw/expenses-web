@@ -10,6 +10,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 
 export interface AddHybridTransactionData {
+  pocketName: string;
   expenseName: string;
   remainingBudget: number;
 }
@@ -38,7 +39,7 @@ export interface AddHybridTransactionResult {
     <div class="add-transaction-modal">
       <h2 mat-dialog-title>
         <mat-icon>add_circle</mat-icon>
-        Nueva Transacción
+        {{ data.pocketName }} - {{ data.expenseName }}
       </h2>
 
       <mat-dialog-content>

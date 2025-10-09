@@ -33,7 +33,7 @@ export interface ViewHybridTransactionsResult {
     <div class="view-transactions-modal">
       <h2 mat-dialog-title>
         <mat-icon>visibility</mat-icon>
-        {{ data.expense.concept_name }}
+        {{ data.expense.pocket_name }} - {{ data.expense.concept_name }}
       </h2>
 
       <mat-dialog-content>

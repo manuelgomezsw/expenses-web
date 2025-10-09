@@ -358,6 +358,7 @@ export class FixedExpensesComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     const dialogData: AddHybridTransactionData = {
+      pocketName: expense.pocket_name || `Bolsillo ${expense.pocket_id}`,
       expenseName: expense.concept_name,
       remainingBudget: remainingBudget
     };
